@@ -69,10 +69,14 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 </head>
 <body>
 <main>
-<div class="top"><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="st" style="display:none">🔥 <b id="stn">0</b></div></div>
+<div class="top"><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" style="display:none;font-size:.85rem"></div><div class="pill" id="st" style="display:none">🔥 <b id="stn">0</b></div></div>
 <div id="app"></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
 <script>
 const LV=[
 {n:"Sortir Data",d:"Klasifikasi data dan prinsip CIA",qs:[
@@ -107,15 +111,30 @@ e:"Yang mencurigakan: akses massal tengah malam, percobaan login berulang, unduh
 const T=20,TL=60,SH=["▲","◆","●"];
 const LMAX=l=>l.log?2000:l.qs.length*1000;
 const MAXP=LV.reduce((s,l)=>s+LMAX(l),0);
-let S={score:0,done:[],lv:0,qi:0,right:0,pick:[],streak:0,lp:0,base:0,tm:null};
+let S={score:0,done:[],lv:0,qi:0,right:0,pick:[],streak:0,lp:0,base:0,tm:null,playing:false};
 const $=id=>document.getElementById(id);
+/* ===== Firebase: kirim skor otomatis ke Firestore (aktif jika firebase-config.js sudah diisi) ===== */
+let DB=null,AUTHP=null;
+function cloudInit(){
+  const C=window.FIREBASE_CONFIG;
+  if(!C||!C.apiKey||/^GANTI/.test(C.apiKey)||!window.firebase)return;
+  try{firebase.initializeApp(C);DB=firebase.firestore();AUTHP=firebase.auth().signInAnonymously();AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
+}
+function cl(s){const el=$("cl");if(!DB){el.style.display="none";return}el.style.display="";el.textContent=s==="ok"?"☁ Tersimpan":s==="err"?"⚠ Gagal kirim":s==="conn"?"☁ Terhubung":"☁ Mengirim…"}
+function total(){if(S.playing){const p=S.done[S.lv];return S.base+Math.max(p?p.pts:0,S.lp)}return myScore()}
+function sync(prog){
+  if(!DB||!S.nm||!S.nim)return;
+  cl("...");
+  const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,t:firebase.firestore.FieldValue.serverTimestamp()};
+  AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid).set(d)).then(()=>cl("ok")).catch(()=>cl("err"));
+}
 const stars=a=>a>=.85?"★★★":a>=.6?"★★☆":"★☆☆";
 function hud(){$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":"none";$("stn").textContent=S.streak}
 function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
 function home(){
-stop();S.score=myScore();S.streak=0;hud();
+stop();S.playing=false;S.score=myScore();S.streak=0;hud();
 let h=`<div class="hero"><div class="logo">🛡️</div><h1>Penjaga Data Kesehatan</h1><p>Jawab cepat dan tepat. Makin cepat, makin banyak poin!</p></div>`;
 h+=nameCard();
 LV.forEach((l,i)=>{const d=S.done[i],ok=i===0||S.done[i-1];
@@ -125,7 +144,7 @@ h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">R
 $("app").innerHTML=h}
 function start(i){if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
-S.base=LV.reduce((t,_,k)=>t+(k!==i&&S.done[k]?S.done[k].pts:0),0);S.score=S.base;hud();LV[i].log?logQ():ques()}
+S.base=LV.reduce((t,_,k)=>t+(k!==i&&S.done[k]?S.done[k].pts:0),0);S.score=S.base;S.playing=true;hud();sync("Level "+(i+1)+": mulai");LV[i].log?logQ():ques()}
 function ques(){
 const l=LV[S.lv],q=l.qs[S.qi];
 $("app").innerHTML=tbox()+`<div class="q"><h2>${q.q}</h2></div><div class="ans" id="o">${q.o.map((t,i)=>`<button class="opt c${i}" onclick="ans(${i})"><i>${SH[i]}</i><span>${t}</span></button>`).join("")}</div><div id="fb"></div>`;
@@ -137,7 +156,7 @@ const q=LV[S.lv].qs[S.qi],b=document.querySelectorAll("#o .opt"),ok=i===q.a,to=i
 b.forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add("ok");else x.classList.add("dim")});
 let pts=0;
 if(ok){pts=Math.round(500+500*left/T);S.lp+=pts;S.right++;S.streak++}else S.streak=0;
-S.score=S.base+S.lp;hud();
+S.score=S.base+S.lp;hud();sync(`Level ${S.lv+1}: soal ${S.qi+1}/${LV[S.lv].qs.length}`);
 const last=S.qi===LV[S.lv].qs.length-1;
 const head=ok?(S.streak>=3?`Tepat! 🔥 Streak ${S.streak}`:"Tepat! ✅"):to?"Waktu habis ⏰":"Belum tepat ❌";
 $("fb").innerHTML=`<div class="res pop ${ok?"good":"no"}"><h3>${head}</h3>${ok?`<p><b>+${pts} poin</b></p>`:""}<p>${q.e}</p><button class="btn" onclick="${last?"endLv()":"nextQ()"}">${last?"Selesaikan level":"Lanjut ▶"}</button></div>`;
@@ -153,13 +172,14 @@ function chk(){
 stop();const l=LV[S.lv];let hit=0,miss=0;
 document.querySelectorAll("#o .opt").forEach((b,i)=>{b.disabled=true;b.classList.remove("sel");const s=S.pick.includes(i),t=l.rows[i][3];
 if(t&&s){b.classList.add("ok");hit++}else if(t){b.classList.add("bad")}else if(s){b.classList.add("bad");miss++}});
-const pts=Math.max(0,hit*500-miss*250);S.lp=pts;S.lgAcc=Math.max(0,hit-miss)/4;S.score=S.base+pts;S.streak=0;hud();
+const pts=Math.max(0,hit*500-miss*250);S.lp=pts;S.lgAcc=Math.max(0,hit-miss)/4;S.score=S.base+pts;S.streak=0;hud();sync(`Level ${S.lv+1}: ${l.n}`);
 $("fb").innerHTML=`<div class="res pop ${hit>=3&&!miss?"good":"no"}"><h3>Ketemu ${hit} dari 4 (${miss} salah tandai)</h3><p><b>+${pts} poin</b></p><p>${l.e}</p><button class="btn" onclick="endLv()">Selesaikan level</button></div>`;
 $("fb").scrollIntoView({behavior:"smooth",block:"nearest"})}
 function endLv(){
 const l=LV[S.lv],acc=l.log?S.lgAcc:S.right/l.qs.length;
 const prev=S.done[S.lv];if(!prev||S.lp>prev.pts)S.done[S.lv]={acc,pts:S.lp};
-S.score=myScore();hud();
+S.playing=false;S.score=myScore();hud();
+sync(S.done.filter(Boolean).length===LV.length?"Selesai semua":`Level ${S.lv+1} selesai`);
 const msg=acc>=.85?"Luar biasa, datamu aman di tanganmu.":acc>=.6?"Bagus. Ulangi untuk mengejar bintang penuh.":"Masih ada yang perlu dipelajari. Coba ulangi level ini.";
 $("app").innerHTML=`<div class="card center pop"><h2>Level ${S.lv+1} selesai 🎉</h2><div class="big">${stars(acc)}</div><p><b>${S.lp}</b> poin · akurasi ${Math.round(acc*100)}%</p><p>${msg}</p><button class="btn" onclick="home()">Peta level</button> <button class="btn ghost" onclick="start(${S.lv})">Ulangi level</button></div>`}
 function fin(){
@@ -183,7 +203,7 @@ function tbl(){const m={};let bad=0;$("in").value.split(/\s+/).filter(Boolean).f
 const r=Object.values(m).sort((a,b)=>b.s-a.s),cell=d=>[0,1,2,3].map(i=>(d.l||[])[i]);
 const tsv=["Nama\tNIM\tL1\tL2\tL3\tL4\tSkor (maks "+MAXP+")"].concat(r.map(d=>[d.n,d.i,...cell(d).map(x=>x==null?"":x),d.s].join("\t"))).join("\n");
 $("out").innerHTML=(r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>Skor</th></tr>${r.map((d,n)=>`<tr><td>${n<3?["🥇","🥈","🥉"][n]:n+1}</td><td>${esc(d.n)}</td><td>${esc(d.i)}</td>${cell(d).map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.s}</b></td></tr>`).join("")}</table></div><p>${r.length} mahasiswa. Persen = akurasi tiap level; skor maksimal ${MAXP}.</p><textarea id="tv" readonly rows="4" onclick="this.select()">${esc(tsv)}</textarea><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button>`:`<p>Belum ada kode yang valid.</p>`)+(bad?`<p style="color:var(--bad)">${bad} kode tidak valid dan dilewati.</p>`:"")}
-home();
+cloudInit();home();
 </script>
 </body>
 </html>
