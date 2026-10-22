@@ -65,6 +65,23 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .pop{animation:pop .35s}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
 @media (prefers-reduced-motion:reduce){.pop{animation:none}.tb i{transition:none}}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;color:#fff}
+.bar h1{font-size:1.5rem;margin-right:auto}
+.bar .btn{margin-top:0;padding:9px 16px}
+.btn.on,.card .btn.on{background:#FFD23F;color:#1F1F2E}
+.live{color:var(--ok);font-weight:700}.mut{color:var(--mut)}
+.err{color:#FFB3C0;margin-top:10px}
+.lb{display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start;color:#fff}
+.lb h2{font-size:2rem;margin-bottom:12px}
+.rw{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;margin-bottom:10px;font-size:1.25rem}
+.rw .rk{font-family:"Bricolage Grotesque",sans-serif;font-size:1.6rem;text-align:center}
+.rw .tr{height:10px;background:rgba(255,255,255,.2);border-radius:6px;margin-top:4px;overflow:hidden}
+.rw .tr i{display:block;height:100%;background:#FFD23F;transition:width .6s}
+.rw b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}
+.rw small{opacity:.75;font-size:.8rem;margin-left:8px}
+.qb{background:#fff;color:#1F1F2E;border-radius:14px;padding:12px;text-align:center;font-size:.9rem}
+.qb svg{width:100%;height:auto}
+@media (max-width:700px){.lb{grid-template-columns:1fr}.rw{font-size:1rem}}
 </style>
 </head>
 <body>
@@ -76,7 +93,10 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js"></script>
+<script>
+/* ===== TEMPEL KONFIGURASI FIREBASE DI SINI (Project settings > Your apps > Web app) ===== */
+window.FIREBASE_CONFIG={apiKey:"AIzaSyD3JcM9d1AF9OEhS9y5XG8qDPVxwpGD2zA",authDomain:"kuiskyu.firebaseapp.com",projectId:"kuiskyu",appId:"1:60373967489:web:b9d0d6c9466a36d5dda380"};
+</script>
 <script>
 const LV=[
 {n:"Sortir Data",d:"Klasifikasi data dan prinsip CIA",qs:[
@@ -114,11 +134,17 @@ const MAXP=LV.reduce((s,l)=>s+LMAX(l),0);
 let S={score:0,done:[],lv:0,qi:0,right:0,pick:[],streak:0,lp:0,base:0,tm:null,playing:false};
 const $=id=>document.getElementById(id);
 /* ===== Firebase: kirim skor otomatis ke Firestore (aktif jika firebase-config.js sudah diisi) ===== */
-let DB=null,AUTHP=null;
+let DB=null,AUTHP=null;const DOSEN=location.hash==="#dosen";
 function cloudInit(){
   const C=window.FIREBASE_CONFIG;
   if(!C||!C.apiKey||/^GANTI/.test(C.apiKey)||!window.firebase)return;
-  try{firebase.initializeApp(C);DB=firebase.firestore();AUTHP=firebase.auth().signInAnonymously();AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
+  try{firebase.initializeApp(C);DB=firebase.firestore();
+    if(DOSEN)return;
+    const A=firebase.auth();
+    AUTHP=new Promise((res,rej)=>{const un=A.onAuthStateChanged(u=>{un();
+      if(u&&!u.isAnonymous)A.signOut().then(()=>A.signInAnonymously()).then(res,rej);
+      else if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
+    AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
 }
 function cl(s){const el=$("cl");if(!DB){el.style.display="none";return}el.style.display="";el.textContent=s==="ok"?"☁ Tersimpan":s==="err"?"⚠ Gagal kirim":s==="conn"?"☁ Terhubung":"☁ Mengirim…"}
 function total(){if(S.playing){const p=S.done[S.lv];return S.base+Math.max(p?p.pts:0,S.lp)}return myScore()}
@@ -140,7 +166,7 @@ h+=nameCard();
 LV.forEach((l,i)=>{const d=S.done[i],ok=i===0||S.done[i-1];
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(S.done.filter(Boolean).length===LV.length)h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
-h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button></p>`;
+h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a></p>`;
 $("app").innerHTML=h}
 function start(i){if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
@@ -203,7 +229,45 @@ function tbl(){const m={};let bad=0;$("in").value.split(/\s+/).filter(Boolean).f
 const r=Object.values(m).sort((a,b)=>b.s-a.s),cell=d=>[0,1,2,3].map(i=>(d.l||[])[i]);
 const tsv=["Nama\tNIM\tL1\tL2\tL3\tL4\tSkor (maks "+MAXP+")"].concat(r.map(d=>[d.n,d.i,...cell(d).map(x=>x==null?"":x),d.s].join("\t"))).join("\n");
 $("out").innerHTML=(r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>Skor</th></tr>${r.map((d,n)=>`<tr><td>${n<3?["🥇","🥈","🥉"][n]:n+1}</td><td>${esc(d.n)}</td><td>${esc(d.i)}</td>${cell(d).map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.s}</b></td></tr>`).join("")}</table></div><p>${r.length} mahasiswa. Persen = akurasi tiap level; skor maksimal ${MAXP}.</p><textarea id="tv" readonly rows="4" onclick="this.select()">${esc(tsv)}</textarea><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button>`:`<p>Belum ada kode yang valid.</p>`)+(bad?`<p style="color:var(--bad)">${bad} kode tidak valid dan dilewati.</p>`:"")}
-cloudInit();home();
+/* ===== Mode dosen: buka halaman ini dengan #dosen di ujung link ===== */
+let dUnsub=null,dDocs=[],dView="rekap",dAnon=false,dMsg="";
+const JOIN=location.href.split("#")[0],MAXD=17000;
+addEventListener("hashchange",()=>location.reload());
+function dosen(){
+  document.querySelector("main").style.maxWidth="1000px";document.querySelector(".top").style.display="none";
+  if(!DB){$("app").innerHTML='<div class="card"><p>Isi konfigurasi Firebase di bagian atas file ini terlebih dahulu.</p></div>';return}
+  firebase.auth().onAuthStateChanged(u=>{if(u&&!u.isAnonymous)dListen();else{dStop();dLogin()}});
+}
+function dStop(){if(dUnsub){dUnsub();dUnsub=null}dDocs=[]}
+function dLogin(){$("app").innerHTML=`<div class="card" style="max-width:420px;margin:40px auto"><h2>Dasbor Dosen</h2><p>Masuk dengan akun Google dosen untuk melihat rekap dan papan peringkat.</p><button class="btn" onclick="dSignin()">Masuk dengan Google</button><p style="color:var(--bad)">${esc(dMsg)}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`}
+function dSignin(){dMsg="";firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{dMsg=e.code==="auth/unauthorized-domain"?"Domain ini belum didaftarkan di Firebase (Authentication > Settings > Authorized domains).":"Gagal masuk: "+e.code;dLogin()})}
+function dListen(){dMsg="";dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dDraw()},e=>{dMsg=e.code==="permission-denied"?"Akun ini bukan akun dosen di aturan Firestore.":"Gagal membaca data: "+e.code;dDraw()});dDraw()}
+function dMs(t){return t&&t.toMillis?t.toMillis():Date.now()}
+function dMerge(){const m={};
+  dDocs.forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;
+    const o=m[k]||(m[k]={nama:d.nama,nim:k,skor:-1,l:[null,null,null,null],prog:"",t:0});
+    if(d.skor>o.skor){o.skor=d.skor;o.nama=d.nama}
+    (d.l||[]).forEach((x,i)=>{if(x!=null&&(o.l[i]==null||x>o.l[i]))o.l[i]=x});
+    const t=dMs(d.t);if(t>=o.t){o.t=t;o.prog=d.prog}});
+  return Object.values(m).sort((a,b)=>b.skor-a.skor)}
+function dIni(n){return String(n).split(/\s+/).filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,4)}
+function dQr(){try{const q=qrcode(0,"M");q.addData(JOIN);q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ""}}
+function dDraw(){const r=dMerge(),now=Date.now();
+  let h=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ${dView==="rekap"?"on":""}" onclick="dView='rekap';dDraw()">Rekap</button><button class="btn ${dView==="board"?"on":""}" onclick="dView='board';dDraw()">Papan peringkat</button>`;
+  if(dView==="board")h+=`<button class="btn ghost w" onclick="dAnon=!dAnon;dDraw()">${dAnon?"Tampilkan nama":"Samarkan nama"}</button><button class="btn ghost w" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Layar penuh</button>`;
+  h+=`<button class="btn ghost w" onclick="firebase.auth().signOut()">Keluar</button></div>`;
+  if(dMsg)h+=`<p class="err">${esc(dMsg)}</p>`;
+  $("app").innerHTML=h+(dView==="board"?dBoard(r):dRekap(r,now))}
+function dRekap(r,now){
+  const tsv=["Nama\tNIM\tL1\tL2\tL3\tL4\tSkor (maks "+MAXD+")"].concat(r.map(d=>[d.nama,d.nim,...d.l.map(x=>x==null?"":x),d.skor].join("\t"))).join("\n");
+  return `<div class="card"><h2>Rekap (${r.length} mahasiswa)</h2><p class="mut">Diperbarui otomatis. Satu NIM dihitung sekali dengan skor tertinggi. Persen = akurasi tiap level.</p>`+
+  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="dReset()">Reset sesi</button></p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang mengirim skor.</p>`)+`</div>`}
+function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1);
+  return `<div class="lb"><div><h2>Papan Peringkat</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/4 level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN)}</div><div class="mut">${r.length} peserta</div></div></div>`}
+async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa? Tindakan ini tidak bisa dibatalkan."))return;
+  const ids=dDocs.map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()}}
+setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
+cloudInit();DOSEN?dosen():home();
 </script>
 </body>
 </html>
