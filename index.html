@@ -297,7 +297,7 @@ function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
 function pick(){stop();S.playing=false;hud();
-let h=`<div class="hero"><div class="logo">📚</div><h1>Pilih Kamar Kuis</h1><p>Pilih mata kuliah sesuai kelasmu.</p></div>`;
+let h=`<div class="hero"><div class="logo">📚</div><h1>Pilih Kuis</h1><p>Pilih mata kuliah sesuai kelasmu.</p></div>`;
 ROOMS.forEach(r=>{h+=`<div class="card"><a class="lv" href="?kamar=${encodeURIComponent(r.id)}" style="text-decoration:none"><b>${r.ikon}</b><div>${esc(r.nama)}<span>${esc(r.ket)}</span></div><span class="stars">Masuk ▶</span></a></div>`});
 h+=`<p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p>`;
 $("app").innerHTML=h}
