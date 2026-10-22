@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kuiskyu</title>
+<title>Keamanan dan Perlindungan Data Kesehatan Quiz</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root{--bg:#46178F;--bg2:#2D0C66;--card:#FFFFFF;--ink:#1F1F2E;--mut:#6B6B80;--pri:#46178F;--priT:#FFFFFF;--soft:#EEE6FA;--ok:#26890C;--okB:#DFF3D8;--bad:#E21B3C;--badB:#FCE0E5;--line:#D9D2E9;--c0:#E21B3C;--c1:#1368CE;--c2:#D89E00;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -89,6 +89,10 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .fig .ln{stroke:var(--mut);stroke-width:2;fill:none}.fig circle{fill:var(--pri)}
 .ex{border-left:5px solid var(--c2);background:var(--soft);border-radius:10px;padding:10px 12px;margin:12px 0}
 .mt .ok2{list-style:none;padding-left:0}.mt .ok2 li{margin:6px 0}
+.rq{border-left:5px solid var(--ok);padding:2px 0 2px 10px;margin:16px 0}.rq.no{border-color:var(--c0)}.rq .a{margin:4px 0}
+.rq details{margin-top:8px;background:var(--soft);border-radius:10px;padding:8px 10px}.rq summary{cursor:pointer;font-weight:700}
+.rv-f{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.rb{display:inline-block;height:8px;background:var(--c0);border-radius:4px;vertical-align:middle;margin:0 6px}.rb.ok{background:var(--ok)}
 </style>
 </head>
 <body>
@@ -260,6 +264,56 @@ add("pdk","Etika dan hak pasien",F(360,150,'<rect x="20" y="4" width="320" heigh
 add("telehealth","Etika dan privasi",F(360,196,B(60,4,240,28,'1 Verifikasi identitas pasien','b0')+A(180,32,180,44)+B(60,44,240,28,'2 Persetujuan setelah penjelasan','b0')+A(180,72,180,84)+B(60,84,240,28,'3 Konsultasi di platform aman','b1')+A(180,112,180,124)+B(60,124,240,28,'4 Gawat darurat? Arahkan ke IGD','b2')+A(180,152,180,164)+B(60,164,240,28,'5 Catat di rekam medis','b3'),'Alur telekonsultasi yang aman'));
 
 })();
+/* ===== Fitur review jawaban + penjelasan materi ===== */
+const rvKey=()=>"rv_"+ROOM.id;
+function rvGet(){try{return JSON.parse(localStorage.getItem(rvKey()))||{}}catch(e){return{}}}
+function rvSet(lv,a){const o=rvGet();o[lv]=a;try{localStorage.setItem(rvKey(),JSON.stringify(o))}catch(e){}}
+const rvStop=new Set("pasien dengan untuk adalah tidak dalam rumah sakit manakah berikut paling sebuah sebagai bukan lebih kalau karena jawaban yang".split(" "));
+const rvTok=s=>(String(s).replace(/<[^>]+>/g," ").toLowerCase().match(/[a-z0-9]{5,}/g)||[]).filter(w=>!rvStop.has(w));
+function rvMat(txt,rm){rm=rm||ROOM;let b=null,bs=2;const w=new Set(rvTok(txt));(rm.mat||[]).forEach(m=>{const t=new Set(rvTok(m.h)),j=new Set(rvTok(m.j));let s=0;w.forEach(x=>{if(t.has(x))s++;if(j.has(x))s+=3});if(s>bs){bs=s;b=m}});
+return b?`<details><summary>📖 Penjelasan materi: ${b.j}</summary><div class="mt">${b.h}</div></details>`:""}
+function review(lv,only){
+stop();S.playing=false;const l=LV[lv],a=rvGet()[lv];if(!a){home();return}
+let items="",head="";
+if(l.log){let hit=0,miss=0;
+l.rows.forEach((r,i)=>{const s=a.includes(i),t=!!r[3];if(t&&s)hit++;else if(s)miss++;
+const ok=t===s,ic=t&&s?"✅":t?"❌":s?"⚠️":"▫️",nt=t&&s?"Benar: mencurigakan dan kamu menandainya.":t?"Terlewat: baris ini mencurigakan.":s?"Salah tandai: baris ini normal.":"Tepat: normal dan tidak kamu tandai.";
+if(only&&ok)return;items+=`<div class="rq ${ok?"":"no"}"><b>${ic}</b> ${r[0]} ${r[1]}: ${r[2]}<div class="a">${nt}</div></div>`});
+head=`Ketemu ${hit} dari 4 baris mencurigakan, ${miss} salah tandai.`;items+=`<p>${l.e}</p>`+rvMat(l.t+" "+l.e)}
+else{let n=0;
+l.qs.forEach((q,i)=>{const p=a[i]==null?-1:a[i],ok=p===q.a;if(ok)n++;if(only&&ok)return;
+items+=`<div class="rq ${ok?"":"no"}"><b>${i+1}. ${ok?"✅":p===-1?"⏰":"❌"}</b> ${q.q}<div class="a">Jawabanmu: ${p>=0?q.o[p]:"(tidak menjawab)"}</div>${ok?"":`<div class="a">Jawaban benar: <b>${q.o[q.a]}</b></div>`}<p>${q.e}</p>${rvMat(q.q+" "+q.e+" "+q.o[q.a])}</div>`});
+head=`Benar ${n} dari ${l.qs.length} soal.`;if(only&&n===l.qs.length)items="<p>Semua jawabanmu benar. Mantap! 🎉</p>"}
+$("app").innerHTML=`<div class="prog"><span>🔍 Review · Level ${lv+1}</span></div><div class="card mt pop"><h2>${l.n}</h2><p><b>${head}</b></p><div class="rv-f"><button class="btn ${only?"ghost":""}" onclick="review(${lv},0)">Semua</button><button class="btn ${only?"":"ghost"}" onclick="review(${lv},1)">Hanya yang salah</button></div>${items}</div><div class="bar"><button class="btn ghost w" onclick="home()">Peta level</button><span class="sp"></span><button class="btn" onclick="start(${lv})">Ulangi level</button></div>`;scrollTo(0,0)}
+const _rvStart=start;start=function(i){S.rv=[];return _rvStart(i)};
+const _rvAns=ans;ans=function(i){S.rv=S.rv||[];if(S.rv[S.qi]===undefined)S.rv[S.qi]=i;return _rvAns(i)};
+const _rvChk=chk;chk=function(){S.rv=S.pick.slice();return _rvChk()};
+const _rvEnd=endLv;endLv=function(){rvSet(S.lv,Array.from(S.rv||[],v=>v===undefined?-1:v));_rvEnd();const c=document.querySelector("#app .card");if(c)c.insertAdjacentHTML("beforeend",`<p><button class="btn ghost" onclick="review(${S.lv})">🔍 Review jawaban dan materi</button></p>`)};
+const _rvHome=home;home=function(){_rvHome();if(!ROOM||!LV)return;const o=rvGet(),ks=Object.keys(o).sort();if(!ks.length)return;
+$("app").lastElementChild.insertAdjacentHTML("beforebegin",`<div class="card">${ks.map(k=>`<button class="lv" onclick="review(${k})"><b>${+k+1}</b><div>Review Level ${+k+1}<span>Lihat jawaban dan penjelasan materi</span></div><span class="stars">🔍</span></button>`).join("")}</div>`)};
+/* ===== Review bersama di dasbor dosen ===== */
+let RVOFF=false,dRvLv=0,dRvSort=false;
+sync=function(prog){
+if(!DB||!S.nm||!S.nim)return;cl("...");
+const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,room:ROOM.id,t:firebase.firestore.FieldValue.serverTimestamp()};
+if(!RVOFF){const o=rvGet();if(Object.keys(o).length)d.rv=o}
+const ref=u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id);
+AUTHP.then(u=>ref(u).set(d).catch(e=>{if(!d.rv)throw e;RVOFF=true;delete d.rv;return ref(u).set(d)})).then(()=>cl("ok")).catch(()=>cl("err"))};
+function dRv(lv){const m={};dDocs.filter(d=>(d.room||"pdk")===dRoom&&d.rv&&Array.isArray(d.rv[lv])).forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;const t=dMs(d.t);if(!m[k]||t>=m[k].t)m[k]={nama:d.nama,a:d.rv[lv],t}});return Object.values(m)}
+function dReview(){
+const rm=RM(),lv=Math.min(dRvLv,rm.lv.length-1),l=rm.lv[lv],ss=dRv(lv),n=ss.length,nm=s=>esc(dAnon?dIni(s.nama):s.nama);
+const nms=w=>w.length?`<details><summary>Yang keliru (${w.length})</summary>${w.map(nm).join(", ")}</details>`:"";
+let h=`<div class="card mt"><h2>${esc(rm.nama)}: review bersama</h2><p class="mut">Memakai percobaan terakhir tiap mahasiswa (satu NIM dihitung sekali). Buka bagian materi untuk membahas bersama.</p><div class="rv-f">${rm.lv.map((x,i)=>`<button class="btn ${i===lv?"":"ghost"}" onclick="dRvLv=${i};dDraw()">L${i+1}</button>`).join("")}<button class="btn ghost" onclick="dRvSort=!dRvSort;dDraw()">${dRvSort?"Urut sesuai nomor":"Urut tersulit dulu"}</button><button class="btn ghost" onclick="dAnon=!dAnon;dDraw()">${dAnon?"Tampilkan nama":"Samarkan nama"}</button></div><p><b>${l.n}</b> · ${n} mahasiswa punya data review</p>`;
+if(!n)return h+`<p>Belum ada data review untuk level ini. Data muncul setelah mahasiswa menyelesaikan level ini memakai file versi terbaru. Jika tetap kosong, cek aturan Firestore: dokumen hasil harus boleh memuat field rv.</p></div>`;
+const it=[];
+if(l.log)l.rows.forEach((r,i)=>{const f=ss.filter(s=>s.a.includes(i)),t=!!r[3],pct=Math.round((t?f.length:n-f.length)/n*100),w=ss.filter(s=>s.a.includes(i)!==t);
+it.push({pct,h:`<div class="rq ${pct>=70?"":"no"}"><b>${pct}% tepat</b> · ${t?"🚩 mencurigakan":"normal"}<div class="a">${r[0]} ${r[1]}: ${r[2]}</div><div class="a">Ditandai ${f.length} dari ${n} mahasiswa<span class="rb ${t?"ok":""}" style="width:${f.length/n*120}px"></span></div>${nms(w)}</div>`})});
+else l.qs.forEach((q,i)=>{const c=q.o.map((_,j)=>ss.filter(s=>s.a[i]===j)),ok=c[q.a].length,pct=Math.round(ok/n*100),w=ss.filter(s=>s.a[i]!==q.a);
+it.push({pct,h:`<div class="rq ${pct>=70?"":"no"}"><b>${i+1}. ${pct}% benar</b> (${ok}/${n})<div>${q.q}</div>${q.o.map((t,j)=>`<div class="a">${j===q.a?"✅":"▫️"} ${t}<span class="rb ${j===q.a?"ok":""}" style="width:${c[j].length/n*120}px"></span>${c[j].length}</div>`).join("")}${nms(w)}<p>${q.e}</p>${rvMat(q.q+" "+q.e+" "+q.o[q.a],rm)}</div>`})});
+if(dRvSort)it.sort((a,b)=>a.pct-b.pct);
+return h+it.map(x=>x.h).join("")+(l.log?`<p>${l.e}</p>${rvMat(l.t+" "+l.e,rm)}`:"")+`</div>`}
+const _dRekap=dRekap;dRekap=function(r,now){return dView==="review"?dReview():_dRekap(r,now)};
+const _dDraw=dDraw;dDraw=function(){_dDraw();const b=document.querySelector("#app .bar");if(b&&b.children[2])b.children[2].insertAdjacentHTML("afterend",`<button class="btn ${dView==="review"?"on":""}" onclick="dView='review';dDraw()">Review soal</button>`)};
 const ROOM_ID=new URLSearchParams(location.search).get("kamar");
 const ROOM=ROOMS.find(r=>r.id===ROOM_ID)||(ROOMS.length===1?ROOMS[0]:null);
 const LV=ROOM?ROOM.lv:[];
@@ -297,7 +351,7 @@ function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
 function pick(){stop();S.playing=false;hud();
-let h=`<div class="hero"><div class="logo">📚</div><h1>Pilih Kuis</h1><p>Pilih mata kuliah sesuai kelasmu.</p></div>`;
+let h=`<div class="hero"><div class="logo">📚</div><h1>Pilih Kamar Kuis</h1><p>Pilih mata kuliah sesuai kelasmu.</p></div>`;
 ROOMS.forEach(r=>{h+=`<div class="card"><a class="lv" href="?kamar=${encodeURIComponent(r.id)}" style="text-decoration:none"><b>${r.ikon}</b><div>${esc(r.nama)}<span>${esc(r.ket)}</span></div><span class="stars">Masuk ▶</span></a></div>`});
 h+=`<p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p>`;
 $("app").innerHTML=h}
