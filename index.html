@@ -236,12 +236,14 @@ addEventListener("hashchange",()=>location.reload());
 function dosen(){
   document.querySelector("main").style.maxWidth="1000px";document.querySelector(".top").style.display="none";
   if(!DB){$("app").innerHTML='<div class="card"><p>Isi konfigurasi Firebase di bagian atas file ini terlebih dahulu.</p></div>';return}
-  firebase.auth().onAuthStateChanged(u=>{if(u&&!u.isAnonymous)dListen();else{dStop();dLogin()}});
+  const A=firebase.auth();
+  A.onAuthStateChanged(u=>{if(u)dListen();else{dStop();A.signInAnonymously().catch(e=>{dMsg="Login anonim gagal: "+e.code;dLogin()})}});
 }
 function dStop(){if(dUnsub){dUnsub();dUnsub=null}dDocs=[]}
-function dLogin(){$("app").innerHTML=`<div class="card" style="max-width:420px;margin:40px auto"><h2>Dasbor Dosen</h2><p>Masuk dengan akun Google dosen untuk melihat rekap dan papan peringkat.</p><button class="btn" onclick="dSignin()">Masuk dengan Google</button><p style="color:var(--bad)">${esc(dMsg)}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`}
-function dSignin(){dMsg="";firebase.auth().signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(e=>{dMsg=e.code==="auth/unauthorized-domain"?"Domain ini belum didaftarkan di Firebase (Authentication > Settings > Authorized domains).":"Gagal masuk: "+e.code;dLogin()})}
-function dListen(){dMsg="";dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dDraw()},e=>{dMsg=e.code==="permission-denied"?"Akun ini bukan akun dosen di aturan Firestore.":"Gagal membaca data: "+e.code;dDraw()});dDraw()}
+function dLogin(){$("app").innerHTML=`<div class="card" style="max-width:420px;margin:40px auto"><h2>Dasbor Dosen</h2><p>Masukkan PIN dosen untuk membuka rekap dan papan peringkat.</p><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button class="btn" onclick="dPin()">Buka dasbor</button><p style="color:var(--bad)">${esc(dMsg)}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`}
+async function dPin(){const v=$("pin").value.trim(),u=firebase.auth().currentUser;if(!v||!u)return;
+  try{await DB.collection("dosen").doc(u.uid).set({pin:v});dMsg="";dListen()}catch(e){dMsg="PIN salah atau belum diatur di Firestore.";dLogin()}}
+function dListen(){dStop();dMsg="";dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dDraw()},e=>{dStop();if(e.code==="permission-denied")dLogin();else{dMsg="Gagal membaca data: "+e.code;dDraw()}});dDraw()}
 function dMs(t){return t&&t.toMillis?t.toMillis():Date.now()}
 function dMerge(){const m={};
   dDocs.forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;
