@@ -98,7 +98,8 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 window.FIREBASE_CONFIG={apiKey:"AIzaSyD3JcM9d1AF9OEhS9y5XG8qDPVxwpGD2zA",authDomain:"kuiskyu.firebaseapp.com",projectId:"kuiskyu",appId:"1:60373967489:web:b9d0d6c9466a36d5dda380"};
 </script>
 <script>
-const LV=[
+const ROOMS=[
+{id:"pdk",nama:"Penjaga Data Kesehatan",ikon:"🛡️",ket:"Keamanan dan etika data pasien",sub:"Jawab cepat dan tepat. Makin cepat, makin banyak poin!",ranks:["Penjaga Data Andal","Petugas Keamanan Data","Calon Penjaga Data"],lv:[
 {n:"Sortir Data",d:"Klasifikasi data dan prinsip CIA",qs:[
 {q:"Jadwal praktik dokter di poli gigi. Termasuk tingkat apa?",o:["Publik","Data pribadi (internal)","Sangat sensitif"],a:0,e:"Jadwal praktik memang untuk diketahui pasien, jadi tidak perlu dibatasi."},
 {q:"Nama, alamat, dan nomor telepon pasien. Termasuk tingkat apa?",o:["Publik","Data pribadi (internal)","Sangat sensitif"],a:1,e:"Identitas pasien adalah data pribadi: hanya untuk petugas yang perlu, bukan untuk dipajang."},
@@ -127,12 +128,69 @@ e:"Yang mencurigakan: akses massal tengah malam, percobaan login berulang, unduh
 {q:"Ancaman sudah dikendalikan. Bagaimana memulihkan layanan?",o:["Memulihkan dari backup bersih yang sudah diverifikasi","Memakai backup mana saja yang terbaru","Membuat ulang semua rekam medis dari ingatan petugas"],a:0,e:"Backup yang terinfeksi bisa membawa masalah kembali, jadi verifikasi dulu."},
 {q:"Terbukti ada data pasien yang bocor. Bagaimana pelaporannya?",o:["Disembunyikan agar nama fasilitas aman","Melapor ke pimpinan sesuai SOP dan memberi tahu pihak terdampak serta otoritas sesuai ketentuan","Hanya diumumkan di media sosial"],a:1,e:"Pelaporan yang jujur dan sesuai prosedur melindungi pasien. Cek batas waktu dan ketentuannya pada regulasi terbaru."},
 {q:"Insiden selesai. Apa yang sebaiknya dilakukan terakhir?",o:["Menutup kasus dan melanjutkan seperti biasa","Mengevaluasi penyebab lalu memperbarui SOP dan menutup kerentanan","Menyalahkan petugas yang pertama melapor"],a:1,e:"Pembelajaran dari insiden dipakai untuk memperbaiki kebijakan dan mencegah kejadian serupa."}]}
+]},
+{id:"jarkom",nama:"Jaringan Komputer",ikon:"🌐",ket:"MIK23311 · OSI, IP, dan layanan dasar",sub:"Uji pemahamanmu tentang cara data berjalan di jaringan.",ranks:["Master Jaringan","Teknisi Jaringan","Calon Network Engineer"],lv:[
+{n:"Lapisan Jaringan",d:"Model OSI dan protokol transport",qs:[
+{q:"Router meneruskan paket berdasarkan alamat IP. Pada lapisan OSI mana ia bekerja?",o:["Lapisan 2 (Data Link)","Lapisan 3 (Network)","Lapisan 4 (Transport)"],a:1,e:"Menentukan jalur paket antarjaringan dengan alamat IP adalah tugas lapisan Network (lapisan 3)."},
+{q:"Switch meneruskan frame di dalam satu LAN memakai alamat MAC. Itu lapisan OSI ke berapa?",o:["Lapisan 2 (Data Link)","Lapisan 1 (Physical)","Lapisan 3 (Network)"],a:0,e:"Alamat MAC dan frame adalah wilayah lapisan Data Link (lapisan 2)."},
+{q:"Protokol mana yang memastikan data sampai lengkap dan berurutan, dengan mengirim ulang bila ada yang hilang?",o:["UDP","TCP","ICMP"],a:1,e:"TCP berorientasi koneksi dan menjamin keandalan. UDP lebih ringan tetapi tanpa jaminan pengiriman ulang."},
+{q:"Panggilan video lebih mengutamakan kelancaran daripada ketepatan setiap paket. Protokol transport yang lazim dipakai?",o:["UDP","TCP","ARP"],a:0,e:"Paket yang terlambat tidak berguna bagi video langsung, jadi UDP yang ringan lebih cocok daripada menunggu kiriman ulang TCP."}]},
+{n:"Alamat IP dan Layanan",d:"Subnet, DNS, dan DHCP",qs:[
+{q:"Manakah yang termasuk alamat IP privat?",o:["8.8.8.8","192.168.10.5","172.32.0.1"],a:1,e:"Rentang privat: 10.0.0.0/8, 172.16.0.0 sampai 172.31.255.255, dan 192.168.0.0/16. Alamat 172.32.x.x sudah termasuk publik."},
+{q:"Jaringan 192.168.1.0/24 punya berapa alamat yang bisa dipakai oleh perangkat (host)?",o:["256","254","24"],a:1,e:"Prefiks /24 menyisakan 8 bit untuk host: 256 alamat, dikurangi alamat jaringan dan alamat broadcast, jadi 254."},
+{q:"Apa fungsi DNS?",o:["Menerjemahkan nama domain menjadi alamat IP","Membagikan alamat IP otomatis ke perangkat","Mengenkripsi seluruh lalu lintas web"],a:0,e:"DNS menerjemahkan nama seperti contoh.ac.id menjadi alamat IP yang dipakai untuk menghubungi server."},
+{q:"Laptop yang baru tersambung ke Wi-Fi rumah sakit langsung mendapat alamat IP tanpa diatur manual. Layanan apa yang bekerja?",o:["DHCP","DNS","NAT"],a:0,e:"DHCP membagikan alamat IP, subnet mask, gateway, dan DNS secara otomatis."}]}
+]},
+{id:"mprme",nama:"Manajemen Proyek RME",ikon:"🗂️",ket:"MIK23504 · Proyek implementasi rekam medis elektronik",sub:"Kelola proyek RME dari awal sampai go-live.",ranks:["Manajer Proyek Andal","Koordinator Proyek","Calon Manajer Proyek"],lv:[
+{n:"Memulai Proyek",d:"Ruang lingkup dan pemangku kepentingan",qs:[
+{q:"Apa yang membedakan proyek implementasi RME dari kegiatan rutin?",o:["Berlangsung terus-menerus tanpa akhir","Bersifat sementara dengan tujuan dan hasil yang jelas","Tidak membutuhkan anggaran"],a:1,e:"Proyek punya awal dan akhir serta menghasilkan sesuatu yang khas. Kegiatan rutin berulang tanpa batas akhir."},
+{q:"Dokter terus meminta fitur tambahan di luar kesepakatan awal tanpa penyesuaian waktu dan biaya. Apa istilah masalah ini?",o:["Scope creep","Milestone","Benchmark"],a:0,e:"Scope creep adalah pertambahan lingkup tanpa kendali. Setiap perubahan sebaiknya lewat prosedur kontrol perubahan dan dihitung dampaknya."},
+{q:"Siapa saja pemangku kepentingan (stakeholder) proyek RME?",o:["Hanya tim IT","Dokter, perawat, petugas rekam medis, manajemen, dan pasien sebagai pihak terdampak","Hanya vendor aplikasi"],a:1,e:"Semua pihak yang memengaruhi atau terdampak proyek perlu diidentifikasi sejak awal agar kebutuhannya tertangkap."},
+{q:"Dokumen apa yang menetapkan tujuan, lingkup, dan kewenangan manajer proyek di awal?",o:["Project charter","Laporan keuangan tahunan","Notulen rapat harian"],a:0,e:"Project charter menjadi dasar resmi proyek dan disetujui oleh sponsor."}]},
+{n:"Risiko dan Peluncuran",d:"Perubahan, mitigasi, dan go-live",qs:[
+{q:"Staf menolak memakai RME karena terbiasa dengan berkas kertas. Ini risiko jenis apa?",o:["Risiko teknis semata","Risiko perubahan organisasi (change management)","Risiko keuangan semata"],a:1,e:"Penolakan pengguna ditangani dengan pelatihan, pendampingan, dan melibatkan pengguna kunci sejak awal."},
+{q:"Sebelum RME dipakai penuh di semua poli, langkah yang paling aman?",o:["Go-live serentak tanpa uji coba","Uji coba terbatas (pilot) lalu perbaikan sebelum diperluas","Menunda tanpa batas waktu"],a:1,e:"Pilot di satu unit menemukan masalah lebih awal dengan dampak yang kecil."},
+{q:"Server RME bisa mati. Manakah yang termasuk mitigasi sebelum risiko terjadi?",o:["Menyiapkan backup dan prosedur saat sistem mati (downtime)","Menunggu kejadian lalu memikirkan solusinya","Menghapus risiko itu dari daftar"],a:0,e:"Mitigasi dilakukan sebelum risiko terjadi, supaya pelayanan pasien tetap berjalan."},
+{q:"Berkas rekam medis kertas dimigrasikan ke RME. Apa yang paling penting dipastikan?",o:["Migrasi secepat mungkin","Data akurat dan lengkap, diverifikasi, dan tetap dijaga kerahasiaannya","Semua berkas kertas langsung dimusnahkan"],a:1,e:"Kualitas dan kerahasiaan data lebih utama daripada kecepatan. Pemusnahan berkas harus mengikuti ketentuan retensi rekam medis yang berlaku."}]}
+]},
+{id:"telehealth",nama:"Telehealth",ikon:"🩺",ket:"MIK23712 · Layanan kesehatan jarak jauh",sub:"Pahami jenis, etika, dan batas layanan telehealth.",ranks:["Pakar Telehealth","Praktisi Telehealth","Calon Praktisi Telehealth"],lv:[
+{n:"Dasar Telehealth",d:"Konsep dan jenis layanan",qs:[
+{q:"Dokter memantau tekanan darah pasien hipertensi dari jauh lewat alat yang mengirim data ke aplikasi. Apa istilahnya?",o:["Remote patient monitoring","Telekonferensi umum","Rujukan konvensional"],a:0,e:"Remote patient monitoring memantau kondisi pasien di rumah lewat perangkat yang mengirim data ke tenaga kesehatan."},
+{q:"Apa perbedaan telehealth dengan telemedicine?",o:["Telehealth lebih luas, mencakup layanan klinis dan non-klinis seperti edukasi dan administrasi","Keduanya sama persis","Telehealth hanya untuk rumah sakit"],a:0,e:"Telemedicine berfokus pada layanan klinis jarak jauh, sedangkan telehealth juga mencakup edukasi, administrasi, dan pelatihan."},
+{q:"Dokter menerima foto luka pasien, lalu membalas beberapa jam kemudian. Mode telehealth apa ini?",o:["Store-and-forward (asinkron)","Sinkron (real time)","Telekonferensi"],a:0,e:"Pada mode asinkron, data dikirim dulu dan dinilai kemudian. Pada mode sinkron, kedua pihak terhubung bersamaan."},
+{q:"Apa manfaat utama telehealth bagi daerah terpencil?",o:["Menggantikan semua pemeriksaan fisik","Memperluas akses ke tenaga kesehatan dan mengurangi biaya perjalanan","Menghilangkan kebutuhan fasilitas kesehatan"],a:1,e:"Telehealth melengkapi layanan tatap muka. Ia tidak menggantikan fasilitas kesehatan."}]},
+{n:"Etika dan Privasi",d:"Persetujuan, kerahasiaan, dan batasan",qs:[
+{q:"Sebelum telekonsultasi dimulai, apa yang perlu dipastikan?",o:["Identitas pasien dan persetujuan setelah mendapat informasi yang jelas","Hanya nomor ponsel pasien","Tidak ada persiapan khusus"],a:0,e:"Verifikasi identitas dan persetujuan pasien tetap berlaku pada layanan jarak jauh."},
+{q:"Platform mana yang lebih pantas dipakai untuk telekonsultasi yang melibatkan data pasien?",o:["Platform dengan enkripsi dan kebijakan privasi yang jelas","Grup chat umum berisi banyak orang","Media sosial yang bersifat publik"],a:0,e:"Data kesehatan termasuk data pribadi yang spesifik, jadi saluran komunikasinya harus aman dan tertutup."},
+{q:"Saat telekonsultasi, pasien mengeluh nyeri dada hebat yang tiba-tiba. Tindakan yang tepat?",o:["Memberi resep lalu mengakhiri sesi","Menilai kegawatan dan segera mengarahkan ke fasilitas gawat darurat","Menyuruh pasien menunggu sampai besok"],a:1,e:"Telehealth punya batas. Kondisi gawat darurat butuh pemeriksaan dan penanganan langsung."},
+{q:"Ke mana hasil telekonsultasi sebaiknya dicatat?",o:["Di rekam medis pasien seperti layanan tatap muka","Tidak perlu dicatat","Hanya di ponsel pribadi dokter"],a:0,e:"Layanan jarak jauh tetap harus didokumentasikan. Cek ketentuan terbaru tentang telemedicine dan rekam medis."}]}
+]}
+/* ===== CARA MENAMBAH KAMAR (MATA KULIAH) BARU =====
+Salin blok di bawah ini, tempel tepat setelah kurung } penutup kamar terakhir di atas
+(sebelum tanda ] yang menutup daftar ROOMS), lalu isi. Jangan lupa koma pemisah antar kamar.
+
+,{id:"kode-unik",nama:"Nama Mata Kuliah",ikon:"📘",ket:"Deskripsi singkat",sub:"Kalimat sambutan di halaman awal",
+ ranks:["Gelar skor tinggi","Gelar skor sedang","Gelar skor rendah"],lv:[
+ {n:"Level 1",d:"Deskripsi level",qs:[
+  {q:"Pertanyaan?",o:["Opsi A","Opsi B","Opsi C"],a:0,e:"Penjelasan jawaban benar."}
+ ]}
+]}
+
+Aturan: id hanya huruf kecil, angka, dan tanda minus (maks 30 karakter), dan harus unik.
+Tiap soal punya tepat 3 opsi, a = nomor opsi benar (0, 1, atau 2). Maksimal 8 level per kamar.
+Level jenis "Detektif Log" (log:true) boleh dipakai di kamar mana pun, contohnya ada di kamar pertama.
+*/
 ];
+const ROOM_ID=new URLSearchParams(location.search).get("kamar");
+const ROOM=ROOMS.find(r=>r.id===ROOM_ID)||(ROOMS.length===1?ROOMS[0]:null);
+const LV=ROOM?ROOM.lv:[];
 const T=20,TL=60,SH=["▲","◆","●"];
 const LMAX=l=>l.log?2000:l.qs.length*1000;
 const MAXP=LV.reduce((s,l)=>s+LMAX(l),0);
 let S={score:0,done:[],lv:0,qi:0,right:0,pick:[],streak:0,lp:0,base:0,tm:null,playing:false};
 const $=id=>document.getElementById(id);
+try{S.nm=localStorage.getItem("nm")||"";S.nim=localStorage.getItem("nim")||""}catch(e){}
+function sv(){try{localStorage.setItem("nm",S.nm||"");localStorage.setItem("nim",S.nim||"")}catch(e){}}
 /* ===== Firebase: kirim skor otomatis ke Firestore (aktif jika firebase-config.js sudah diisi) ===== */
 let DB=null,AUTHP=null;const DOSEN=location.hash==="#dosen";
 function cloudInit(){
@@ -151,22 +209,28 @@ function total(){if(S.playing){const p=S.done[S.lv];return S.base+Math.max(p?p.p
 function sync(prog){
   if(!DB||!S.nm||!S.nim)return;
   cl("...");
-  const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,t:firebase.firestore.FieldValue.serverTimestamp()};
-  AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid).set(d)).then(()=>cl("ok")).catch(()=>cl("err"));
+  const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,room:ROOM.id,t:firebase.firestore.FieldValue.serverTimestamp()};
+  AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).set(d)).then(()=>cl("ok")).catch(()=>cl("err"));
 }
 const stars=a=>a>=.85?"★★★":a>=.6?"★★☆":"★☆☆";
 function hud(){$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":"none";$("stn").textContent=S.streak}
 function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
+function pick(){stop();S.playing=false;hud();
+let h=`<div class="hero"><div class="logo">📚</div><h1>Pilih Kamar Kuis</h1><p>Pilih mata kuliah sesuai kelasmu.</p></div>`;
+ROOMS.forEach(r=>{h+=`<div class="card"><a class="lv" href="?kamar=${encodeURIComponent(r.id)}" style="text-decoration:none"><b>${r.ikon}</b><div>${esc(r.nama)}<span>${esc(r.ket)}</span></div><span class="stars">Masuk ▶</span></a></div>`});
+h+=`<p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p>`;
+$("app").innerHTML=h}
 function home(){
+if(!ROOM){pick();return}
 stop();S.playing=false;S.score=myScore();S.streak=0;hud();
-let h=`<div class="hero"><div class="logo">🛡️</div><h1>Penjaga Data Kesehatan</h1><p>Jawab cepat dan tepat. Makin cepat, makin banyak poin!</p></div>`;
+let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1><p>${esc(ROOM.sub||"")}</p></div>`;
 h+=nameCard();
 LV.forEach((l,i)=>{const d=S.done[i],ok=i===0||S.done[i-1];
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(S.done.filter(Boolean).length===LV.length)h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
-h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a></p>`;
+h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
 $("app").innerHTML=h}
 function start(i){if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
@@ -209,29 +273,32 @@ sync(S.done.filter(Boolean).length===LV.length?"Selesai semua":`Level ${S.lv+1} 
 const msg=acc>=.85?"Luar biasa, datamu aman di tanganmu.":acc>=.6?"Bagus. Ulangi untuk mengejar bintang penuh.":"Masih ada yang perlu dipelajari. Coba ulangi level ini.";
 $("app").innerHTML=`<div class="card center pop"><h2>Level ${S.lv+1} selesai 🎉</h2><div class="big">${stars(acc)}</div><p><b>${S.lp}</b> poin · akurasi ${Math.round(acc*100)}%</p><p>${msg}</p><button class="btn" onclick="home()">Peta level</button> <button class="btn ghost" onclick="start(${S.lv})">Ulangi level</button></div>`}
 function fin(){
-const p=myScore()/MAXP,t=p>=.8?"Penjaga Data Andal":p>=.55?"Petugas Keamanan Data":"Calon Penjaga Data";
+const p=myScore()/MAXP,R=ROOM.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],t=p>=.8?R[0]:p>=.55?R[1]:R[2];
 $("app").innerHTML=`<div class="card center pop"><div class="logo">🏆</div><h2>${t}</h2><div class="big">${myScore()} / ${MAXP}</div><p>Kamu menyelesaikan semua level. Bahas soal yang masih keliru dengan dosen atau teman, lalu coba lagi untuk skor lebih tinggi. Kirim kode hasil di bawah ini ke dosen.</p><button class="btn" onclick="home()">Peta level</button></div>${codeCard()}`}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function hs(j){let h=0;for(const c of j)h=(h*31+c.charCodeAt(0))>>>0;return h.toString(36)}
 function enc(o){const j=JSON.stringify(o);return "PDK."+btoa(unescape(encodeURIComponent(j)))+"."+hs(j)}
 function dec(c){try{const[p,b,h]=c.trim().split(".");const j=decodeURIComponent(escape(atob(b)));if(p!=="PDK"||hs(j)!==h)return null;return JSON.parse(j)}catch(e){return null}}
 function myScore(){return LV.reduce((t,_,i)=>t+(S.done[i]?S.done[i].pts:0),0)}
-function myCode(){return enc({n:S.nm,i:S.nim,s:myScore(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),t:Date.now()})}
-function nameCard(){return `<div class="card"><h3>Siapa namamu?</h3><input placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim()"><input placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim()"><div id="msg" style="color:var(--bad);margin-top:8px"></div></div>`}
+function myCode(){return enc({n:S.nm,i:S.nim,r:ROOM.id,s:myScore(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),t:Date.now()})}
+function nameCard(){return `<div class="card"><h3>Siapa namamu?</h3><input placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()"><input placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()"><div id="msg" style="color:var(--bad);margin-top:8px"></div></div>`}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
 function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
 try{const q=qrcode(0,"M");q.addData(u);q.make();o.innerHTML=`<div style="background:#fff;padding:8px;border-radius:12px;width:min(260px,100%);margin:12px auto 0">${q.createSvgTag({cellSize:6,margin:0,scalable:true})}</div><p class="center" style="margin:8px 0 0;font-size:.9rem">Pindai dengan kamera HP</p>`}
 catch(e){o.textContent="QR gagal dibuat. Pastikan link benar dan tidak terlalu panjang."}}
 function rekap(){const u=/^https?:/.test(location.href)?location.href.split("#")[0]:"";
-$("app").innerHTML=`<div class="card"><h3>QR untuk mahasiswa</h3><p>Tampilkan di layar kelas. Mahasiswa memindai dan langsung membuka kuis ini.</p><input id="qu" placeholder="Tempel link kuis yang sudah di-hosting" value="${esc(u)}" oninput="qr()"><div id="qr"></div></div><div class="card"><h2>Rekap dosen</h2><p>Tempel kode hasil mahasiswa, satu kode per baris. Jika satu NIM mengirim beberapa kode, yang skornya tertinggi dipakai.</p><textarea id="in" rows="7" placeholder="PDK.…"></textarea><button class="btn" onclick="tbl()">Tampilkan rekap</button> <button class="btn ghost" onclick="home()">Kembali</button><div id="out"></div></div>`;qr()}
+$("app").innerHTML=`<div class="card"><h3>QR untuk mahasiswa</h3><p>Tampilkan di layar kelas. Mahasiswa memindai dan langsung membuka kuis ini.</p><input id="qu" placeholder="Tempel link kuis yang sudah di-hosting" value="${esc(u)}" oninput="qr()"><div id="qr"></div></div><div class="card"><h2>Rekap dosen</h2><p>Kamar: <b>${esc(ROOM.nama)}</b>. Tempel kode hasil mahasiswa, satu kode per baris. Jika satu NIM mengirim beberapa kode, yang skornya tertinggi dipakai.</p><textarea id="in" rows="7" placeholder="PDK.…"></textarea><button class="btn" onclick="tbl()">Tampilkan rekap</button> <button class="btn ghost" onclick="home()">Kembali</button><div id="out"></div></div>`;qr()}
 function tbl(){const m={};let bad=0;$("in").value.split(/\s+/).filter(Boolean).forEach(c=>{const d=dec(c);if(!d||!d.i){bad++;return}const k=String(d.i).trim();if(!m[k]||d.s>m[k].s)m[k]=d});
-const r=Object.values(m).sort((a,b)=>b.s-a.s),cell=d=>[0,1,2,3].map(i=>(d.l||[])[i]);
-const tsv=["Nama\tNIM\tL1\tL2\tL3\tL4\tSkor (maks "+MAXP+")"].concat(r.map(d=>[d.n,d.i,...cell(d).map(x=>x==null?"":x),d.s].join("\t"))).join("\n");
-$("out").innerHTML=(r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>Skor</th></tr>${r.map((d,n)=>`<tr><td>${n<3?["🥇","🥈","🥉"][n]:n+1}</td><td>${esc(d.n)}</td><td>${esc(d.i)}</td>${cell(d).map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.s}</b></td></tr>`).join("")}</table></div><p>${r.length} mahasiswa. Persen = akurasi tiap level; skor maksimal ${MAXP}.</p><textarea id="tv" readonly rows="4" onclick="this.select()">${esc(tsv)}</textarea><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button>`:`<p>Belum ada kode yang valid.</p>`)+(bad?`<p style="color:var(--bad)">${bad} kode tidak valid dan dilewati.</p>`:"")}
+const r=Object.values(m).sort((a,b)=>b.s-a.s),cell=d=>LV.map((_,i)=>(d.l||[])[i]);
+const tsv=["Nama\tNIM\t"+LV.map((_,i)=>"L"+(i+1)).join("\t")+"\tSkor (maks "+MAXP+")"].concat(r.map(d=>[d.n,d.i,...cell(d).map(x=>x==null?"":x),d.s].join("\t"))).join("\n");
+$("out").innerHTML=(r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${LV.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th></tr>${r.map((d,n)=>`<tr><td>${n<3?["🥇","🥈","🥉"][n]:n+1}</td><td>${esc(d.n)}</td><td>${esc(d.i)}</td>${cell(d).map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.s}</b></td></tr>`).join("")}</table></div><p>${r.length} mahasiswa. Persen = akurasi tiap level; skor maksimal ${MAXP}.</p><textarea id="tv" readonly rows="4" onclick="this.select()">${esc(tsv)}</textarea><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button>`:`<p>Belum ada kode yang valid.</p>`)+(bad?`<p style="color:var(--bad)">${bad} kode tidak valid dan dilewati.</p>`:"")}
 /* ===== Mode dosen: buka halaman ini dengan #dosen di ujung link ===== */
 let dUnsub=null,dDocs=[],dView="rekap",dAnon=false,dMsg="";
-const JOIN=location.href.split("#")[0],MAXD=17000;
+let dRoom=(ROOM||ROOMS[0]).id;
+const RM=()=>ROOMS.find(r=>r.id===dRoom)||ROOMS[0];
+const rMax=r=>r.lv.reduce((s,l)=>s+(l.log?2000:l.qs.length*1000),0);
+const JOIN=()=>location.origin+location.pathname+"?kamar="+encodeURIComponent(dRoom);
 addEventListener("hashchange",()=>location.reload());
 function dosen(){
   document.querySelector("main").style.maxWidth="1000px";document.querySelector(".top").style.display="none";
@@ -246,29 +313,32 @@ async function dPin(){const v=$("pin").value.trim(),u=firebase.auth().currentUse
 function dListen(){dStop();dMsg="";dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dDraw()},e=>{dStop();if(e.code==="permission-denied")dLogin();else{dMsg="Gagal membaca data: "+e.code;dDraw()}});dDraw()}
 function dMs(t){return t&&t.toMillis?t.toMillis():Date.now()}
 function dMerge(){const m={};
-  dDocs.forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;
-    const o=m[k]||(m[k]={nama:d.nama,nim:k,skor:-1,l:[null,null,null,null],prog:"",t:0});
+  dDocs.filter(d=>(d.room||"pdk")===dRoom).forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;
+    const o=m[k]||(m[k]={nama:d.nama,nim:k,skor:-1,l:RM().lv.map(()=>null),prog:"",t:0});
     if(d.skor>o.skor){o.skor=d.skor;o.nama=d.nama}
     (d.l||[]).forEach((x,i)=>{if(x!=null&&(o.l[i]==null||x>o.l[i]))o.l[i]=x});
     const t=dMs(d.t);if(t>=o.t){o.t=t;o.prog=d.prog}});
   return Object.values(m).sort((a,b)=>b.skor-a.skor)}
 function dIni(n){return String(n).split(/\s+/).filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,4)}
-function dQr(){try{const q=qrcode(0,"M");q.addData(JOIN);q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ""}}
+function dQr(){try{const q=qrcode(0,"M");q.addData(JOIN());q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ""}}
 function dDraw(){const r=dMerge(),now=Date.now();
   let h=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ${dView==="rekap"?"on":""}" onclick="dView='rekap';dDraw()">Rekap</button><button class="btn ${dView==="board"?"on":""}" onclick="dView='board';dDraw()">Papan peringkat</button>`;
   if(dView==="board")h+=`<button class="btn ghost w" onclick="dAnon=!dAnon;dDraw()">${dAnon?"Tampilkan nama":"Samarkan nama"}</button><button class="btn ghost w" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Layar penuh</button>`;
   h+=`<button class="btn ghost w" onclick="firebase.auth().signOut()">Keluar</button></div>`;
+  if(ROOMS.length>1)h+=`<div class="bar">${ROOMS.map((x,i)=>`<button class="btn ${x.id===dRoom?"on":"ghost w"}" onclick="dRoom=ROOMS[${i}].id;dDraw()">${x.ikon} ${esc(x.nama)}</button>`).join("")}</div>`;
   if(dMsg)h+=`<p class="err">${esc(dMsg)}</p>`;
   $("app").innerHTML=h+(dView==="board"?dBoard(r):dRekap(r,now))}
 function dRekap(r,now){
-  const tsv=["Nama\tNIM\tL1\tL2\tL3\tL4\tSkor (maks "+MAXD+")"].concat(r.map(d=>[d.nama,d.nim,...d.l.map(x=>x==null?"":x),d.skor].join("\t"))).join("\n");
-  return `<div class="card"><h2>Rekap (${r.length} mahasiswa)</h2><p class="mut">Diperbarui otomatis. Satu NIM dihitung sekali dengan skor tertinggi. Persen = akurasi tiap level.</p>`+
-  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th><th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="dReset()">Reset sesi</button></p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang mengirim skor.</p>`)+`</div>`}
-function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1);
-  return `<div class="lb"><div><h2>Papan Peringkat</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/4 level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN)}</div><div class="mut">${r.length} peserta</div></div></div>`}
-async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa? Tindakan ini tidak bisa dibatalkan."))return;
-  const ids=dDocs.map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()}}
+  const n=RM().lv.length,mx=rMax(RM());
+  const tsv=["Nama\tNIM\t"+RM().lv.map((_,i)=>"L"+(i+1)).join("\t")+"\tSkor (maks "+mx+")"].concat(r.map(d=>[d.nama,d.nim,...d.l.map(x=>x==null?"":x),d.skor].join("\t"))).join("\n");
+  return `<div class="card"><h2>${esc(RM().nama)}: rekap (${r.length} mahasiswa)</h2><p class="mut">Diperbarui otomatis. Satu NIM dihitung sekali dengan skor tertinggi. Persen = akurasi tiap level. Skor maksimal ${mx}.</p>`+
+  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${RM().lv.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="dReset()">Reset kamar ini</button></p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang mengirim skor di kamar ini.</p>`)+`</div>`}
+function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n=RM().lv.length;
+  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
+async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
+  const ids=dDocs.filter(d=>(d.room||"pdk")===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()}}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
+document.title=DOSEN?"Dasbor Dosen":ROOM?ROOM.nama+" Quiz":"Kuis";
 cloudInit();DOSEN?dosen():home();
 </script>
 </body>
