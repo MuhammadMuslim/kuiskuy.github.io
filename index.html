@@ -99,7 +99,7 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .ed label input[type=text]{margin:0;flex:1;width:auto}
 .pz{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pz>div{display:flex;flex-direction:column;gap:8px}.pzw .opt{background:var(--soft);color:var(--ink);box-shadow:none;font-weight:600;padding:12px;margin-top:8px}.pz .opt{margin-top:0}.pzw .opt.sel{background:var(--c1);color:#fff}.pzw .opt.ok{background:var(--ok);color:#fff;outline:none;box-shadow:none}.tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.tiles .opt{width:auto;min-width:48px;justify-content:center;margin:0;font-size:1.3rem}.pzw .opt i{color:inherit}
 
-/* ===== Halaman awal animasi KuisKyu ===== */
+/* ===== Halaman awal animasi KuisKuy ===== */
 .ks{position:relative;min-height:72vh;display:grid;place-items:center;text-align:center;color:#fff;overflow:hidden}
 .ks-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .ks-bg span{position:absolute;bottom:-12%;left:var(--x);font-size:var(--s);opacity:0;color:#fff;animation:ksUp var(--dur) linear var(--d) infinite}
@@ -143,6 +143,8 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 @keyframes ksSlide{0%{transform:translateX(-100%)}100%{transform:translateX(260%)}}
 .ks-hint{font-size:.85rem;opacity:.75;margin-top:14px;animation:ksFade .8s ease 2.3s both}
 .ks-go{display:inline-block;text-decoration:none;margin-top:18px;animation:ksFade .6s ease both,ksPulse 2.4s ease-in-out .6s infinite}
+.ks-dev{text-align:center;color:#fff;opacity:.8;font-size:.9rem;margin:6px 0 0;animation:ksFade .8s ease 2.3s both}
+.ks-dev a{color:#FFD23F;font-weight:700;text-decoration:none}.ks-dev a:hover,.ks-dev a:focus-visible{text-decoration:underline}
 </style>
 </head>
 <body>
@@ -273,10 +275,10 @@ function ksHop(e){e.classList.remove("hop");void e.offsetWidth;e.classList.add("
 function pick(){stop();S.playing=false;
 const tp=document.querySelector(".top");if(tp)tp.style.display="none";
 const gl=["▲","◆","●"],bg=Array.from({length:14},(_,i)=>`<span style="--x:${(i*7+3)%94}%;--s:${22+(i*13)%34}px;--dur:${9+(i*5)%8}s;--d:-${(i*3)%11}s">${gl[i%3]}</span>`).join("");
-const tl=[..."KuisKyu"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${c}</b>`).join("");
+const tl=[..."KuisKuy"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${c}</b>`).join("");
 const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:36},(_,i)=>`<i style="--x:${(i*29)%100}%;--w:${6+(i*3)%7}px;--c:${cc[i%5]};--t:${2.6+(i%5)*.45}s;--d:${(i%9)*.12+.3}s;--dx:${(i%2?1:-1)*(20+(i*11)%60)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
 const st=Array.from({length:9},(_,i)=>`<em style="--x:${(i*37+8)%92}%;--y:${(i*23+6)%80}%;--s:${12+(i*5)%14}px;--d:${(i%5)*.45}s">✦</em>`).join("");
-$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKyu">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p>`}
+$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
 const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
 function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
@@ -645,7 +647,7 @@ cloudInit();loadX().then(()=>{
     return}
   if(!DOSEN&&!ROOMS.length&&!kOk&&useCache()){mergeX([])}
   if(!DOSEN&&!ROOMS.length){bootFail();return}
-  rmLock=!DOSEN;setR();document.title=DOSEN?"Dasbor Dosen":ROOM?ROOM.nama+" Quiz":"KuisKyu";if(!DOSEN&&ROOM)pgLoad();DOSEN?dosen():(S.cur?resume():home());pgCheck()});
+  rmLock=!DOSEN;setR();document.title=DOSEN?"Dasbor Dosen":ROOM?ROOM.nama+" Quiz":"KuisKuy";if(!DOSEN&&ROOM)pgLoad();DOSEN?dosen():(S.cur?resume():home());pgCheck()});
 </script>
 </body>
 </html>
