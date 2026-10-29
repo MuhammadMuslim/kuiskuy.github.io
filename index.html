@@ -324,6 +324,19 @@ let S={score:0,done:[],lv:0,qi:0,right:0,pick:[],streak:0,lp:0,base:0,tm:null,pl
 const $=id=>document.getElementById(id);
 try{S.nm=localStorage.getItem("nm")||"";S.nim=localStorage.getItem("nim")||""}catch(e){}
 function sv(){try{localStorage.setItem("nm",S.nm||"");localStorage.setItem("nim",S.nim||"")}catch(e){}}
+/* ===== Progres kuis: dikunci per perangkat dan bisa dilanjutkan ===== */
+const pgKey=()=>"pg_"+ROOM.id;
+const cur=(p,adv,lg)=>({lv:S.lv,qi:S.qi+(adv?1:0),right:S.right,lp:S.lp,streak:S.streak,base:S.base,pend:p?1:0,lgAcc:S.lgAcc||0,lgdone:lg?1:0,rv:Array.from(S.rv||[],v=>v===undefined?-1:v)});
+function pgSave(c){try{localStorage.setItem(pgKey(),JSON.stringify({nm:S.nm,nim:S.nim,done:Array.from(S.done,v=>v||null),cur:c||null}))}catch(e){}}
+function pgLoad(){try{const o=JSON.parse(localStorage.getItem(pgKey()));if(!o||!o.nim)return false;S.nm=o.nm;S.nim=o.nim;S.done=(o.done||[]).map(v=>v||undefined);S.cur=o.cur||null;S.locked=true;return true}catch(e){return false}}
+function pgCheck(){if(!DB||!AUTHP||DOSEN||!ROOM)return;let sent=0;try{sent=localStorage.getItem("sent_"+ROOM.id)}catch(e){}if(!sent)return;
+AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).get()).then(d=>{if(d&&d.exists===false){try{localStorage.removeItem(pgKey());localStorage.removeItem(rvKey());localStorage.removeItem("sent_"+ROOM.id)}catch(e){}location.reload()}}).catch(()=>{})}
+function resume(){const c=S.cur,l=c&&LV[c.lv];S.cur=null;if(!c||!l){home();return}
+S.lv=c.lv;S.qi=c.qi;S.right=c.right;S.lp=c.lp;S.streak=c.streak;S.base=c.base;S.lgAcc=c.lgAcc||0;S.pick=[];S.rv=c.rv||[];S.playing=true;S.ansd=false;S.score=S.base+S.lp;hud();
+if(c.pend){S.streak=0;S.note="Kamu keluar saat soal sedang tampil, jadi soal itu dihitung tidak terjawab.";if(l.log){S.lp=0;S.lgAcc=0;endLv();return}S.qi++}
+sync("Level "+(S.lv+1)+": lanjut setelah keluar");
+if(l.log?c.lgdone:S.qi>=l.qs.length){endLv();return}
+l.log?logQ():ques()}
 /* ===== Firebase: kirim skor otomatis ke Firestore (aktif jika firebase-config.js sudah diisi) ===== */
 let DB=null,AUTHP=null;const DOSEN=location.hash==="#dosen";
 function cloudInit(){
@@ -337,7 +350,7 @@ function cloudInit(){
       else if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
     AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
 }
-function cl(s){const el=$("cl");if(!DB){el.style.display="none";return}el.style.display="";el.textContent=s==="ok"?"☁ Tersimpan":s==="err"?"⚠ Gagal kirim":s==="conn"?"☁ Terhubung":"☁ Mengirim…"}
+function cl(s){if(s==="ok"&&ROOM)try{localStorage.setItem("sent_"+ROOM.id,"1")}catch(e){}const el=$("cl");if(!DB){el.style.display="none";return}el.style.display="";el.textContent=s==="ok"?"☁ Tersimpan":s==="err"?"⚠ Gagal kirim":s==="conn"?"☁ Terhubung":"☁ Mengirim…"}
 function total(){if(S.playing){const p=S.done[S.lv];return S.base+Math.max(p?p.pts:0,S.lp)}return myScore()}
 function sync(prog){
   if(!DB||!S.nm||!S.nim)return;
@@ -366,26 +379,27 @@ stop();S.playing=false;S.score=myScore();S.streak=0;hud();
 let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1><p>${esc(ROOM.sub||"")}</p></div>`;
 h+=nameCard();
 if(ROOM.mat&&ROOM.mat.length){const ok=matOk();h+=`<div class="card"><button class="lv" onclick="mat(0)"><b>📖</b><div>Materi<span>${ok?"Sudah dibaca. Buka lagi kapan saja.":"Baca materi dulu untuk membuka level kuis."}</span></div><span class="stars">${ok?"✅":"Baca ▶"}</span></button></div>`}
-LV.forEach((l,i)=>{const d=S.done[i],ok=(i===0||S.done[i-1])&&matOk();
+LV.forEach((l,i)=>{const d=S.done[i],ok=(i===0||S.done[i-1])&&matOk()&&!d;
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(S.done.filter(Boolean).length===LV.length)h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
 h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
 $("app").innerHTML=h}
-function start(i){if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
+function start(i){if(S.done[i])return;if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
-S.base=LV.reduce((t,_,k)=>t+(k!==i&&S.done[k]?S.done[k].pts:0),0);S.score=S.base;S.playing=true;hud();sync("Level "+(i+1)+": mulai");LV[i].log?logQ():ques()}
+S.base=LV.reduce((t,_,k)=>t+(k!==i&&S.done[k]?S.done[k].pts:0),0);S.score=S.base;S.playing=true;S.locked=true;S.ansd=false;S.note="";hud();pgSave(cur(0));sync("Level "+(i+1)+": mulai");LV[i].log?logQ():ques()}
 function ques(){
 const l=LV[S.lv],q=l.qs[S.qi];
-$("app").innerHTML=tbox()+`<div class="q"><h2>${q.q}</h2></div><div class="ans" id="o">${q.o.map((t,i)=>`<button class="opt c${i}" onclick="ans(${i})"><i>${SH[i]}</i><span>${t}</span></button>`).join("")}</div><div id="fb"></div>`;
+$("app").innerHTML=tbox()+(S.note?`<div class="card center"><p>${S.note}</p></div>`:"")+`<div class="q"><h2>${q.q}</h2></div><div class="ans" id="o">${q.o.map((t,i)=>`<button class="opt c${i}" onclick="ans(${i})"><i>${SH[i]}</i><span>${t}</span></button>`).join("")}</div><div id="fb"></div>`;
 $("pl").textContent=`Level ${S.lv+1} · Soal ${S.qi+1}/${l.qs.length}`;
-timer(T,()=>ans(-1))}
+S.note="";S.ansd=false;pgSave(cur(1));timer(T,()=>ans(-1))}
 function ans(i){
+if(S.ansd)return;S.ansd=true;
 const left=Math.max(0,T-(Date.now()-S.t0)/1000);stop();
 const q=LV[S.lv].qs[S.qi],b=document.querySelectorAll("#o .opt"),ok=i===q.a,to=i===-1;
 b.forEach((x,j)=>{x.disabled=true;if(j===q.a)x.classList.add("ok");else x.classList.add("dim")});
 let pts=0;
 if(ok){pts=Math.round(500+500*left/T);S.lp+=pts;S.right++;S.streak++}else S.streak=0;
-S.score=S.base+S.lp;hud();sync(`Level ${S.lv+1}: soal ${S.qi+1}/${LV[S.lv].qs.length}`);
+S.score=S.base+S.lp;hud();pgSave(cur(0,1));sync(`Level ${S.lv+1}: soal ${S.qi+1}/${LV[S.lv].qs.length}`);
 const last=S.qi===LV[S.lv].qs.length-1;
 const head=ok?(S.streak>=3?`Tepat! 🔥 Streak ${S.streak}`:"Tepat! ✅"):to?"Waktu habis ⏰":"Belum tepat ❌";
 $("fb").innerHTML=`<div class="res pop ${ok?"good":"no"}"><h3>${head}</h3>${ok?`<p><b>+${pts} poin</b></p>`:""}<p>${q.e}</p><button class="btn" onclick="${last?"endLv()":"nextQ()"}">${last?"Selesaikan level":"Lanjut ▶"}</button></div>`;
@@ -393,34 +407,34 @@ $("fb").scrollIntoView({behavior:"smooth",block:"nearest"})}
 function nextQ(){S.qi++;ques()}
 function logQ(){
 const l=LV[S.lv];
-$("app").innerHTML=tbox()+`<div class="q"><h2>${l.t}</h2></div><div class="lg"><div class="log" id="o">${l.rows.map((r,i)=>`<button class="opt" onclick="tog(${i},this)">${r[0]} ${r[1]}: ${r[2]}</button>`).join("")}</div></div><div id="fb"><button class="btn" id="chk" onclick="chk()">Periksa</button></div>`;
+$("app").innerHTML=tbox()+(S.note?`<div class="card center"><p>${S.note}</p></div>`:"")+`<div class="q"><h2>${l.t}</h2></div><div class="lg"><div class="log" id="o">${l.rows.map((r,i)=>`<button class="opt" onclick="tog(${i},this)">${r[0]} ${r[1]}: ${r[2]}</button>`).join("")}</div></div><div id="fb"><button class="btn" id="chk" onclick="chk()">Periksa</button></div>`;
 $("pl").textContent=`Level ${S.lv+1} · ${l.n}`;
-timer(TL,chk)}
+S.note="";S.ansd=false;pgSave(cur(1));timer(TL,chk)}
 function tog(i,el){if(el.disabled)return;const k=S.pick.indexOf(i);if(k>=0){S.pick.splice(k,1);el.classList.remove("sel")}else{S.pick.push(i);el.classList.add("sel")}}
 function chk(){
-stop();const l=LV[S.lv];let hit=0,miss=0;
+if(S.ansd)return;S.ansd=true;stop();const l=LV[S.lv];let hit=0,miss=0;
 document.querySelectorAll("#o .opt").forEach((b,i)=>{b.disabled=true;b.classList.remove("sel");const s=S.pick.includes(i),t=l.rows[i][3];
 if(t&&s){b.classList.add("ok");hit++}else if(t){b.classList.add("bad")}else if(s){b.classList.add("bad");miss++}});
-const pts=Math.max(0,hit*500-miss*250);S.lp=pts;S.lgAcc=Math.max(0,hit-miss)/4;S.score=S.base+pts;S.streak=0;hud();sync(`Level ${S.lv+1}: ${l.n}`);
+const pts=Math.max(0,hit*500-miss*250);S.lp=pts;S.lgAcc=Math.max(0,hit-miss)/4;S.score=S.base+pts;S.streak=0;hud();pgSave(cur(0,0,1));sync(`Level ${S.lv+1}: ${l.n}`);
 $("fb").innerHTML=`<div class="res pop ${hit>=3&&!miss?"good":"no"}"><h3>Ketemu ${hit} dari 4 (${miss} salah tandai)</h3><p><b>+${pts} poin</b></p><p>${l.e}</p><button class="btn" onclick="endLv()">Selesaikan level</button></div>`;
 $("fb").scrollIntoView({behavior:"smooth",block:"nearest"})}
 function endLv(){
 const l=LV[S.lv],acc=l.log?S.lgAcc:S.right/l.qs.length;
-const prev=S.done[S.lv];if(!prev||S.lp>prev.pts)S.done[S.lv]={acc,pts:S.lp};
+S.done[S.lv]={acc,pts:S.lp};S.cur=null;pgSave(null);
 S.playing=false;S.score=myScore();hud();
 sync(S.done.filter(Boolean).length===LV.length?"Selesai semua":`Level ${S.lv+1} selesai`);
-const msg=acc>=.85?"Luar biasa, datamu aman di tanganmu.":acc>=.6?"Bagus. Ulangi untuk mengejar bintang penuh.":"Masih ada yang perlu dipelajari. Coba ulangi level ini.";
-$("app").innerHTML=`<div class="card center pop"><h2>Level ${S.lv+1} selesai 🎉</h2><div class="big">${stars(acc)}</div><p><b>${S.lp}</b> poin · akurasi ${Math.round(acc*100)}%</p><p>${msg}</p><button class="btn" onclick="home()">Peta level</button> <button class="btn ghost" onclick="start(${S.lv})">Ulangi level</button></div>`}
+const msg=acc>=.85?"Luar biasa, datamu aman di tanganmu.":acc>=.6?"Bagus. Lanjut ke level berikutnya.":"Masih ada yang perlu dipelajari. Buka review untuk membahas jawabannya.";
+$("app").innerHTML=`<div class="card center pop"><h2>Level ${S.lv+1} selesai 🎉</h2><div class="big">${stars(acc)}</div><p><b>${S.lp}</b> poin · akurasi ${Math.round(acc*100)}%</p><p>${msg}</p>${S.note?`<p class="mut">${S.note}</p>`:""}<button class="btn" onclick="home()">Peta level</button></div>`}
 function fin(){
 const p=myScore()/MAXP,R=ROOM.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],t=p>=.8?R[0]:p>=.55?R[1]:R[2];
-$("app").innerHTML=`<div class="card center pop"><div class="logo">🏆</div><h2>${t}</h2><div class="big">${myScore()} / ${MAXP}</div><p>Kamu menyelesaikan semua level. Bahas soal yang masih keliru dengan dosen atau teman, lalu coba lagi untuk skor lebih tinggi. Kirim kode hasil di bawah ini ke dosen.</p><button class="btn" onclick="home()">Peta level</button></div>${codeCard()}`}
+$("app").innerHTML=`<div class="card center pop"><div class="logo">🏆</div><h2>${t}</h2><div class="big">${myScore()} / ${MAXP}</div><p>Kamu menyelesaikan semua level. Bahas soal yang masih keliru dengan dosen atau teman. Kirim kode hasil di bawah ini ke dosen.</p><button class="btn" onclick="home()">Peta level</button></div>${codeCard()}`}
 function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
 function hs(j){let h=0;for(const c of j)h=(h*31+c.charCodeAt(0))>>>0;return h.toString(36)}
 function enc(o){const j=JSON.stringify(o);return "PDK."+btoa(unescape(encodeURIComponent(j)))+"."+hs(j)}
 function dec(c){try{const[p,b,h]=c.trim().split(".");const j=decodeURIComponent(escape(atob(b)));if(p!=="PDK"||hs(j)!==h)return null;return JSON.parse(j)}catch(e){return null}}
 function myScore(){return LV.reduce((t,_,i)=>t+(S.done[i]?S.done[i].pts:0),0)}
 function myCode(){return enc({n:S.nm,i:S.nim,r:ROOM.id,s:myScore(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),t:Date.now()})}
-function nameCard(){return `<div class="card"><h3>Siapa namamu?</h3><input placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()"><input placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()"><div id="msg" style="color:var(--bad);margin-top:8px"></div></div>`}
+function nameCard(){return `<div class="card"><h3>Siapa namamu?</h3><input ${S.locked?"readonly ":""}placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()"><input ${S.locked?"readonly ":""}placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()"><div id="msg" style="color:var(--bad);margin-top:8px"></div>${S.locked?`<p class="mut">Nama dan NIM terkunci di perangkat ini setelah kuis dimulai.</p>`:""}</div>`}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
 function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
@@ -478,7 +492,7 @@ async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM
   const ids=dDocs.filter(d=>(d.room||"pdk")===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()}}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
 document.title=DOSEN?"Dasbor Dosen":ROOM?ROOM.nama+" Quiz":"Kuis";
-cloudInit();DOSEN?dosen():home();
+cloudInit();if(!DOSEN&&ROOM)pgLoad();DOSEN?dosen():(S.cur?resume():home());pgCheck();
 </script>
 </body>
 </html>
