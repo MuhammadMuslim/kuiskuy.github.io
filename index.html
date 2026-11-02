@@ -99,6 +99,8 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .ed label input[type=text]{margin:0;flex:1;width:auto}
 .pz{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pz>div{display:flex;flex-direction:column;gap:8px}.pzw .opt{background:var(--soft);color:var(--ink);box-shadow:none;font-weight:600;padding:12px;margin-top:8px}.pz .opt{margin-top:0}.pzw .opt.sel{background:var(--c1);color:#fff}.pzw .opt.ok{background:var(--ok);color:#fff;outline:none;box-shadow:none}.tiles{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.tiles .opt{width:auto;min-width:48px;justify-content:center;margin:0;font-size:1.3rem}.pzw .opt i{color:inherit}
 
+.avg{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin:6px 0}.avg button{font-size:1.6rem;line-height:1;padding:7px 0;border-radius:12px;border:2px solid var(--line);background:var(--card);cursor:pointer}.avg button.on{border-color:var(--pri);background:var(--soft)}.avg button:disabled{opacity:.5;cursor:default}.avi{width:1.3em;height:1.3em;vertical-align:-.28em;border-radius:50%;background:var(--soft)}.avg img{width:100%;max-width:40px;display:block;margin:auto;border-radius:50%}.avt{font-size:.8rem;font-weight:700;color:var(--mut);margin-top:6px}
+.ov{position:fixed;inset:0;z-index:60;background:rgba(20,8,45,.85);display:grid;place-items:center;padding:16px}.ov>div{background:var(--card);color:var(--ink);border-radius:18px;padding:22px;max-width:440px;width:100%;max-height:86vh;overflow:auto;text-align:left}.ov h2{margin:0 0 10px}.ov li{margin:6px 0}.ov .btn{margin-top:12px}
 /* ===== Halaman awal animasi KuisKuy ===== */
 .ks{position:relative;min-height:72vh;display:grid;place-items:center;text-align:center;color:#fff;overflow:hidden}
 .ks-bg{position:absolute;inset:0;pointer-events:none;overflow:hidden}
@@ -145,6 +147,18 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .ks-go{display:inline-block;text-decoration:none;margin-top:18px;animation:ksFade .6s ease both,ksPulse 2.4s ease-in-out .6s infinite}
 .ks-dev{text-align:center;color:#fff;opacity:.8;font-size:.9rem;margin:6px 0 0;animation:ksFade .8s ease 2.3s both}
 .ks-dev a{color:#FFD23F;font-weight:700;text-decoration:none}.ks-dev a:hover,.ks-dev a:focus-visible{text-decoration:underline}
+
+/* ===== Portal dosen: login dan status ===== */
+a.btn{display:inline-block;text-decoration:none}
+.dl{max-width:420px;margin:40px auto;text-align:center}
+.dl .logo{font-size:3rem;margin-bottom:4px}
+.dpw{display:flex;gap:8px;align-items:center}.dpw input{flex:1;margin-top:10px}.dpw .btn{margin-top:10px;padding:12px 14px}
+.dl .go{width:100%}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.stats div{background:rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:10px 12px;text-align:center}
+.stats b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}.stats span{font-size:.8rem;opacity:.85}
+.stats .on b{color:#8CF08C}.stats .off b{color:#FFB3C0}
+@media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -199,13 +213,14 @@ const _rvEnd=endLv;endLv=function(){if(!LV[S.lv].g)rvSet(S.lv,Array.from(S.rv||[
 const _rvHome=home;home=function(){_rvHome();if(!ROOM||!LV)return;const o=rvGet(),ks=Object.keys(o).sort();if(!ks.length)return;
 $("app").lastElementChild.insertAdjacentHTML("beforebegin",`<div class="card">${ks.map(k=>`<button class="lv" onclick="review(${k})"><b>${+k+1}</b><div>Review Level ${+k+1}<span>Lihat jawaban dan penjelasan materi</span></div><span class="stars">🔍</span></button>`).join("")}</div>`)};
 /* ===== Review bersama di dasbor dosen ===== */
-let RVOFF=false,dRvLv=0,dRvSort=false;
+let AVOFF=false,RVOFF=false,dRvLv=0,dRvSort=false;
 sync=function(prog){
 if(!DB||!S.nm||!S.nim)return;cl("...");
 const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,room:ROOM.id,t:firebase.firestore.FieldValue.serverTimestamp()};
 if(!RVOFF){const o=rvGet();if(Object.keys(o).length)d.rv=o}
+if(!AVOFF&&S.av)d.av=S.av;
 const ref=u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id);
-AUTHP.then(u=>ref(u).set(d).catch(e=>{if(!d.rv)throw e;RVOFF=true;delete d.rv;return ref(u).set(d)})).then(()=>cl("ok")).catch(()=>cl("err"))};
+return AUTHP.then(u=>ref(u).set(d).catch(e=>{if(!d.rv&&!d.av)throw e;if(d.rv){RVOFF=true;delete d.rv}if(d.av){AVOFF=true;delete d.av}return ref(u).set(d)})).then(()=>{cl("ok");return true}).catch(()=>{cl("err");return false})};
 function dRv(lv){const m={};dDocs.filter(d=>(d.room||"pdk")===dRoom&&d.rv&&Array.isArray(d.rv[lv])).forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;const t=dMs(d.t);if(!m[k]||t>=m[k].t)m[k]={nama:d.nama,a:d.rv[lv],t}});return Object.values(m)}
 function dReview(){
 const rm=RM(),lv=Math.min(dRvLv,rm.lv.length-1),l=rm.lv[lv],ss=dRv(lv),n=ss.length,nm=s=>esc(dAnon?dIni(s.nama):s.nama);
@@ -229,8 +244,8 @@ const LMAX=l=>l.h?0:l.g?1000:l.log?2000:l.qs.length*1000;
 let MAXP=LV.reduce((s,l)=>s+LMAX(l),0);
 let S={score:0,done:[],lv:0,qi:0,right:0,pick:[],streak:0,lp:0,base:0,tm:null,playing:false};
 const $=id=>document.getElementById(id);
-try{S.nm=localStorage.getItem("nm")||"";S.nim=localStorage.getItem("nim")||""}catch(e){}
-function sv(){try{localStorage.setItem("nm",S.nm||"");localStorage.setItem("nim",S.nim||"")}catch(e){}}
+try{S.nm=localStorage.getItem("nm")||"";S.nim=localStorage.getItem("nim")||"";S.av=localStorage.getItem("av")||""}catch(e){}
+function sv(){try{localStorage.setItem("nm",S.nm||"");localStorage.setItem("nim",S.nim||"");localStorage.setItem("av",S.av||"")}catch(e){}}
 /* ===== Progres kuis: dikunci per perangkat dan bisa dilanjutkan ===== */
 const pgKey=()=>"pg_"+ROOM.id;
 const cur=(p,adv,lg)=>({lv:S.lv,qi:S.qi+(adv?1:0),right:S.right,lp:S.lp,streak:S.streak,base:S.base,pend:p?1:0,lgAcc:S.lgAcc||0,lgdone:lg?1:0,rv:Array.from(S.rv||[],v=>v===undefined?-1:v)});
@@ -246,7 +261,7 @@ sync("Level "+(S.lv+1)+": lanjut setelah keluar");
 if(l.log?c.lgdone:S.qi>=l.qs.length){endLv();return}
 l.log?logQ():ques()}
 /* ===== Firebase: kirim skor otomatis ke Firestore (aktif jika firebase-config.js sudah diisi) ===== */
-let DB=null,AUTHP=null;const DOSEN=location.hash==="#dosen";
+let DB=null,AUTHP=null,jnT=null;const DOSEN=location.hash==="#dosen";
 function cloudInit(){
   const C=window.FIREBASE_CONFIG;
   if(!C||!C.apiKey||/^GANTI/.test(C.apiKey)||!window.firebase)return;
@@ -264,7 +279,7 @@ function sync(prog){
   if(!DB||!S.nm||!S.nim)return;
   cl("...");
   const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,room:ROOM.id,t:firebase.firestore.FieldValue.serverTimestamp()};
-  AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).set(d)).then(()=>cl("ok")).catch(()=>cl("err"));
+  return AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).set(d)).then(()=>{cl("ok");return true}).catch(()=>{cl("err");return false});
 }
 const stars=a=>a>=.85?"★★★":a>=.6?"★★☆":"★☆☆";
 function hud(){$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":"none";$("stn").textContent=S.streak}
@@ -278,24 +293,26 @@ const gl=["▲","◆","●"],bg=Array.from({length:14},(_,i)=>`<span style="--x:
 const tl=[..."KuisKuy"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${c}</b>`).join("");
 const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:36},(_,i)=>`<i style="--x:${(i*29)%100}%;--w:${6+(i*3)%7}px;--c:${cc[i%5]};--t:${2.6+(i%5)*.45}s;--d:${(i%9)*.12+.3}s;--dx:${(i%2?1:-1)*(20+(i*11)%60)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
 const st=Array.from({length:9},(_,i)=>`<em style="--x:${(i*37+8)%92}%;--y:${(i*23+6)%80}%;--s:${12+(i*5)%14}px;--d:${(i%5)*.45}s">✦</em>`).join("");
-$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
+$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
 const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
 function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
 $("app").innerHTML=`<div class="prog"><span>📖 Materi · ${p+1}/${m.length}</span></div><div class="card mt pop"><h2>${x.j}</h2>${x.h}</div><div class="bar">${p?`<button class="btn ghost w" onclick="mat(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">Selesai, ke kuis ▶</button>`:`<button class="btn" onclick="mat(${p+1})">Lanjut ▶</button>`}</div>`;scrollTo(0,0)}
-function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;home()}
+function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;home();introNext()}
 function home(){
 if(!ROOM){pick();return}
-stop();S.playing=false;S.score=myScore();S.streak=0;hud();
+goListen();stop();S.playing=false;S.score=myScore();S.streak=0;hud();
 let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1><p>${esc(ROOM.sub||"")}</p></div>`;
-h+=nameCard();
+h+=nameCard();if(!S.i1&&S.nm&&S.nim){S.i1=1;setTimeout(introNext,300)}
 if(ROOM.mat&&ROOM.mat.length){const ok=matOk();h+=`<div class="card"><button class="lv" onclick="mat(0)"><b>📖</b><div>Materi<span>${ok?"Sudah dibaca. Buka lagi kapan saja.":"Baca materi dulu untuk membuka level kuis."}</span></div><span class="stars">${ok?"✅":"Baca ▶"}</span></button></div>`}
 LV.forEach((l,i)=>{if(l.h)return;const d=S.done[i],ok=LV.slice(0,i).every((x,k)=>x.h||S.done[k])&&matOk()&&!d;
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(LV.every((x,k)=>x.h||S.done[k]))h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
-h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
+h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" onclick="dFlagSet(null)" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
 $("app").innerHTML=h}
 function start(i){if(S.done[i])return;if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
+if(!(matOk()&&tutOk())){introNext();return}
+if(gateOn()&&!S.cdOk){siap(i);return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
 S.base=LV.reduce((t,_,k)=>t+(k!==i&&S.done[k]?S.done[k].pts:0),0);S.score=S.base;S.playing=true;S.locked=true;S.ansd=false;S.note="";hud();pgSave(cur(0));sync("Level "+(i+1)+": mulai");LV[i].g?pzStart():LV[i].log?logQ():ques()}
 function ques(){
@@ -345,7 +362,39 @@ function enc(o){const j=JSON.stringify(o);return "PDK."+btoa(unescape(encodeURIC
 function dec(c){try{const[p,b,h]=c.trim().split(".");const j=decodeURIComponent(escape(atob(b)));if(p!=="PDK"||hs(j)!==h)return null;return JSON.parse(j)}catch(e){return null}}
 function myScore(){return LV.reduce((t,_,i)=>t+(S.done[i]?S.done[i].pts:0),0)}
 function myCode(){return enc({n:S.nm,i:S.nim,r:ROOM.id,s:myScore(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),t:Date.now()})}
-function nameCard(){return `<div class="card"><h3>Siapa namamu?</h3><input ${S.locked?"readonly ":""}placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()"><input ${S.locked?"readonly ":""}placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()"><div id="msg" style="color:var(--bad);margin-top:8px"></div>${S.locked?`<p class="mut">Nama dan NIM terkunci di perangkat ini setelah kuis dimulai.</p>`:""}</div>`}
+/* ===== Panduan, siap, dan mulai serentak (mahasiswa) ===== */
+let GO=false,GOERR=false,goU=null;
+const tutOk=()=>{try{return localStorage.getItem("tut_"+ROOM.id)==="1"}catch(e){return !!S.tutDone}};
+function ov(h){let e=$("ov");if(!e){e=document.createElement("div");e.id="ov";e.className="ov";document.body.appendChild(e)}e.innerHTML="<div>"+h+"</div>"}
+function ovX(){const e=$("ov");if(e)e.remove()}
+function introNext(){if(!ROOM||S.locked||S.playing||S.done.some(Boolean)||!S.nm||!S.nim)return;
+  if(ROOM.mat&&ROOM.mat.length&&!matOk()){ov('<h2>📖 Langkah 1: Baca materi</h2><p>Sebelum kuis, kamu wajib membaca materi sampai selesai. Level kuis baru terbuka setelah materi selesai dibaca.</p><button class="btn" onclick="ovX();mat(0)">Baca materi ▶</button>');return}
+  if(!tutOk())tutorial()}
+function tutorial(){ov('<h2>🎮 Langkah 2: Cara bermain</h2><ol><li>Tiap soal punya <b>timer</b>. Jawab setepat dan <b>secepat</b> mungkin, makin cepat makin besar poinnya.</li><li>Jawaban benar beruntun menambah <b>streak</b>.</li><li>Level dimainkan <b>berurutan</b> dan tiap level hanya <b>sekali</b>, tidak bisa diulang.</li><li>Jangan keluar atau menutup halaman saat soal tampil, soal itu dihitung tidak terjawab.</li><li>Nama dan NIM terkunci setelah kuis dimulai.</li><li>Kuis dimulai <b>serentak</b>: ketuk <b>Main ▶</b> pada Level 1, lalu tunggu dosen menekan Mulai. Hitung mundur 3-2-1 akan tampil.</li></ol><button class="btn" onclick="tutFin()">Mengerti, saya siap ▶</button>')}
+function tutFin(){S.tutDone=1;try{localStorage.setItem("tut_"+ROOM.id,"1")}catch(e){}ovX()}
+function gateOn(){return !!DB&&!GOERR&&!S.locked&&!S.done.some(Boolean)}
+function siap(i){S.rdy=i;sync("Siap, menunggu dosen");if(GO){cd(i);return}
+  ov('<h2>⏳ Menunggu dosen…</h2><p>Kamu sudah siap. Kuis dimulai serentak setelah dosen menekan tombol <b>Mulai</b>. Jangan tutup halaman ini.</p><div class="ks-bar"><i></i></div><button class="btn ghost" onclick="siapX()">Batal</button>')}
+function siapX(){S.rdy=null;S.cdRun=0;ovX();sync("Bergabung, belum mulai")}
+function cd(i){S.cdRun=1;let n=3;const t=()=>{if(S.rdy!==i){S.cdRun=0;return}
+  if(n<1){ovX();S.cdOk=1;S.rdy=null;S.cdRun=0;start(i);return}
+  ov('<div style="text-align:center"><p>Bersiap…</p><div style="font-size:5rem;font-weight:800">'+n+'</div></div>');n--;setTimeout(t,1000)};t()}
+function goListen(){if(!DB||DOSEN||!ROOM||goU)return;goU=1;
+  AUTHP.then(()=>DB.collection("kamar").doc(ROOM.id).onSnapshot(d=>{const x=d.data()||{};GO=x.go===true;if(GO&&S.rdy!=null&&!S.cdRun)cd(S.rdy)},()=>{GOERR=true;if(S.rdy!=null&&!S.cdRun)cd(S.rdy)})).catch(()=>{GOERR=true})}
+function jnTxt(){return S.jnOk===1?'<span style="color:var(--ok,#26890C)">✅ Kamu sudah bergabung. Dosen sudah melihat namamu.</span>':S.jnOk===2?'<span style="color:var(--bad)">⚠ Gagal bergabung. Periksa koneksi lalu ketuk Gabung lagi.</span>':''}
+function jnUi(t){const e=$("jn");if(e)e.innerHTML=t}
+function jnSch(){clearTimeout(jnT);S.jnOk=0;jnUi("");if(S.locked||!DB)return;if((S.nm||"").length>=2&&(S.nim||"").length>=6)jnT=setTimeout(joinRoom,1500)}
+function joinRoom(q){clearTimeout(jnT);if(S.locked||S.playing||S.done.some(Boolean))return;
+  if((S.nm||"").length<2||(S.nim||"").length<3){jnUi('<span style="color:var(--bad)">Isi nama dan NIM dulu.</span>');return}
+  if(!DB||!AUTHP){S.jnOk=2;jnUi(jnTxt());return}
+  const k=S.nm+"|"+S.nim;S.jnK=k;jnUi('<span class="mut">Bergabung…</span>');
+  Promise.resolve(sync("Bergabung, belum mulai")).then(ok=>{if(S.jnK!==k)return;S.jnOk=ok?1:2;jnUi(jnTxt());if(ok&&!q){S.i1=1;introNext()}})}
+const AVS=[["🦸 Pahlawan",["🦸‍♂️","🦸‍♀️","🦹","🥷","🧙‍♂️","🧚","🤺","🧛"]],["🐾 Hewan",["🐱","🐶","🦊","🐼","🦁","🐯","🐵","🐸","🐧","🦄","🐲","🐘","🐨","🐙"]],["🇮🇩 Nusantara",["🇮🇩","🦅","🦎","🦧","🐅","🦜","🎭","🥁","🌋","🎖️"]],["🎭 Karakter seru",["🤖","👽","👻","🎃","🦖","🧸","🤡","😎","🤠","🥳"]]];
+const DBS=[["pixel-art","Pixel"],["thumbs","Jempol"],["bottts","Robot"],["adventurer","Petualang"],["fun-emoji","Emoji seru"]],DBN=["Koko","Mika","Ravi","Sari","Bima","Nala"];
+function avH(a){a=String(a||"");const m=/^db:([a-z-]+):([A-Za-z]{1,20})$/.exec(a);return m?`<img class="avi" alt="" loading="lazy" src="https://api.dicebear.com/9.x/${m[1]}/svg?seed=${m[2]}">`:esc(a)}
+function avPick(b,a){if(S.locked)return;S.av=a;sv();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
+function avCard(){return DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
+function nameCard(){return `<div class="card"><h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> Siapa namamu?</h3><input ${S.locked?"readonly ":""}placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${S.locked?"readonly ":""}placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()"><div class="avt">Pilih avatarmu</div>${avCard()}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${S.locked?`<p class="mut">Nama dan NIM terkunci di perangkat ini setelah kuis dimulai.</p>`:`<div style="margin-top:8px"><button class="btn" onclick="joinRoom()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div>`}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
 function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
@@ -368,19 +417,49 @@ function dosen(){
   document.querySelector("main").style.maxWidth="1000px";document.querySelector(".top").style.display="none";
   if(!DB){$("app").innerHTML='<div class="card"><p>Isi konfigurasi Firebase di bagian atas file ini terlebih dahulu.</p></div>';return}
   const A=firebase.auth();
-  A.onAuthStateChanged(u=>{if(u)dListen();else{dStop();A.signInAnonymously().catch(e=>{dMsg="Login anonim gagal: "+e.code;dLogin()})}});
+  $("app").innerHTML='<div class="card center dl">Memeriksa sesi…</div>';
+  A.onAuthStateChanged(u=>{
+    if(!u){dStop();dAuthOk=false;dLogin();return}
+    if(dAuthOk)return;
+    if(dFlag()===u.uid){dAuthOk=true;dListen()}else dLogin()});
 }
-function dStop(){if(dUnsub){dUnsub();dUnsub=null}dDocs=[]}
-function dLogin(){$("app").innerHTML=`<div class="card" style="max-width:420px;margin:40px auto"><h2>Dasbor Dosen</h2><p>Masukkan PIN dosen untuk membuka rekap dan papan peringkat.</p><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button class="btn" onclick="dPin()">Buka dasbor</button><p style="color:var(--bad)">${esc(dMsg)}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`}
-async function dPin(){const v=$("pin").value.trim(),u=firebase.auth().currentUser;if(!v||!u)return;
-  try{await DB.collection("dosen").doc(u.uid).set({pin:v});dMsg="";dListen()}catch(e){dMsg="PIN salah atau belum diatur di Firestore.";dLogin()}}
-function dListen(){dStop();dMsg="";dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dDraw()},e=>{dStop();if(e.code==="permission-denied")dLogin();else{dMsg="Gagal membaca data: "+e.code;dDraw()}});dDraw()}
+let dGoM={},dGoU=null;
+function dStop(){if(dUnsub){dUnsub();dUnsub=null}if(dGoU){dGoU();dGoU=null}dDocs=[]}
+function dGoSet(v){const id=dRoom;DB.collection("kamar").doc(id).set(v?{go:true,gt:firebase.firestore.FieldValue.serverTimestamp(),sesi:Date.now()}:{go:false},{merge:true}).catch(e=>alert("Gagal mengubah status kuis: "+((e&&e.code)||"koneksi")))}
+function dMulai(){const rdy=dMerge().filter(d=>/^Siap/.test(d.prog)).length;if(!confirm("Mulai kuis sekarang untuk "+rdy+" mahasiswa yang sudah siap? Mahasiswa lain yang menekan siap sesudahnya langsung masuk hitung mundur."))return;dGoSet(1)}
+function dTutup(){if(confirm("Tutup kuis dan reset ke status menunggu? Mahasiswa yang belum mulai kembali harus menunggu tombol Mulai."))dGoSet(0)}
+function dCtl(r){const go=!!dGoM[dRoom],rdy=r.filter(d=>/^Siap/.test(d.prog)).length;
+  return `<div class="card"><h3>${go?"🟢 Kuis sedang berjalan":"🟡 Ruang tunggu"}</h3><p class="mut">${r.length} bergabung · ${go?"mahasiswa yang menekan siap langsung masuk hitung mundur 3-2-1.":rdy+" siap. Tekan Mulai agar semua mulai bersamaan."}</p>${go?'<button class="btn ghost" onclick="dTutup()">⏹ Tutup &amp; reset</button>':`<button class="btn" onclick="dMulai()">▶ Mulai kuis</button>`}</div>`}
+let dAuthOk=false,dBusy=false,dLast=0,dLive="off",dRetry=0,dRetryT=null;
+const dFlag=()=>{try{return sessionStorage.getItem("dosen_ok")}catch(e){return null}};
+function dFlagSet(v){try{v?sessionStorage.setItem("dosen_ok",v):sessionStorage.removeItem("dosen_ok")}catch(e){}}
+function dLogin(){dBusy=false;
+  $("app").innerHTML=`<div class="card dl pop"><div class="logo">🛡️</div><h2>Portal Dosen</h2><p class="mut">Masuk dengan PIN dosen untuk membuka rekap, papan peringkat, dan bank soal.</p><div class="dpw"><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan PIN">👁</button></div><button class="btn go" id="pinbtn" onclick="dPin()">Masuk ke dasbor</button><p id="pinmsg" style="color:var(--bad);font-weight:700;min-height:1.4em">${esc(dMsg)}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
+  setTimeout(()=>{const p=$("pin");if(p)p.focus()},50)}
+function dShowPin(b){const p=$("pin");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"👁":"🙈"}
+function dLogout(){dStop();clearTimeout(dRetryT);dAuthOk=false;dLive="off";dFlagSet(null);dMsg="";firebase.auth().signOut().then(dLogin,dLogin)}
+function dRefresh(){dListen();loadX(true).then(()=>dDraw())}
+async function dPin(){if(dBusy)return;const v=$("pin").value.trim(),m=$("pinmsg"),b=$("pinbtn");
+  if(!v){m.textContent="Isi PIN dulu.";return}
+  dBusy=true;b.disabled=true;b.textContent="Memeriksa…";m.textContent="";
+  try{const A=firebase.auth();let u=A.currentUser;if(!u)u=(await A.signInAnonymously()).user;
+    await DB.collection("dosen").doc(u.uid).set({pin:v});
+    await DB.collection("hasil").limit(1).get();
+    dFlagSet(u.uid);dAuthOk=true;dMsg="";dBusy=false;dListen()}
+  catch(e){dBusy=false;b.disabled=false;b.textContent="Masuk ke dasbor";m.textContent=e&&e.code==="permission-denied"?"PIN salah. Coba lagi.":"Gagal masuk: "+((e&&e.code)||"koneksi")}}
+function dListen(){dStop();clearTimeout(dRetryT);dMsg="";dLive="conn";
+  dGoU=DB.collection("kamar").onSnapshot(s=>{dGoM={};s.docs.forEach(d=>{dGoM[d.id]=d.data().go===true});dDraw()},()=>{});
+  dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dLive="on";dRetry=0;dLast=Date.now();dDraw()},e=>{dStop();
+    if(e.code==="permission-denied"){dAuthOk=false;dFlagSet(null);dMsg="Sesi ditolak. Masuk lagi dengan PIN dosen.";dLogin();return}
+    dLive="off";dMsg="Koneksi terputus ("+e.code+"). Menyambung ulang…";dDraw();
+    dRetryT=setTimeout(()=>{if(dAuthOk)dListen()},Math.min(15000,2000*(++dRetry)))});
+  dDraw()}
 function dMs(t){return t&&t.toMillis?t.toMillis():Date.now()}
 const dRid=d=>d.room||(ROOMS.some(r=>r.id==="pdk")?"pdk":(ROOMS[0]||{}).id||"");
 function dMerge(){const m={};
   dDocs.filter(d=>dRid(d)===dRoom).forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;
-    const o=m[k]||(m[k]={nama:d.nama,nim:k,skor:-1,l:RM().lv.map(()=>null),prog:"",t:0});
-    if(d.skor>o.skor){o.skor=d.skor;o.nama=d.nama}
+    const o=m[k]||(m[k]={nama:d.nama,av:"",nim:k,skor:-1,l:RM().lv.map(()=>null),prog:"",t:0});
+    if(d.skor>o.skor){o.skor=d.skor;o.nama=d.nama}if(d.av)o.av=d.av;
     (d.l||[]).forEach((x,i)=>{if(x!=null&&(o.l[i]==null||x>o.l[i]))o.l[i]=x});
     const t=dMs(d.t);if(t>=o.t){o.t=t;o.prog=d.prog}});
   return Object.values(m).sort((a,b)=>b.skor-a.skor)}
@@ -389,21 +468,23 @@ function dQr(){try{const q=qrcode(0,"M");q.addData(JOIN());q.make();return q.cre
 function dDraw(){const r=dMerge(),now=Date.now();
   let h=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ${dView==="rekap"?"on":""}" onclick="dView='rekap';dDraw()">Rekap</button><button class="btn ${dView==="board"?"on":""}" onclick="dView='board';dDraw()">Papan peringkat</button>`;
   if(dView==="board")h+=`<button class="btn ghost w" onclick="dAnon=!dAnon;dDraw()">${dAnon?"Tampilkan nama":"Samarkan nama"}</button><button class="btn ghost w" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Layar penuh</button>`;
-  h+=`<button class="btn ghost w" onclick="firebase.auth().signOut()">Keluar</button></div>`;
+  h+=`<button class="btn ghost w" onclick="dRefresh()">⟳ Muat ulang</button><button class="btn ghost w" onclick="dLogout()">Keluar</button></div>`;
+  h+=`<div class="stats"><div><b>${r.length}</b><span>Peserta</span></div><div><b>${r.filter(d=>now-d.t<60000).length}</b><span>Aktif</span></div><div><b>${r.length?Math.round(r.reduce((t,d)=>t+d.skor,0)/r.length):0}</b><span>Rata-rata skor</span></div><div class="${dLive}"><b>${dLive==="on"?"● Live":dLive==="conn"?"Menyambung…":"○ Putus"}</b><span>${dLast?"Update "+new Date(dLast).toLocaleTimeString("id-ID"):"Menunggu data"}</span></div></div>`;
   if(ROOMS.length>1)h+=`<div class="bar">${ROOMS.map((x,i)=>`<button class="btn ${x.id===dRoom?"on":"ghost w"}" onclick="dRoom=ROOMS[${i}].id;bkFresh=1;dDraw()">${x.ikon} ${esc(x.nama)}</button>`).join("")}</div>`;
+  if(RM())h+=dCtl(r);
   if(dMsg)h+=`<p class="err">${esc(dMsg)}</p>`;
   $("app").innerHTML=h+(dView==="board"?dBoard(r):dRekap(r,now))}
 function dRekap(r,now){
   const n=RM().lv.length,mx=rMax(RM());
   const tsv=["Nama\tNIM\t"+RM().lv.map((_,i)=>"L"+(i+1)).join("\t")+"\tSkor (maks "+mx+")"].concat(r.map(d=>[d.nama,d.nim,...d.l.map(x=>x==null?"":x),d.skor].join("\t"))).join("\n");
   return `<div class="card"><h2>${esc(RM().nama)}: rekap (${r.length} mahasiswa)</h2><p class="mut">Diperbarui otomatis. Satu NIM dihitung sekali dengan skor tertinggi. Persen = akurasi tiap level. Skor maksimal ${mx}.</p>`+
-  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${RM().lv.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="dReset()">Reset kamar ini</button></p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang mengirim skor di kamar ini.</p>${dOrphan()}`)+`</div>`}
+  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${RM().lv.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${d.av?avH(d.av)+" ":""}${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="dReset()">Reset kamar ini</button></p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang bergabung di kamar ini.</p>${dOrphan()}`)+`</div>`}
 function dOrphan(){if(!dDocs.length)return "";const c={};dDocs.forEach(d=>{const k=dRid(d)||"(kosong)";c[k]=(c[k]||0)+1});
   return `<p class="err">Di database ada ${dDocs.length} hasil, tetapi tidak ada yang cocok dengan kamar ini (id: <b>${esc(dRoom)}</b>). Id kamar pada hasil: ${Object.entries(c).map(([k,n])=>"<b>"+esc(k)+"</b> ("+n+")").join(", ")}. Kemungkinan id kamar berubah setelah impor ulang data-bawaan.json.</p>`}
 function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n=RM().lv.length;
-  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
+  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
 async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
-  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()}}
+  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()};dGoSet(0)}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
 
 /* ===== Pemuatan data kamar + level tambahan (Firestore koleksi "kamar" dan "soal") ===== */
@@ -459,11 +540,11 @@ function impCard(){
    +(dImp.rules?`<p class="mut">Tempel aturan ini di Firebase Console, Firestore, Rules (di dalam <b>match /documents</b>, bersama fungsi isDosen), lalu Publish:</p><textarea readonly rows="8" onclick="this.select()">${esc(RULES)}</textarea>`:"")}
 const _dDraw9=dDraw;dDraw=function(){
   if(ROOMS.length)return _dDraw9();
-  const bar=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ghost w" onclick="firebase.auth().signOut()">Keluar</button></div>`;
+  const bar=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ghost w" onclick="dLogout()">Keluar</button></div>`;
   $("app").innerHTML=bar+(kOk?`<div class="card ed"><h2>Belum ada kamar di Firebase</h2><p class="mut">Soal, materi, dan level disimpan di Firestore koleksi <b>kamar</b>, bukan di file HTML. Unggah satu kali untuk mengisinya.</p>${impCard()}</div>`
     :kErr==="permission-denied"?`<div class="card"><p>Firestore belum mengizinkan membaca koleksi kamar. Tempel aturan ini di Firebase Console, Firestore, Rules (di dalam <b>match /documents</b>, bersama fungsi isDosen), lalu Publish, kemudian muat ulang halaman.</p><textarea readonly rows="8" onclick="this.select()">${esc(RULES)}</textarea></div>`
     :`<div class="card"><p>Memuat data kamar…</p></div>`)};
-function bootFail(){$("app").innerHTML=`<div class="card" style="max-width:480px;margin:40px auto"><h2>Soal belum bisa dimuat</h2><p>${!DB?"Firebase belum terhubung, sedangkan soal disimpan di Firebase.":kOk?"Belum ada kamar kuis. Hubungi dosen.":kErr==="permission-denied"?"Aturan Firestore belum mengizinkan membaca kamar. Hubungi dosen.":"Periksa koneksi internet, lalu coba lagi."}</p><button class="btn" onclick="location.reload()">Coba lagi</button></div><p class="center"><a href="#dosen" style="color:#fff;opacity:.85">Dasbor dosen</a></p>`}
+function bootFail(){$("app").innerHTML=`<div class="card" style="max-width:480px;margin:40px auto"><h2>Soal belum bisa dimuat</h2><p>${!DB?"Firebase belum terhubung, sedangkan soal disimpan di Firebase.":kOk?"Belum ada kamar kuis. Hubungi dosen.":kErr==="permission-denied"?"Aturan Firestore belum mengizinkan membaca kamar. Hubungi dosen.":"Periksa koneksi internet, lalu coba lagi."}</p><button class="btn" onclick="location.reload()">Coba lagi</button></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p>`}
 
 /* ===== Bank soal (dosen): lihat dan edit semua level dan soal yang sudah ada ===== */
 let bk={room:"",lv:0,q:null,row:null,meta:false,nl:false,rules:false,f:{},f0:"",msg:"",bad:0,busy:false},bkFresh=0;
@@ -574,6 +655,7 @@ function dBank(){
   return h+impBox+`</div>`}
 const _dRk4=dRekap;dRekap=function(r,now){return dView==="bank"?dBank():_dRk4(r,now)};
 const _dDr4=dDraw;dDraw=function(){
+  if(ROOMS.length&&!ROOMS.some(r=>r.id===dRoom))dRoom=ROOMS[0].id;
   if(dView==="bank"){if(bk.room!==dRoom)bkReset();else if(!bkFresh&&$("bkroot"))return}
   bkFresh=0;_dDr4();
   const b=document.querySelector("#app .bar"),e=b&&Array.from(b.children).find(x=>x.textContent==="Review soal");
