@@ -222,6 +222,54 @@ a.btn{display:inline-block;text-decoration:none}
 .lg .rw{grid-template-columns:40px 1fr auto;font-size:1rem;margin-bottom:6px}
 @media (max-width:700px){.ln{grid-template-columns:104px 1fr}.lb.ul{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.hp,.kr .hp{animation:none}.pw{transition:none}}
+
+/* ===== Perbaikan tampilan mobile ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--bg2);overflow-x:hidden}
+body{background:transparent;overflow-x:hidden}
+/* background-attachment:fixed tidak didukung iOS Safari, jadi gradien dipasang lewat layer fixed */
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(160deg,var(--bg),var(--bg2));pointer-events:none}
+img,svg,video{max-width:100%}
+main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
+.card,.q,.res,.lg,.opt,.rq,.mt{overflow-wrap:anywhere}
+.opt{min-width:0}
+.pz{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pz>div{min-width:0}
+/* splash: kontainer tidak lagi melebar mengikuti isi, jadi judul/kartu/tombol tidak terpotong */
+.ks{min-height:72vh;min-height:72dvh;grid-template-columns:minmax(0,1fr);margin:0 -16px;padding:0 16px}
+.ks{-webkit-mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(transparent,#000 7%,#000 93%,transparent)}
+.ks-c{width:100%;min-width:0;box-sizing:border-box;padding:24px 0}
+.ks-t{gap:clamp(3px,1.2vw,6px);flex-wrap:nowrap;max-width:100%}
+.ks-t b{width:min(56px,calc((100vw - 92px)/7));height:auto;aspect-ratio:56/66;font-size:clamp(1.4rem,7vw,2.4rem);min-width:0}
+.ks-s{padding:0 4px;overflow-wrap:anywhere}
+.ks-card{display:block;box-sizing:border-box;width:100%;max-width:360px;margin:0 auto}
+.kj{width:100%;box-sizing:border-box}
+.kj .btn{flex:none;white-space:nowrap}
+.kj form>div,.kj div{min-width:0}
+.ov>div{max-height:86vh;max-height:86dvh}
+.pds{height:min(66vh,480px);height:min(66dvh,480px)}
+@media (max-width:700px){
+  input,textarea,select{font-size:16px}  /* cegah iOS zoom otomatis saat fokus */
+  .ed textarea{font-size:16px}
+  .bar h1{font-size:1.25rem}
+}
+@media (max-width:380px){
+  html,body{font-size:16px}
+  .opt{padding:14px 12px}
+  .card,.q{padding:16px}
+}
+/* petunjuk musik */
+.muhint{position:fixed;right:14px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:80;max-width:calc(100vw - 28px);background:rgba(255,255,255,.95);color:#1F1F2E;border-radius:12px;padding:8px 12px;font-size:.85rem;font-weight:700;box-shadow:0 3px 0 rgba(0,0,0,.25);animation:ksFade .4s ease both;pointer-events:none}
+.mubtn.wait{animation:ksPulse 1.8s ease-in-out infinite}
+/* notice "Ketuk hurufnya" di atas judul */
+.ks-note{position:relative;display:flex;align-items:center;gap:8px;width:fit-content;max-width:100%;margin:0 auto 20px;padding:8px 16px;background:#FFD23F;color:#1F1F2E;border-radius:999px;font-weight:700;font-size:.95rem;box-shadow:0 4px 0 rgba(0,0,0,.25);animation:ksNoteIn .6s cubic-bezier(.3,1.6,.5,1) 1.4s both,ksNoteBob 1.6s ease-in-out 2s infinite}
+.ks-note::after{content:"";position:absolute;left:50%;bottom:-6px;width:14px;height:14px;background:#FFD23F;border-radius:0 0 4px 0;transform:translateX(-50%) rotate(45deg)}
+.ks-note i{font-style:normal;display:inline-block;animation:ksPoint .7s ease-in-out infinite alternate}
+.ks-note.off{animation:ksNoteOut .3s ease forwards}
+@keyframes ksNoteIn{from{opacity:0;transform:translateY(-16px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes ksNoteBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes ksPoint{to{transform:translateY(5px)}}
+@keyframes ksNoteOut{to{opacity:0;transform:scale(.6)}}
+@media (prefers-reduced-motion:reduce){.ks-note,.ks-note i{animation:none}.ks-note.off{display:none}}
 </style>
 </head>
 <body>
@@ -362,14 +410,14 @@ async function kjGo(ev){if(ev)ev.preventDefault();const inp=$("kjc"),m=$("kjm");
   if(r){location.href="?kamar="+encodeURIComponent(r.id)}
   else m.textContent=(!DB||(!ROOMS.length&&!kOk))?"Belum bisa memeriksa kode. Periksa koneksi lalu coba lagi.":"Kode tidak ditemukan. Periksa lagi ejaannya.";
   return false}
-function ksHop(e){e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop");setTimeout(()=>e.classList.remove("hop"),650)}
+function ksHop(e){const n=document.querySelector(".ks-note");if(n&&!n.classList.contains("off")){n.classList.add("off");setTimeout(()=>n.remove(),350)}e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop");setTimeout(()=>e.classList.remove("hop"),650)}
 function pick(){stop();S.playing=false;
 const tp=document.querySelector(".top");if(tp)tp.style.display="none";
 const gl=["▲","◆","●"],bg=Array.from({length:14},(_,i)=>`<span style="--x:${(i*7+3)%94}%;--s:${22+(i*13)%34}px;--dur:${9+(i*5)%8}s;--d:-${(i*3)%11}s">${gl[i%3]}</span>`).join("");
 const tl=[..."KuisKuy"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${c}</b>`).join("");
 const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:36},(_,i)=>`<i style="--x:${(i*29)%100}%;--w:${6+(i*3)%7}px;--c:${cc[i%5]};--t:${2.6+(i%5)*.45}s;--d:${(i%9)*.12+.3}s;--dx:${(i%2?1:-1)*(20+(i*11)%60)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
 const st=Array.from({length:9},(_,i)=>`<em style="--x:${(i*37+8)%92}%;--y:${(i*23+6)%80}%;--s:${12+(i*5)%14}px;--d:${(i%5)*.45}s">✦</em>`).join("");
-$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><form class="kj" onsubmit="return kjGo(event)"><p>atau masukkan kode join</p><div style="display:flex;gap:8px"><input id="kjc" placeholder="KODE" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kode join kuis"><button class="btn" type="submit">Masuk ▶</button></div><div class="kjm" id="kjm" role="status"></div></form><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
+$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><div class="ks-note" role="note"><i aria-hidden="true">👇</i>Ketuk hurufnya, coba!</div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><form class="kj" onsubmit="return kjGo(event)"><p>atau masukkan kode join</p><div style="display:flex;gap:8px"><input id="kjc" placeholder="KODE" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kode join kuis"><button class="btn" type="submit">Masuk ▶</button></div><div class="kjm" id="kjm" role="status"></div></form><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div></div></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
 const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
 function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
@@ -886,11 +934,24 @@ function muPodium(){muHalt();muStart();const t0=MU.ctx.currentTime+.1;
   [72,76,79,84].forEach(n=>muTone(mF(n),t0+7.2,1.6,"triangle",.14));
   muRun(MT.win,t0+8.8);MU.cur="podium"}
 function music(n){MU.want=n;if(!MU.ok)return;if(!n){muHalt();return}if(MU.cur===n)return;n==="podium"?muPodium():muPlay(n)}
-function muUnlock(){const c=muCtx();if(!c)return;if(c.resume)c.resume();MU.ok=true;["pointerdown","keydown","touchend"].forEach(e=>removeEventListener(e,muUnlock,true));music(MU.want)}
-["pointerdown","keydown","touchend"].forEach(e=>addEventListener(e,muUnlock,true));
+MU.evs=["pointerup","touchend","click","keydown"];
+function muHint(on){let h=$("muhint");const b=$("mubtn");if(b)b.classList.toggle("wait",!!on);
+  if(!on){if(h)h.remove();return}
+  if(!h){document.body.insertAdjacentHTML("beforeend",'<div id="muhint" class="muhint" role="status">Ketuk layar untuk menyalakan musik 🎵</div>');h=$("muhint");setTimeout(()=>{const x=$("muhint");if(x)x.remove()},8000)}}
+function muReady(){const c=MU.ctx;if(!c||c.state!=="running"||MU.ok)return;MU.ok=true;MU.evs.forEach(e=>removeEventListener(e,muUnlock,true));muHint(false);music(MU.want)}
+function muUnlock(){const c=muCtx();if(!c)return;
+  /* iOS: putar buffer kosong di dalam gestur agar audio benar-benar terbuka */
+  try{const s=c.createBufferSource();s.buffer=c.createBuffer(1,1,22050);s.connect(c.destination);s.start(0)}catch(e){}
+  const p=c.resume&&c.resume();if(p&&p.then)p.then(muReady,()=>{});muReady()}
+/* listener hanya dilepas setelah AudioContext benar-benar "running" (sebelumnya dilepas pada sentuhan pertama walau audio masih terkunci) */
+MU.evs.forEach(e=>addEventListener(e,muUnlock,true));
+/* coba langsung saat halaman dibuka: berhasil di browser yang mengizinkan, jika tidak akan menunggu ketukan pertama */
+try{const c=muCtx();if(c){c.onstatechange=muReady;const p=c.resume&&c.resume();if(p&&p.then)p.then(muReady,()=>{});
+  setTimeout(()=>{if(!MU.ok&&MU.on)muHint(true)},600)}}catch(e){}
+addEventListener("pageshow",e=>{if(e.persisted&&MU.ctx&&MU.ctx.state!=="running")MU.ctx.resume().then(muReady,()=>{})});
 function muBtn(){const b=$("mubtn");if(b){b.textContent=MU.on?"🔊":"🔇";b.setAttribute("aria-label",MU.on?"Matikan musik":"Nyalakan musik")}}
-function muTog(){MU.on=!MU.on;try{localStorage.setItem("musik",MU.on?"1":"0")}catch(e){}muBtn();if(MU.mg)MU.mg.gain.setTargetAtTime(MU.on?.5:0,MU.ctx.currentTime,.05)}
-document.addEventListener("visibilitychange",()=>{if(!MU.ctx)return;if(document.hidden)MU.ctx.suspend();else MU.ctx.resume()});
+function muTog(){MU.on=!MU.on;try{localStorage.setItem("musik",MU.on?"1":"0")}catch(e){}muBtn();if(MU.on&&MU.ctx&&MU.ctx.state!=="running")MU.ctx.resume().then(muReady,()=>{});if(!MU.on)muHint(false);if(MU.mg)MU.mg.gain.setTargetAtTime(MU.on?.5:0,MU.ctx.currentTime,.05)}
+document.addEventListener("visibilitychange",()=>{if(!MU.ctx)return;if(document.hidden){if(MU.ok)MU.ctx.suspend()}else{const p=MU.ctx.resume();if(p&&p.then)p.then(muReady,()=>{})}});
 document.body.insertAdjacentHTML("beforeend",'<button id="mubtn" class="mubtn" type="button" onclick="muTog()"></button>');muBtn();
 /* Pemicu musik: pembuka (peta level, ruang tunggu), bermain (soal dan puzzle), podium (dosen) */
 const _muPick=pick;pick=function(){_muPick();music("lobby")};
