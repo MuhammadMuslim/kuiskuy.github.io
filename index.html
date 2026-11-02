@@ -159,6 +159,35 @@ a.btn{display:inline-block;text-decoration:none}
 .stats b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}.stats span{font-size:.8rem;opacity:.85}
 .stats .on b{color:#8CF08C}.stats .off b{color:#FFB3C0}
 @media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
+/* ===== Tema papan peringkat ===== */
+.tmb{margin:0 0 14px}.tmb span{font-weight:700;margin-right:4px}
+.ln{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;margin-bottom:8px}
+.ln .nm{line-height:1.2;min-width:0}.ln .nm b{display:block;font-family:"Bricolage Grotesque",sans-serif;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ln .nm small{opacity:.8}
+.rt{position:relative;height:60px;border-radius:12px;overflow:hidden}
+.rt::after{content:"🏁";position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:1.6rem}
+.rt.kd{background:repeating-linear-gradient(90deg,#6aa33a 0 36px,#5e9532 36px 72px)}
+.rt.kr{background:linear-gradient(#9fd7ff 0 22%,#6fb23f 22%)}
+.rt.kr::before{content:"";position:absolute;left:0;right:0;top:0;height:10px;background:repeating-linear-gradient(90deg,#e21b3c 0 14px,#fff 14px 28px)}
+.rt.rk{background:radial-gradient(#fff 1px,transparent 1.5px) 0 0/38px 27px,linear-gradient(90deg,#0d1b4c,#2a1263)}
+.pw{position:absolute;transform:translate(-50%,-50%);transition:left .9s ease,top .9s ease}
+.hp{display:block;font-size:2rem;line-height:1;animation:tbob .45s ease-in-out infinite alternate}
+.tg{position:absolute;left:-6px;top:-14px;width:1.6em;height:1.6em;display:grid;place-items:center;border-radius:50%;background:#fff;color:#1F1F2E;font-size:.8rem;font-style:normal;font-weight:700;overflow:hidden}
+.tg .avi{width:100%;height:100%;vertical-align:0}
+.kr .tg{left:50%;top:-20px;transform:translateX(-50%)}
+.kr .hp{animation:thop .6s ease-in-out infinite alternate}
+.sk{display:block;width:34px;height:30px;margin:6px auto 0;background:#b98b52;clip-path:polygon(12% 0,88% 0,100% 100%,0 100%)}
+@keyframes tbob{to{transform:translateY(-4px)}}@keyframes thop{to{transform:translateY(-12px)}}
+.lb.ul{grid-template-columns:1fr 290px}
+.sl{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;background:#fff}
+.sg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(10,1fr);grid-template-rows:repeat(10,1fr)}
+.sg i{font-style:normal;font-size:clamp(.5rem,1.4vw,.7rem);color:#6B6B80;padding:2px 3px}
+.sl svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.pw.sp{width:7%;aspect-ratio:1}
+.pp{width:100%;height:100%;border:3px solid;border-radius:50%;background:#fff;color:#1F1F2E;display:grid;place-items:center;overflow:hidden;font-size:clamp(.6rem,2vw,1.1rem);font-weight:700;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.pp .avi{width:100%;height:100%;vertical-align:0}
+.lg .rw{grid-template-columns:40px 1fr auto;font-size:1rem;margin-bottom:6px}
+@media (max-width:700px){.ln{grid-template-columns:104px 1fr}.lb.ul{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.hp,.kr .hp{animation:none}.pw{transition:none}}
 </style>
 </head>
 <body>
@@ -720,6 +749,41 @@ function lvHide(){const rm=RM(),gi=bkGi(),l=rm.lv[gi];if(!l.h&&rm.lv.filter(x=>!
 const _dBk=dBank;dBank=function(){const rm=RM();if(!rm||!DB)return _dBk();const gi=bkGi(),l=rm.lv[gi],c=(l?lvCard(l,gi):"")+pzCard(rm);
   if(l&&l.g)return `<div class="card ed" id="bkroot"><h2>${esc(rm.nama)}: bank soal</h2><div class="rv-f">${rm.lv.map((x,i)=>`<button class="btn ${i===gi?"":"ghost"}" onclick="bkPick(${i})">L${i+1}${x.h?" 🙈":""}</button>`).join("")}</div>${bk.msg?`<p class="${bk.bad?"":"live"}" style="${bk.bad?"color:var(--bad);font-weight:700":""}">${esc(bk.msg)}</p>`:""}<p><b>${l.n}</b> · ${PZ[l.g]?PZ[l.g][1]:"Puzzle"}, ${l.items.length} item</p>${l.items.map((x,i)=>`<div class="rq"><b>${i+1}.</b> ${Array.isArray(x)?esc(x[0])+" → "+esc(x[1]):esc(x)}</div>`).join("")}<button class="btn ghost" onclick="bkDelLv()">Hapus level</button></div>`+c;
   return _dBk()+c};
+
+/* ===== Tema papan peringkat dosen: default, ular tangga, balapan (kuda, karung, roket) ===== */
+const TM={default:["🏆","Default"],ular:["🐍","Ular tangga"],kuda:["🐎","Balapan kuda"],karung:["🎒","Balapan karung"],roket:["🚀","Balapan roket"]};
+const LN={kuda:{c:"kd",e:"🐎"},karung:{c:"kr",e:'<i class="sk"></i>'},roket:{c:"rk",e:'<span style="display:inline-block;transform:rotate(45deg)">🚀</span>'}};
+const COL=["#FFD23F","#C0C0C0","#CD7F32","#E21B3C","#1368CE","#26890C","#FF7F50","#8E44AD","#16A085","#E91E63"],MEDAL=["🥇","🥈","🥉"];
+let dTema="default";try{dTema=localStorage.getItem("tema_papan")||"default"}catch(e){}
+const TP={};
+function dTemaSet(k){dTema=k;try{localStorage.setItem("tema_papan",k)}catch(e){}dDraw()}
+function tPos(nim,x,y,z,x0,y0){const k=dTema+"|"+dRoom+"|"+nim,o=TP[k]||{x:x0,y:y0};TP[k]={x,y};return `style="left:${o.x}%;top:${o.y}%;z-index:${z}" data-x="${x}" data-y="${y}"`}
+function dTween(){const e=document.querySelectorAll("#app .pw[data-x]");if(!e.length)return;void document.body.offsetWidth;e.forEach(x=>{x.style.left=x.dataset.x+"%";x.style.top=x.dataset.y+"%"})}
+const _dD2=dDraw;dDraw=function(){_dD2();dTween()};
+const tNm=d=>esc(dAnon?dIni(d.nama):d.nama),tBd=d=>d.av?avH(d.av):esc(dIni(d.nama).slice(0,2)),tP=d=>Math.min(1,Math.max(0,d.skor/Math.max(rMax(RM()),1)));
+const tQr=r=>`<div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div>`;
+function tLane(r){const c=LN[dTema],top=r.slice(0,10);
+  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2><p style="opacity:.85;margin:0 0 10px">Garis finis = skor maksimal (${rMax(RM())}). Makin tinggi skor, makin dekat ke finis.</p>${top.length?top.map((d,i)=>`<div class="ln"><div class="nm"><b>${i<3?MEDAL[i]:(i+1)+"."} ${tNm(d)}</b><small>${d.skor} poin</small></div><div class="rt ${c.c}"><div class="pw" ${tPos(d.nim,5+tP(d)*84,50,20-i,5,50)}><i class="tg">${tBd(d)}</i><span class="hp">${c.e}</span></div></div></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div>${tQr(r)}</div>`}
+const cc=n=>{const q=Math.floor((n-1)/10);let c=(n-1)%10;if(q%2)c=9-c;return[c*10+5,(9-q)*10+5]};
+const LAD=[[3,22],[11,42],[34,55],[52,73],[67,88]],SNK=[[27,7],[48,26],[64,36],[91,53],[98,78]];
+function tDeco(){let s="";
+  LAD.forEach(([a,b])=>{const A=cc(a),B=cc(b),dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L,px=-uy*1.3,py=ux*1.3;
+    s+=`<path d="M${A[0]+px} ${A[1]+py}L${B[0]+px} ${B[1]+py}M${A[0]-px} ${A[1]-py}L${B[0]-px} ${B[1]-py}" stroke="#8A5A2B" stroke-width=".9" fill="none"/>`;
+    for(let t=3;t<L;t+=4.5)s+=`<path d="M${A[0]+ux*t+px} ${A[1]+uy*t+py}L${A[0]+ux*t-px} ${A[1]+uy*t-py}" stroke="#A9742F" stroke-width=".7"/>`});
+  SNK.forEach(([h,t],k)=>{const H=cc(h),T=cc(t),dx=T[0]-H[0],dy=T[1]-H[1],L=Math.hypot(dx,dy),nx=-dy/L*7,ny=dx/L*7,g=k%2?"#2E9B4F":"#D9534F";
+    s+=`<path d="M${H[0]} ${H[1]}C${H[0]+dx*.3+nx} ${H[1]+dy*.3+ny} ${H[0]+dx*.7-nx} ${H[1]+dy*.7-ny} ${T[0]} ${T[1]}" stroke="${g}" stroke-width="2" stroke-linecap="round" fill="none" opacity=".85"/><circle cx="${H[0]}" cy="${H[1]}" r="2.2" fill="${g}"/>`});
+  return s}
+function tUlar(r){const top=r.slice(0,10);let cells="";
+  for(let q=9;q>=0;q--)for(let c=0;c<10;c++){const k=q*10+(q%2?10-c:c+1);cells+=`<i style="background:${k===1?"#9BE29B":k===100?"#FFD23F":(q+c)%2?"#FFF3C4":"#CDEBFF"}">${k===100?"🏁":k}</i>`}
+  const pw=top.map((d,i)=>{const n=1+Math.round(tP(d)*99),p=cc(n),x=p[0]+((i*7)%5-2)*.9,y=p[1]+((i*3)%5-2)*.9,s=cc(1);
+    return `<div class="pw sp" ${tPos(d.nim,x,y,20-i,s[0],s[1])}><div class="pp" style="border-color:${COL[i]}">${tBd(d)}</div></div>`}).join("");
+  const lg=top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?MEDAL[i]:i+1}</div><div><i style="color:${COL[i]};font-style:normal">●</i> ${tNm(d)}<small>kotak ${1+Math.round(tP(d)*99)}</small></div><b>${d.skor}</b></div>`).join("");
+  return `<div class="lb ul"><div><h2>${esc(RM().nama)}</h2><p style="opacity:.85;margin:0 0 10px">Kotak 100 = skor maksimal (${rMax(RM())}). Posisi bidak mengikuti skor.</p><div class="sl"><div class="sg">${cells}</div><svg viewBox="0 0 100 100" aria-hidden="true">${tDeco()}</svg>${pw}</div></div><div><div class="lg">${lg||'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div>${tQr(r)}</div></div>`}
+const _dB=dBoard;
+dBoard=function(r){
+  const pk=`<div class="bar tmb"><span>Tema papan:</span>${Object.keys(TM).map(k=>`<button class="btn ${dTema===k?"on":"ghost w"}" onclick="dTemaSet('${k}')">${TM[k][0]} ${TM[k][1]}</button>`).join("")}</div>`;
+  if(!TM[dTema]||dTema==="default")return pk+_dB(r);
+  return pk+(dTema==="ular"?tUlar(r):tLane(r))};
 
 if(!DOSEN&&!ROOM_ID)pick();
 cloudInit();loadX().then(()=>{
