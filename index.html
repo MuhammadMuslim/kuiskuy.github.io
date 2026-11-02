@@ -146,6 +146,40 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .ks-hint{font-size:.85rem;opacity:.75;margin-top:14px;animation:ksFade .8s ease 2.3s both}
 .ks-go{display:inline-block;text-decoration:none;margin-top:18px;animation:ksFade .6s ease both,ksPulse 2.4s ease-in-out .6s infinite}
 .ks-dev{text-align:center;color:#fff;opacity:.8;font-size:.9rem;margin:6px 0 0;animation:ksFade .8s ease 2.3s both}
+.kj{max-width:360px;margin:18px auto 0;text-align:center;position:relative;z-index:3}
+.kj p{margin:0 0 8px;font-weight:700}
+.kj form{display:flex;gap:8px}
+.kj input{margin:0;flex:1;min-width:0;text-align:center;text-transform:uppercase;letter-spacing:.25em;font-weight:700;font-size:1.2rem}
+.kj .btn{margin-top:0;padding:12px 16px}
+.kj .kjm{color:#FFB3C0;min-height:1.3em;margin-top:8px;font-size:.92rem}
+.kcode{font-family:"Bricolage Grotesque",sans-serif;font-size:2.2rem;font-weight:800;letter-spacing:.2em;color:var(--pri);margin:4px 0}
+.qb .kcode{color:#46178F;font-size:1.8rem}
+/* ===== Podium akhir ===== */
+.pod{position:fixed;inset:0;z-index:70;background:radial-gradient(circle at 50% 0,#6A2BC4,#2D0C66 70%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;overflow:auto;text-align:center}
+.pod h2{font-size:clamp(1.8rem,5vw,2.8rem);animation:ksFade .8s ease both}
+.pod>p{margin:4px 0 0;opacity:.85;animation:ksFade .8s ease .2s both}
+.pds{display:flex;align-items:flex-end;justify-content:center;gap:clamp(8px,2vw,20px);width:min(780px,100%);height:min(66vh,480px);margin-top:18px}
+.pdc{flex:1;max-width:230px;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-width:0}
+.pdp{max-width:100%;margin-bottom:8px;opacity:0;transform:translateY(-40px) scale(.5);animation:pdIn .8s cubic-bezier(.3,1.6,.5,1) var(--pd) forwards}
+.pdp .av{font-size:clamp(2.2rem,8vw,3.6rem);line-height:1.1}
+.pdp .nm{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(1rem,3.4vw,1.5rem);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pdp .sc{font-weight:700;opacity:.9}
+.pdc.r1 .pdp .nm{font-size:clamp(1.2rem,4.2vw,1.9rem);color:#FFD23F}
+.pdc.r1 .pdp{position:relative;padding-top:clamp(2.4rem,8.5vw,4rem);animation:pdIn .9s cubic-bezier(.3,1.6,.5,1) var(--pd) forwards,pdGlow 2s ease-in-out 7.6s infinite}
+.crown{position:absolute;left:50%;top:0;font-size:clamp(2.2rem,8.5vw,3.8rem);line-height:1;opacity:0;transform:translate(-50%,-300px) rotate(-35deg) scale(1.8);animation:crownDrop 1.1s cubic-bezier(.3,1.4,.5,1) 6.4s forwards;z-index:2}
+.flash{position:absolute;left:50%;top:clamp(1.2rem,4vw,2rem);width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:radial-gradient(circle,#fff 0,rgba(255,226,122,.9) 35%,rgba(255,210,63,0) 70%);opacity:0;pointer-events:none;animation:crownFlash 1.1s ease-out 7.3s forwards}
+@keyframes crownDrop{0%{opacity:0;transform:translate(-50%,-300px) rotate(-35deg) scale(1.8)}15%{opacity:1}70%{transform:translate(-50%,6px) rotate(6deg) scale(.95)}100%{opacity:1;transform:translate(-50%,0) rotate(0) scale(1)}}
+@keyframes crownFlash{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(34)}}
+.pdb{width:100%;height:0;border-radius:14px 14px 0 0;display:flex;justify-content:center;padding-top:10px;font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(2.2rem,8vw,3.8rem);color:#1F1F2E;box-shadow:0 -4px 0 rgba(255,255,255,.25) inset;animation:pdUp .9s cubic-bezier(.2,.9,.3,1) var(--bd) forwards}
+.pdp,.pdb{flex:none}
+.r1 .pdb{background:linear-gradient(#FFE27A,#E8A317);--h:54%}.r2 .pdb{background:linear-gradient(#E6EAF0,#A9B0BC);--h:38%}.r3 .pdb{background:linear-gradient(#E6A56B,#A65F25);--h:26%}
+@keyframes pdUp{from{height:0}to{height:var(--h)}}
+@keyframes pdIn{to{opacity:1;transform:none}}
+@keyframes pdGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,210,63,0))}50%{filter:drop-shadow(0 0 16px rgba(255,210,63,.9))}}
+.pod .bar{margin:16px 0 0;justify-content:center;animation:ksFade .6s ease 8.6s both}
+.pod .ks-cf i{animation-delay:calc(var(--d) + 7.3s)}
+.mubtn{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:80;width:48px;height:48px;border-radius:50%;border:0;font-size:1.4rem;cursor:pointer;background:rgba(255,255,255,.92);color:#1F1F2E;box-shadow:0 3px 0 rgba(0,0,0,.3)}
+.mubtn:focus-visible{outline:3px solid #FFD23F;outline-offset:2px}
 .ks-dev a{color:#FFD23F;font-weight:700;text-decoration:none}.ks-dev a:hover,.ks-dev a:focus-visible{text-decoration:underline}
 
 /* ===== Portal dosen: login dan status ===== */
@@ -210,7 +244,7 @@ window.FIREBASE_CONFIG={apiKey:"AIzaSyD3JcM9d1AF9OEhS9y5XG8qDPVxwpGD2zA",authDom
 const ROOMS=[];
 let kOk=false,kErr="",rmLock=false;
 function kRooms(docs){const out=[];docs.forEach(d=>{const x=d.data?d.data():d;
-  try{const r={id:d.id,nama:x.nama,ikon:x.ikon||"📘",ket:x.ket||"",sub:x.sub||"",ranks:x.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],mat:JSON.parse(x.mat||"[]"),lv:JSON.parse(x.lv||"[]"),u:x.urut||0};
+  try{const r={id:d.id,nama:x.nama,ikon:x.ikon||"📘",ket:x.ket||"",sub:x.sub||"",kode:x.kode||"",ranks:x.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],mat:JSON.parse(x.mat||"[]"),lv:JSON.parse(x.lv||"[]"),u:x.urut||0};
     if(r.nama&&Array.isArray(r.lv)&&r.lv.length)out.push(r)}catch(e){}});
   return out.sort((a,b)=>a.u-b.u)}
 function useCache(){try{const c=JSON.parse(localStorage.getItem("kamar_cache"));if(Array.isArray(c)&&c.length){ROOMS.length=0;ROOMS.push(...c);return true}}catch(e){}return false}
@@ -315,6 +349,19 @@ function hud(){$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":
 function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
+/* ===== Gabung lewat kode join ===== */
+const kNorm=s=>String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const kOf=r=>kNorm(r.kode||r.id);
+function kFind(c){c=kNorm(c);if(!c)return null;return ROOMS.find(r=>r.kode&&kNorm(r.kode)===c)||ROOMS.find(r=>kNorm(r.id)===c)||null}
+async function kjGo(ev){if(ev)ev.preventDefault();const inp=$("kjc"),m=$("kjm");if(!inp)return false;
+  const c=kNorm(inp.value);if(!c){m.textContent="Isi kode join dari dosenmu.";return false}
+  m.textContent="Memeriksa kode…";
+  let r=kFind(c);
+  if(!r&&DB){try{await loadX()}catch(e){}r=kFind(c)}
+  if(!r&&!ROOMS.length&&useCache()){mergeX([]);r=kFind(c)}
+  if(r){location.href="?kamar="+encodeURIComponent(r.id)}
+  else m.textContent=(!DB||(!ROOMS.length&&!kOk))?"Belum bisa memeriksa kode. Periksa koneksi lalu coba lagi.":"Kode tidak ditemukan. Periksa lagi ejaannya.";
+  return false}
 function ksHop(e){e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop");setTimeout(()=>e.classList.remove("hop"),650)}
 function pick(){stop();S.playing=false;
 const tp=document.querySelector(".top");if(tp)tp.style.display="none";
@@ -322,7 +369,7 @@ const gl=["▲","◆","●"],bg=Array.from({length:14},(_,i)=>`<span style="--x:
 const tl=[..."KuisKuy"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${c}</b>`).join("");
 const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:36},(_,i)=>`<i style="--x:${(i*29)%100}%;--w:${6+(i*3)%7}px;--c:${cc[i%5]};--t:${2.6+(i%5)*.45}s;--d:${(i%9)*.12+.3}s;--dx:${(i%2?1:-1)*(20+(i*11)%60)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
 const st=Array.from({length:9},(_,i)=>`<em style="--x:${(i*37+8)%92}%;--y:${(i*23+6)%80}%;--s:${12+(i*5)%14}px;--d:${(i%5)*.45}s">✦</em>`).join("");
-$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
+$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><form class="kj" onsubmit="return kjGo(event)"><p>atau masukkan kode join</p><div style="display:flex;gap:8px"><input id="kjc" placeholder="KODE" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kode join kuis"><button class="btn" type="submit">Masuk ▶</button></div><div class="kjm" id="kjm" role="status"></div></form><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div><p class="ks-hint">Ketuk hurufnya, coba! 👆</p></div></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
 const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
 function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
@@ -457,8 +504,26 @@ function dStop(){if(dUnsub){dUnsub();dUnsub=null}if(dGoU){dGoU();dGoU=null}dDocs
 function dGoSet(v){const id=dRoom;DB.collection("kamar").doc(id).set(v?{go:true,gt:firebase.firestore.FieldValue.serverTimestamp(),sesi:Date.now()}:{go:false},{merge:true}).catch(e=>alert("Gagal mengubah status kuis: "+((e&&e.code)||"koneksi")))}
 function dMulai(){const rdy=dMerge().filter(d=>/^Siap/.test(d.prog)).length;if(!confirm("Mulai kuis sekarang untuk "+rdy+" mahasiswa yang sudah siap? Mahasiswa lain yang menekan siap sesudahnya langsung masuk hitung mundur."))return;dGoSet(1)}
 function dTutup(){if(confirm("Tutup kuis dan reset ke status menunggu? Mahasiswa yang belum mulai kembali harus menunggu tombol Mulai."))dGoSet(0)}
+/* ===== Podium: peringkat 3 naik dulu, lalu 2, terakhir juara 1 ===== */
+function dPodX(){const e=$("pod");if(e)e.remove();removeEventListener("keydown",dPodKey)}
+function dPodKey(ev){if(ev.key==="Escape")dPodX()}
+function dPodium(){const top=dMerge().slice(0,3);dPodX();
+  const el=document.createElement("div");el.id="pod";el.className="pod";el.setAttribute("role","dialog");el.setAttribute("aria-label","Podium juara");
+  const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:60},(_,i)=>`<i style="--x:${(i*17)%100}%;--w:${6+(i*3)%8}px;--c:${cc[i%5]};--t:${2.8+(i%5)*.5}s;--d:${(i%12)*.1}s;--dx:${(i%2?1:-1)*(20+(i*11)%80)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
+  const delay={0:4.3,1:2.3,2:.5};
+  const col=i=>{const d=top[i];if(!d)return "";const nm=esc(dAnon?dIni(d.nama):d.nama),bd=d.av?avH(d.av):"🙂",pd=delay[i]+.7;
+    return `<div class="pdc r${i+1}"><div class="pdp" style="--pd:${pd}s">${i===0?'<div class="crown" aria-hidden="true">👑</div><div class="flash" aria-hidden="true"></div>':""}<div class="av">${bd}</div><div class="nm">${nm}</div><div class="sc">${d.skor} poin</div></div><div class="pdb" style="--bd:${delay[i]}s">${i+1}</div></div>`};
+  el.innerHTML=top.length?`<h2>🏆 Podium Juara</h2><p>${esc(RM().nama)}</p><div class="pds">${[1,0,2].map(col).join("")}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="bar"><button class="btn ghost w" onclick="dPodium()">↻ Putar ulang</button><button class="btn" onclick="dPodX()">Tutup</button></div>`
+    :`<h2>Belum ada peserta</h2><div class="bar" style="animation:none"><button class="btn" onclick="dPodX()">Tutup</button></div>`;
+  document.body.appendChild(el);addEventListener("keydown",dPodKey);el.querySelector(".btn:last-child").focus()}
+const dKode=()=>{const r=RM();return r?kOf(r):""};
+async function dKodeBaru(){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";
+  do{c=Array.from({length:6},()=>A[Math.random()*A.length|0]).join("")}while(ROOMS.some(r=>kOf(r)===c));
+  if(!confirm("Buat kode join baru? Kode lama tidak berlaku lagi untuk mahasiswa yang belum bergabung."))return;
+  try{await DB.collection("kamar").doc(dRoom).set({kode:c},{merge:true});await loadX(true);dDraw()}
+  catch(e){alert("Gagal menyimpan kode: "+((e&&e.code)||"koneksi"))}}
 function dCtl(r){const go=!!dGoM[dRoom],rdy=r.filter(d=>/^Siap/.test(d.prog)).length;
-  return `<div class="card"><h3>${go?"🟢 Kuis sedang berjalan":"🟡 Ruang tunggu"}</h3><p class="mut">${r.length} bergabung · ${go?"mahasiswa yang menekan siap langsung masuk hitung mundur 3-2-1.":rdy+" siap. Tekan Mulai agar semua mulai bersamaan."}</p>${go?'<button class="btn ghost" onclick="dTutup()">⏹ Tutup &amp; reset</button>':`<button class="btn" onclick="dMulai()">▶ Mulai kuis</button>`}</div>`}
+  return `<div class="card center"><b>Kode join</b><div class="kcode">${esc(dKode())}</div><p class="mut" style="margin:0">Mahasiswa bisa memindai QR atau memasukkan kode ini di halaman awal.</p><button class="btn ghost" onclick="dKodeBaru()">🔄 Buat kode baru</button></div><div class="card"><h3>${go?"🟢 Kuis sedang berjalan":"🟡 Ruang tunggu"}</h3><p class="mut">${r.length} bergabung · ${go?"mahasiswa yang menekan siap langsung masuk hitung mundur 3-2-1.":rdy+" siap. Tekan Mulai agar semua mulai bersamaan."}</p>${go?'<button class="btn ghost" onclick="dTutup()">⏹ Tutup &amp; reset</button>':`<button class="btn" onclick="dMulai()">▶ Mulai kuis</button>`} <button class="btn ghost" onclick="dPodium()">🏆 Podium</button></div>`}
 let dAuthOk=false,dBusy=false,dLast=0,dLive="off",dRetry=0,dRetryT=null;
 const dFlag=()=>{try{return sessionStorage.getItem("dosen_ok")}catch(e){return null}};
 function dFlagSet(v){try{v?sessionStorage.setItem("dosen_ok",v):sessionStorage.removeItem("dosen_ok")}catch(e){}}
@@ -496,7 +561,7 @@ function dIni(n){return String(n).split(/\s+/).filter(Boolean).map(w=>w[0]).join
 function dQr(){try{const q=qrcode(0,"M");q.addData(JOIN());q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ""}}
 function dDraw(){const r=dMerge(),now=Date.now();
   let h=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ${dView==="rekap"?"on":""}" onclick="dView='rekap';dDraw()">Rekap</button><button class="btn ${dView==="board"?"on":""}" onclick="dView='board';dDraw()">Papan peringkat</button>`;
-  if(dView==="board")h+=`<button class="btn ghost w" onclick="dAnon=!dAnon;dDraw()">${dAnon?"Tampilkan nama":"Samarkan nama"}</button><button class="btn ghost w" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Layar penuh</button>`;
+  if(dView==="board")h+=`<button class="btn ghost w" onclick="dAnon=!dAnon;dDraw()">${dAnon?"Tampilkan nama":"Samarkan nama"}</button><button class="btn ghost w" onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">Layar penuh</button><button class="btn ghost w" onclick="dPodium()">🏆 Podium</button>`;
   h+=`<button class="btn ghost w" onclick="dRefresh()">⟳ Muat ulang</button><button class="btn ghost w" onclick="dLogout()">Keluar</button></div>`;
   h+=`<div class="stats"><div><b>${r.length}</b><span>Peserta</span></div><div><b>${r.filter(d=>now-d.t<60000).length}</b><span>Aktif</span></div><div><b>${r.length?Math.round(r.reduce((t,d)=>t+d.skor,0)/r.length):0}</b><span>Rata-rata skor</span></div><div class="${dLive}"><b>${dLive==="on"?"● Live":dLive==="conn"?"Menyambung…":"○ Putus"}</b><span>${dLast?"Update "+new Date(dLast).toLocaleTimeString("id-ID"):"Menunggu data"}</span></div></div>`;
   if(ROOMS.length>1)h+=`<div class="bar">${ROOMS.map((x,i)=>`<button class="btn ${x.id===dRoom?"on":"ghost w"}" onclick="dRoom=ROOMS[${i}].id;bkFresh=1;dDraw()">${x.ikon} ${esc(x.nama)}</button>`).join("")}</div>`;
@@ -511,7 +576,7 @@ function dRekap(r,now){
 function dOrphan(){if(!dDocs.length)return "";const c={};dDocs.forEach(d=>{const k=dRid(d)||"(kosong)";c[k]=(c[k]||0)+1});
   return `<p class="err">Di database ada ${dDocs.length} hasil, tetapi tidak ada yang cocok dengan kamar ini (id: <b>${esc(dRoom)}</b>). Id kamar pada hasil: ${Object.entries(c).map(([k,n])=>"<b>"+esc(k)+"</b> ("+n+")").join(", ")}. Kemungkinan id kamar berubah setelah impor ulang data-bawaan.json.</p>`}
 function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n=RM().lv.length;
-  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
+  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
 async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
   const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()};dGoSet(0)}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
@@ -556,7 +621,7 @@ function impFile(inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new 
     bkFresh=1;dDraw()};rd.readAsText(f)}
 async function impGo(){if(!dImp.rooms||dImp.busy)return;const rooms=dImp.rooms;dImp.busy=true;dImp.msg="Mengunggah…";dImp.bad=0;bkFresh=1;dDraw();
   try{const b=DB.batch();
-    rooms.forEach((r,i)=>b.set(DB.collection("kamar").doc(r.id),{nama:r.nama,ikon:r.ikon||"📘",ket:r.ket||"",sub:r.sub||"",ranks:r.ranks||[],urut:i,mat:JSON.stringify(r.mat||[]),lv:JSON.stringify(r.lv),t:firebase.firestore.FieldValue.serverTimestamp()}));
+    rooms.forEach((r,i)=>b.set(DB.collection("kamar").doc(r.id),{nama:r.nama,ikon:r.ikon||"📘",ket:r.ket||"",sub:r.sub||"",ranks:r.ranks||[],urut:i,mat:JSON.stringify(r.mat||[]),lv:JSON.stringify(r.lv),t:firebase.firestore.FieldValue.serverTimestamp()},{merge:true}));
     await b.commit();
     dImp={rooms:null,name:"",msg:rooms.length+" kamar tersimpan di Firebase. Mahasiswa memuat versi terbaru saat membuka halaman kuis.",bad:0,busy:false,rules:false};
     await loadX(true);bkFresh=1;dDraw()}
@@ -761,7 +826,7 @@ function tPos(nim,x,y,z,x0,y0){const k=dTema+"|"+dRoom+"|"+nim,o=TP[k]||{x:x0,y:
 function dTween(){const e=document.querySelectorAll("#app .pw[data-x]");if(!e.length)return;void document.body.offsetWidth;e.forEach(x=>{x.style.left=x.dataset.x+"%";x.style.top=x.dataset.y+"%"})}
 const _dD2=dDraw;dDraw=function(){_dD2();dTween()};
 const tNm=d=>esc(dAnon?dIni(d.nama):d.nama),tBd=d=>d.av?avH(d.av):esc(dIni(d.nama).slice(0,2)),tP=d=>Math.min(1,Math.max(0,d.skor/Math.max(rMax(RM()),1)));
-const tQr=r=>`<div class="qb"><b>Gabung kuis</b>${dQr()}<div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div>`;
+const tQr=r=>`<div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div>`;
 function tLane(r){const c=LN[dTema],top=r.slice(0,10);
   return `<div class="lb"><div><h2>${esc(RM().nama)}</h2><p style="opacity:.85;margin:0 0 10px">Garis finis = skor maksimal (${rMax(RM())}). Makin tinggi skor, makin dekat ke finis.</p>${top.length?top.map((d,i)=>`<div class="ln"><div class="nm"><b>${i<3?MEDAL[i]:(i+1)+"."} ${tNm(d)}</b><small>${d.skor} poin</small></div><div class="rt ${c.c}"><div class="pw" ${tPos(d.nim,5+tP(d)*84,50,20-i,5,50)}><i class="tg">${tBd(d)}</i><span class="hp">${c.e}</span></div></div></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div>${tQr(r)}</div>`}
 const cc=n=>{const q=Math.floor((n-1)/10);let c=(n-1)%10;if(q%2)c=9-c;return[c*10+5,(9-q)*10+5]};
@@ -784,6 +849,59 @@ dBoard=function(r){
   const pk=`<div class="bar tmb"><span>Tema papan:</span>${Object.keys(TM).map(k=>`<button class="btn ${dTema===k?"on":"ghost w"}" onclick="dTemaSet('${k}')">${TM[k][0]} ${TM[k][1]}</button>`).join("")}</div>`;
   if(!TM[dTema]||dTema==="default")return pk+_dB(r);
   return pk+(dTema==="ular"?tUlar(r):tLane(r))};
+
+/* ===== Musik latar (dibuat langsung oleh browser lewat WebAudio, tanpa file audio) ===== */
+const MU={on:true,ok:false,ctx:null,mg:null,tg:null,nb:null,tm:null,cur:null,want:null};
+try{MU.on=localStorage.getItem("musik")!=="0"}catch(e){}
+const mF=n=>440*Math.pow(2,(n-69)/12);
+function muCtx(){if(MU.ctx)return MU.ctx;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+  try{const c=new C();MU.ctx=c;MU.mg=c.createGain();MU.mg.gain.value=MU.on?.5:0;MU.mg.connect(c.destination);
+    const b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;MU.nb=b;return c}catch(e){return null}}
+function muTone(f,t,d,ty,v){const c=MU.ctx,o=c.createOscillator(),g=c.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(MU.tg);o.start(t);o.stop(t+d+.05)}
+function muNoise(t,d,v,hp){const c=MU.ctx,s=c.createBufferSource(),g=c.createGain(),f=c.createBiquadFilter();s.buffer=MU.nb;f.type="highpass";f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(MU.tg);s.start(t);s.stop(t+d+.05)}
+function muKick(t,v){const c=MU.ctx,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g);g.connect(MU.tg);o.start(t);o.stop(t+.2)}
+/* bars: [nada bass, 8 nada melodi (0 = jeda)]; dr: 0 santai, 1 menegangkan, 2 meriah */
+const MT={
+ lobby:{bpm:116,lt:"triangle",lv:.22,dr:0,bars:[[48,[72,0,76,0,79,0,76,0]],[41,[77,0,81,0,79,0,76,0]],[43,[74,0,77,0,79,0,77,0]],[48,[76,0,72,0,67,0,0,0]]]},
+ play:{bpm:150,lt:"square",lv:.05,dr:1,bars:[[45,[69,72,76,72,69,72,76,72]],[43,[67,71,74,71,67,71,74,71]],[41,[65,69,72,69,65,69,72,69]],[40,[64,68,71,68,64,68,71,76]]]},
+ win:{bpm:128,lt:"square",lv:.07,dr:2,bars:[[48,[72,0,76,0,79,79,0,76]],[41,[77,0,81,77,84,0,81,0]],[43,[79,0,83,0,86,86,0,83]],[48,[84,0,0,79,84,0,0,0]]]}};
+function muStep(T,i,t){const sd=60/T.bpm/2,b=T.bars[(i>>3)%T.bars.length],k=i&7,n=b[1][k];
+  if(n)muTone(mF(n),t,sd*(T.dr===1?.9:1.7),T.lt,T.lv);
+  if(k%2===0)muTone(mF(b[0]+(k%4===2?(T.dr?12:7):0)),t,sd*1.8,"triangle",.2);
+  if(T.dr===0){if(k===0||k===4)muKick(t,.22);if(k%2)muNoise(t,.04,.03,7000)}
+  else if(T.dr===1){if(k===0||k===4)muKick(t,.3);if(k===2||k===6)muNoise(t,.1,.1,1800);muNoise(t,.03,.035,8000)}
+  else{if(k%2===0)muKick(t,.33);if(k===2||k===6)muNoise(t,.1,.12,1800);if(k%2)muNoise(t,.03,.04,8000)}}
+function muRun(T,start){const c=MU.ctx,sd=60/T.bpm/2;let i=0,nt=start;MU.tm=setInterval(()=>{while(nt<c.currentTime+.25){muStep(T,i,nt);nt+=sd;i++}},60)}
+function muStart(){const g=MU.ctx.createGain();g.connect(MU.mg);MU.tg=g}
+function muHalt(){if(MU.tm){clearInterval(MU.tm);MU.tm=null}const g=MU.tg;
+  if(g&&MU.ctx){const c=MU.ctx;try{g.gain.cancelScheduledValues(c.currentTime);g.gain.setValueAtTime(g.gain.value,c.currentTime);g.gain.linearRampToValueAtTime(0,c.currentTime+.4)}catch(e){}setTimeout(()=>{try{g.disconnect()}catch(e){}},700)}
+  MU.tg=null;MU.cur=null}
+function muPlay(n){muHalt();muStart();muRun(MT[n],MU.ctx.currentTime+.08);MU.cur=n}
+/* Podium: gulungan drum, tiga hentakan saat peringkat 3-2-1 muncul, fanfare saat mahkota mendarat, lalu lagu kemenangan */
+function muPodium(){muHalt();muStart();const t0=MU.ctx.currentTime+.1;
+  for(let t=0;t<6.3;){muNoise(t0+t,.07,.06+.16*(t/6.3),1500);t+=.3-.23*(t/6.3)}
+  [[1.2,[60,64]],[3,[64,67]],[5,[67,72]]].forEach(([t,ns])=>{muKick(t0+t,.5);ns.forEach(n=>muTone(mF(n),t0+t,.45,"square",.1))});
+  [[6.4,72,.16],[6.55,76,.16],[6.7,79,.16],[6.85,84,.4]].forEach(([t,n,d])=>muTone(mF(n),t0+t,d,"square",.1));
+  muKick(t0+7.2,.6);muNoise(t0+7.2,1.6,.3,3000);muTone(mF(36),t0+7.2,1.8,"triangle",.3);
+  [72,76,79,84].forEach(n=>muTone(mF(n),t0+7.2,1.6,"triangle",.14));
+  muRun(MT.win,t0+8.8);MU.cur="podium"}
+function music(n){MU.want=n;if(!MU.ok)return;if(!n){muHalt();return}if(MU.cur===n)return;n==="podium"?muPodium():muPlay(n)}
+function muUnlock(){const c=muCtx();if(!c)return;if(c.resume)c.resume();MU.ok=true;["pointerdown","keydown","touchend"].forEach(e=>removeEventListener(e,muUnlock,true));music(MU.want)}
+["pointerdown","keydown","touchend"].forEach(e=>addEventListener(e,muUnlock,true));
+function muBtn(){const b=$("mubtn");if(b){b.textContent=MU.on?"🔊":"🔇";b.setAttribute("aria-label",MU.on?"Matikan musik":"Nyalakan musik")}}
+function muTog(){MU.on=!MU.on;try{localStorage.setItem("musik",MU.on?"1":"0")}catch(e){}muBtn();if(MU.mg)MU.mg.gain.setTargetAtTime(MU.on?.5:0,MU.ctx.currentTime,.05)}
+document.addEventListener("visibilitychange",()=>{if(!MU.ctx)return;if(document.hidden)MU.ctx.suspend();else MU.ctx.resume()});
+document.body.insertAdjacentHTML("beforeend",'<button id="mubtn" class="mubtn" type="button" onclick="muTog()"></button>');muBtn();
+/* Pemicu musik: pembuka (peta level, ruang tunggu), bermain (soal dan puzzle), podium (dosen) */
+const _muPick=pick;pick=function(){_muPick();music("lobby")};
+const _muHome=home;home=function(){_muHome();if(!DOSEN)music("lobby")};
+const _muQues=ques;ques=function(){music("play");_muQues()};
+const _muLogQ=logQ;logQ=function(){music("play");_muLogQ()};
+const _muPz=pzStart;pzStart=function(){music("play");_muPz()};
+const _muEnd=endLv;endLv=function(){_muEnd();music("lobby")};
+const _muFin=fin;fin=function(){_muFin();music("win")};
+const _muPodX=dPodX;dPodX=function(){_muPodX();music(null)};
+const _muPod=dPodium;dPodium=function(){_muPod();music("podium")};
 
 if(!DOSEN&&!ROOM_ID)pick();
 cloudInit();loadX().then(()=>{
