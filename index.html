@@ -930,11 +930,12 @@ function muKick(t,v){const c=MU.ctx,o=c.createOscillator(),g=c.createGain();o.fr
 /* bars: [nada bass, 8 nada melodi (0 = jeda)]; dr: 0 santai, 1 menegangkan, 2 meriah */
 const MT={
  lobby:{bpm:116,lt:"triangle",lv:.22,dr:0,bars:[[48,[72,0,76,0,79,0,76,0]],[41,[77,0,81,0,79,0,76,0]],[43,[74,0,77,0,79,0,77,0]],[48,[76,0,72,0,67,0,0,0]]]},
- play:{bpm:150,lt:"square",lv:.05,dr:1,bars:[[45,[69,72,76,72,69,72,76,72]],[43,[67,71,74,71,67,71,74,71]],[41,[65,69,72,69,65,69,72,69]],[40,[64,68,71,68,64,68,71,76]]]},
+ play:{bpm:164,lt:"square",lv:.05,dr:1,pz:1,bars:[[45,[76,0,76,0,0,72,0,69]],[43,[74,0,74,0,0,71,0,67]],[41,[72,0,72,0,0,69,0,65]],[40,[71,0,71,0,68,0,71,76]]]},
  win:{bpm:128,lt:"square",lv:.07,dr:2,bars:[[48,[72,0,76,0,79,79,0,76]],[41,[77,0,81,77,84,0,81,0]],[43,[79,0,83,0,86,86,0,83]],[48,[84,0,0,79,84,0,0,0]]]}};
 function muStep(T,i,t){const sd=60/T.bpm/2,b=T.bars[(i>>3)%T.bars.length],k=i&7,n=b[1][k];
   if(n)muTone(mF(n),t,sd*(T.dr===1?.9:1.7),T.lt,T.lv);
-  if(k%2===0)muTone(mF(b[0]+(k%4===2?(T.dr?12:7):0)),t,sd*1.8,"triangle",.2);
+  if(T.pz)muTone(mF(b[0]+(k%2?12:0)),t,sd*.6,"triangle",.32);
+  else if(k%2===0)muTone(mF(b[0]+(k%4===2?(T.dr?12:7):0)),t,sd*1.8,"triangle",.2);
   if(T.dr===0){if(k===0||k===4)muKick(t,.22);if(k%2)muNoise(t,.04,.03,7000)}
   else if(T.dr===1){if(k===0||k===4)muKick(t,.3);if(k===2||k===6)muNoise(t,.1,.1,1800);muNoise(t,.03,.035,8000)}
   else{if(k%2===0)muKick(t,.33);if(k===2||k===6)muNoise(t,.1,.12,1800);if(k%2)muNoise(t,.03,.04,8000)}}
@@ -980,7 +981,9 @@ const _muLogQ=logQ;logQ=function(){music("play");_muLogQ()};
 const _muPz=pzStart;pzStart=function(){music("play");_muPz()};
 const _muEnd=endLv;endLv=function(){_muEnd();music("lobby")};
 const _muFin=fin;fin=function(){_muFin();music("win")};
-const _muPodX=dPodX;dPodX=function(){_muPodX();music(null)};
+const _muPodX=dPodX;dPodX=function(){_muPodX();music(DOSEN?"lobby":null)};
+const _muDosen=dosen;dosen=function(){_muDosen();music("lobby")};
+const _muDLogin=dLogin;dLogin=function(){_muDLogin();music("lobby")};
 const _muPod=dPodium;dPodium=function(){_muPod();music("podium")};
 
 /* ===== Kelola kamar: kuis baru, duplikat, ubah info, arsip, hapus, kelompok mata kuliah ===== */
@@ -1039,7 +1042,7 @@ async function rmDel(){const rm=RM();if(!rm||rm.x||rmUi.busy)return;
   catch(e){rmUi.busy=false;rmErr(e)}}
 function rmCard(rm){const u=rmUi,f=u.f||{},v=k=>esc(f[k]||""),x=!!rm.x;
   const mks=[...new Set(ROOMS.map(r=>r.mk).filter(Boolean))];
-  let h=`<div class="card ed" id="rmroot"><h2>Kelola kamar kuis</h2><p class="mut">Satu kamar = satu kuis, dengan kode join, papan skor, tombol Mulai, dan reset sendiri. Beberapa kuis di satu mata kuliah dibuat sebagai beberapa kamar yang diisi <b>Mata kuliah</b> sama; di dasbor mereka dikelompokkan dan rekapnya bisa digabung lewat tombol <b>Rekap mata kuliah</b>.</p>`;
+  let h=`<div class="card ed" id="rmroot"><h2>Kelola kamar kuis</h2><p class="mut">Satu kamar = satu kuis, dengan kode join, papan skor, tombol Mulai, dan reset sendiri. Satu mata kuliah bisa berisi banyak kuis: isi kolom <b>Mata kuliah</b> dengan nama yang sama. Di dasbor, pilih mata kuliah di baris atas, lalu kuis-kuisnya muncul di baris bawah. Rekap semua kuis dalam satu mata kuliah ada di tombol <b>Rekap mata kuliah</b>. Memindahkan kuis ke mata kuliah lain: <b>Ubah info kamar</b>, lalu ganti isian Mata kuliah.</p>`;
   if(u.msg)h+=`<p class="${u.bad?"":"live"}" style="${u.bad?"color:var(--bad);font-weight:700":""}">${esc(u.msg)}</p>`;
   if(u.rules)h+=`<p class="mut">Tempel aturan ini di Firebase Console, Firestore, Rules (di dalam <b>match /documents</b>, bersama fungsi isDosen), lalu Publish:</p><textarea readonly rows="8" onclick="this.select()">${esc(RULES)}</textarea>`;
   const opt=[0,1,2].map(j=>`<label><input type="radio" name="rma" value="${j}" ${String(f.a)===String(j)?"checked":""} aria-label="Jawaban benar ${"ABC"[j]}"><input type="text" id="rm_o${j}" placeholder="Opsi ${"ABC"[j]}" value="${v("o"+j)}"></label>`).join("");
@@ -1049,12 +1052,52 @@ function rmCard(rm){const u=rmUi,f=u.f||{},v=k=>esc(f[k]||""),x=!!rm.x;
   else h+=`<p><button class="btn" onclick="rmOpen('new')">＋ Kuis baru</button> <button class="btn ghost" onclick="rmDup()">Duplikat kamar ini</button>`+(x?`</p><p class="mut">Kamar ini berasal dari bank soal lama, jadi info, arsip, dan hapus tidak tersedia di sini.</p>`:` <button class="btn ghost" onclick="rmOpen('edit')">Ubah info kamar</button> <button class="btn ghost" onclick="rmArsip()">${rm.ar?"Aktifkan kembali":"Arsipkan"}</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="rmDel()">Hapus kamar</button></p>`);
   return h+`</div>`}
 const _dBk3=dBank;dBank=function(){const rm=RM();return _dBk3()+(rm&&DB?rmCard(rm):"")};
+/* ===== Dua tingkat: Mata kuliah > Kuis ===== */
+let mkKeys=[];
+let mkMenu=false;
 function dRoomBar(){
   const act=ROOMS.filter(r=>!r.ar||r.id===dRoom||rmUi.ar),nAr=ROOMS.filter(r=>r.ar).length,g=new Map();
   act.forEach(r=>{const k=r.mk||"";if(!g.has(k))g.set(k,[]);g.get(k).push(r)});
-  const named=[...g.keys()].some(k=>k);let h="";
-  g.forEach((rs,k)=>{h+=`<div class="bar">${named?`<b style="opacity:.9">📚 ${esc(k||"Tanpa mata kuliah")}</b>`:""}${rs.map(x=>`<button class="btn ${x.id===dRoom?"on":"ghost w"}" onclick="dRoom=ROOMS[${ROOMS.indexOf(x)}].id;bkFresh=1;dDraw()">${esc(x.ikon)} ${esc(x.nama)}${x.ar?" 🗄":""}</button>`).join("")}</div>`});
-  return h+`<div class="bar"><button class="btn ghost w" onclick="rmNewTop()">＋ Kuis baru</button>${nAr?`<button class="btn ghost w" onclick="rmUi.ar=!rmUi.ar;dDraw()">${rmUi.ar?"Sembunyikan":"Tampilkan"} arsip (${nAr})</button>`:""}</div>`}
+  mkKeys=[...g.keys()].sort((a,b)=>a===""?1:b===""?-1:0);
+  const cur=ROOMS.find(r=>r.id===dRoom),ck=cur?(cur.mk||""):(mkKeys[0]||""),rs=g.get(ck)||[];
+  const sel="padding:10px 12px;border-radius:12px;border:2px solid #fff;font-weight:700;background:#fff;color:#2D0C66;min-width:0;width:100%;max-width:100%";
+  const lb="display:flex;flex-direction:column;gap:4px;flex:1 1 230px;min-width:0;font-size:.8rem;font-weight:700;opacity:.95";
+  let h=`<div class="bar" style="align-items:flex-end"><label style="${lb}">📚 Mata kuliah<select style="${sel}" onchange="mkGo(this.selectedIndex)" aria-label="Pilih mata kuliah">${mkKeys.map(k=>`<option ${k===ck?"selected":""}>${esc(k||"Tanpa mata kuliah")} (${g.get(k).length} kuis)</option>`).join("")}</select></label>`+
+  `<label style="${lb}">📝 Kuis<select style="${sel}" onchange="dRoom=this.value;bkFresh=1;dDraw()" aria-label="Pilih kuis">${rs.map(x=>`<option value="${esc(x.id)}" ${x.id===dRoom?"selected":""}>${esc(x.ikon)} ${esc(x.nama)}${x.ar?" 🗄":""}</option>`).join("")}</select></label>`+
+  `<button class="btn ghost w" onclick="rmNewTop()">＋ Kuis baru</button></div>`;
+  h+=`<details class="mkmenu" style="margin:-4px 0 14px;color:#fff" ${mkMenu?"open":""} ontoggle="mkMenu=this.open"><summary style="cursor:pointer;font-weight:700;opacity:.9">⚙ Kelola mata kuliah</summary><div class="bar" style="margin:10px 0 0"><button class="btn ghost w" onclick="mkNew()">＋ Mata kuliah baru</button>${ck?`<button class="btn ghost w" onclick="mkRename()">✏ Ubah nama "${esc(ck)}"</button>`:""}<button class="btn ${dView==="mkfix"?"on":"ghost w"}" onclick="mkFixOpen()">🧹 Rapikan mata kuliah</button>${nAr?`<button class="btn ghost w" onclick="rmUi.ar=!rmUi.ar;dDraw()">${rmUi.ar?"Sembunyikan":"Tampilkan"} arsip (${nAr})</button>`:""}</div></details>`;
+  return h}
+function mkGo(i){const k=mkKeys[i];if(k===undefined)return;const r=ROOMS.find(x=>(x.mk||"")===k&&(!x.ar||rmUi.ar))||ROOMS.find(x=>(x.mk||"")===k);if(!r)return;dRoom=r.id;bkFresh=1;dDraw()}
+function mkNew(){dView="bank";rmOpen("new");rmUi.f.m="";rmUi.msg="Ketik nama mata kuliah baru di kolom Mata kuliah, lalu isi kuis pertamanya. Kuis berikutnya di mata kuliah ini tinggal ditambah lewat tombol Kuis baru.";rmUi.bad=0;rmGo();setTimeout(()=>{const e=$("rm_m");if(e)e.focus()},80)}
+async function mkRename(){const rm=RM(),k=rm&&rm.mk;if(!k||rmUi.busy)return;
+  const rs=ROOMS.filter(r=>r.mk===k&&!r.x);
+  const n=prompt("Nama baru untuk mata kuliah \""+k+"\" ("+rs.length+" kuis ikut berubah):",k);if(n===null)return;
+  const v=n.trim().slice(0,60);if(!v||v===k)return;
+  rmUi.busy=true;
+  try{for(let i=0;i<rs.length;i+=400){const b=DB.batch();rs.slice(i,i+400).forEach(r=>b.update(DB.collection("kamar").doc(r.id),{mk:v,t:firebase.firestore.FieldValue.serverTimestamp()}));await b.commit()}
+    await loadX(true);rmUi.busy=false;rmMsg("Nama mata kuliah diubah menjadi \""+v+"\".",0)}
+  catch(e){rmUi.busy=false;rmErr(e)}}
+/* ===== Rapikan mata kuliah: atur banyak kuis sekaligus ===== */
+let mkFix=null;
+function mkSug(r){if(r.mk)return r.mk;const n=r.nama||"";
+  if(/^kuis\s*\d+/i.test(n)||/\bRME\b/i.test(n))return "Manajemen Proyek RME";
+  return n}
+function mkFixOpen(){mkFix={v:{},msg:"",bad:0};ROOMS.filter(r=>!r.x&&!r.ar).forEach(r=>{mkFix.v[r.id]=mkSug(r)});dView="mkfix";dDraw()}
+function mkFixCard(){if(!mkFix)mkFixOpen();
+  const rs=ROOMS.filter(r=>!r.x&&!r.ar),mks=[...new Set(ROOMS.map(r=>r.mk).filter(Boolean))];
+  return `<div class="card ed"><h2>Rapikan mata kuliah</h2><p class="mut">Ketik nama mata kuliah untuk tiap kuis. Kuis dengan nama yang sama otomatis jadi satu mata kuliah. Isian sudah diisi usulan awal, silakan ubah sesukamu, lalu tekan Simpan semua.</p>`+
+  (mkFix.msg?`<p style="${mkFix.bad?"color:var(--bad);font-weight:700":"font-weight:700"}">${esc(mkFix.msg)}</p>`:"")+
+  `<datalist id="mfl">${mks.map(m=>`<option value="${esc(m)}">`).join("")}</datalist>`+
+  rs.map(r=>`<label style="display:flex;gap:8px;align-items:center;margin:6px 0"><span style="flex:1">${esc(r.ikon)} ${esc(r.nama)}</span><input type="text" list="mfl" maxlength="60" placeholder="Mata kuliah" value="${esc(mkFix.v[r.id]!==undefined?mkFix.v[r.id]:mkSug(r))}" oninput="mkFix.v['${r.id}']=this.value"></label>`).join("")+
+  `<p><button class="btn" onclick="mkFixSave()">Simpan semua</button> <button class="btn ghost" onclick="dView='rekap';dDraw()">Tutup</button></p></div>`}
+async function mkFixSave(){if(rmUi.busy||!mkFix)return;
+  const val=r=>(mkFix.v[r.id]!==undefined?mkFix.v[r.id]:mkSug(r)).trim().slice(0,60);
+  const ch=ROOMS.filter(r=>!r.x&&!r.ar&&val(r)!==(r.mk||""));
+  if(!ch.length){mkFix.msg="Tidak ada perubahan untuk disimpan.";mkFix.bad=0;return dDraw()}
+  rmUi.busy=true;
+  try{for(let i=0;i<ch.length;i+=400){const b=DB.batch();ch.slice(i,i+400).forEach(r=>b.update(DB.collection("kamar").doc(r.id),{mk:val(r),t:firebase.firestore.FieldValue.serverTimestamp()}));await b.commit()}
+    await loadX(true);rmUi.busy=false;mkFix={v:{},msg:ch.length+" kuis sudah dirapikan ke mata kuliahnya.",bad:0};dDraw()}
+  catch(e){rmUi.busy=false;mkFix.msg=e&&e.code==="permission-denied"?"Firestore menolak penyimpanan. Pasang aturan koleksi kamar lewat Bank soal, lalu coba lagi.":"Gagal menyimpan: "+((e&&e.code)||"koneksi");mkFix.bad=1;dDraw()}}
 /* Rekap gabungan semua kuis dalam satu mata kuliah */
 function dMk(){const rm=RM(),k=rm.mk||"",rs=ROOMS.filter(r=>k?r.mk===k:r.id===rm.id).filter(r=>!r.ar||r.id===rm.id||rmUi.ar),m={};
   rs.forEach((r,j)=>{dDocs.filter(d=>dRid(d)===r.id).forEach(d=>{const n=String(d.nim||"").trim();if(!n)return;const o=m[n]||(m[n]={nama:d.nama,nim:n,s:rs.map(()=>null)});if(o.s[j]==null||d.skor>o.s[j])o.s[j]=d.skor;if(d.nama)o.nama=d.nama})});
@@ -1064,6 +1107,7 @@ function dMk(){const rm=RM(),k=rm.mk||"",rs=ROOMS.filter(r=>k?r.mk===k:r.id===rm
   return `<div class="card"><h2>${esc(k||rm.nama)}: rekap mata kuliah (${rows.length} mahasiswa, ${rs.length} kuis)</h2><p class="mut">${k?"Menggabungkan semua kamar dengan mata kuliah yang sama. ":"Kamar ini belum punya mata kuliah, jadi hanya satu kuis yang tampil. Isi kolom Mata kuliah lewat Bank soal, Ubah info kamar. "}Tiap kuis memakai skor tertinggi per NIM. Total adalah jumlah skor semua kuis.</p>`+
   (rows.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${rs.map(r=>`<th>${esc(r.ikon)} ${esc(r.nama)}</th>`).join("")}<th>Total</th></tr>${rows.map((o,i)=>`<tr><td>${i+1}</td><td>${esc(o.nama)}</td><td>${esc(o.nim)}</td>${o.s.map(x=>`<td>${x==null?"–":x}</td>`).join("")}<td><b>${o.tot}</b></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tvm',this)">Salin untuk Excel</button></p><textarea id="tvm" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada hasil mahasiswa di kuis mana pun untuk mata kuliah ini.</p>`)+`</div>`}
 const _dRk5=dRekap;dRekap=function(r,now){return dView==="mk"?dMk():_dRk5(r,now)};
+const _dRk6=dRekap;dRekap=function(r,now){return dView==="mkfix"?mkFixCard():_dRk6(r,now)};
 const _dDr5=dDraw;dDraw=function(){_dDr5();
   const b=document.querySelector("#app .bar"),e=b&&Array.from(b.children).find(x=>x.textContent==="Rekap");
   if(e&&!Array.from(b.children).some(x=>x.textContent==="Rekap mata kuliah"))e.insertAdjacentHTML("afterend",`<button class="btn ${dView==="mk"?"on":""}" onclick="dView='mk';dDraw()">Rekap mata kuliah</button>`)};
