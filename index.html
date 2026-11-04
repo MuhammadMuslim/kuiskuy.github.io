@@ -14,6 +14,20 @@ main{max-width:640px;margin:0 auto;padding:16px 16px 48px}
 .top{display:flex;align-items:center;gap:10px;margin-bottom:14px;color:#fff}
 .pill{background:rgba(255,255,255,.16);border-radius:999px;padding:6px 14px;font-weight:700;white-space:nowrap}
 .pill b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.15rem}
+.pill#st{transition:box-shadow .25s,background .25s}
+.pill#st.combo{box-shadow:0 0 0 2px #FFD23F,0 0 12px rgba(255,210,63,.55);animation:comboPulse .55s ease-in-out infinite}
+.pill#st.fire{background:linear-gradient(180deg,#FF8A3D,#E21B3C);box-shadow:0 0 20px rgba(255,107,53,.75);animation:comboPulse .45s ease-in-out infinite}
+@keyframes comboPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.09)}}
+.pill#st .flm{display:inline-block}
+.pill#st.fire .flm{animation:flmFlick .3s ease-in-out infinite alternate}
+.fire .flm{animation:flmFlick .3s ease-in-out infinite alternate}
+.rwflm{display:inline-block;margin-left:6px;padding:0 7px;border-radius:999px;font-size:.72rem;font-weight:700;font-family:"Bricolage Grotesque",sans-serif;vertical-align:middle}
+.rwflm.combo{background:rgba(255,210,63,.22);box-shadow:0 0 0 1px rgba(255,210,63,.6);animation:comboPulse .55s ease-in-out infinite}
+.rwflm.fire{background:linear-gradient(180deg,#FF8A3D,#E21B3C);box-shadow:0 0 12px rgba(255,107,53,.75);animation:comboPulse .45s ease-in-out infinite}
+.rw .tr.combo i{box-shadow:0 0 10px 2px rgba(255,210,63,.65)}
+.rw .tr.fire i{background:linear-gradient(90deg,#FFD23F,#FF8A3D,#E21B3C);box-shadow:0 0 14px rgba(255,107,53,.8);animation:fireBar .5s ease-in-out infinite alternate}
+@keyframes fireBar{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
+@keyframes flmFlick{0%{transform:scale(1) translateY(0) rotate(-4deg);filter:drop-shadow(0 0 2px #FFD23F)}100%{transform:scale(1.22) translateY(-2px) rotate(5deg);filter:drop-shadow(0 0 9px #FF6B35)}}
 .sp{flex:1}
 .card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
 .hero{text-align:center;background:transparent;box-shadow:none;color:#fff;padding:8px 0 4px}
@@ -79,6 +93,9 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .rw .tr i{display:block;height:100%;background:#FFD23F;transition:width .6s}
 .rw b{font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}
 .rw small{opacity:.75;font-size:.8rem;margin-left:8px}
+.rw b{display:inline-block}
+.rw b.pop{animation:scorePop .7s cubic-bezier(.22,.9,.3,1.3)}
+@keyframes scorePop{0%{transform:scale(1.55);color:#FFD23F;text-shadow:0 0 14px rgba(255,210,63,.9)}100%{transform:scale(1);color:inherit;text-shadow:none}}
 .qb{background:#fff;color:#1F1F2E;border-radius:14px;padding:12px;text-align:center;font-size:.9rem}
 .qb svg{width:100%;height:auto}
 .mt h2{margin-bottom:10px}.mt p,.mt li{margin:8px 0}.mt ul{padding-left:20px;margin:8px 0}.mt .box{background:var(--soft);border-radius:10px;padding:10px 12px;margin:10px 0}
@@ -274,7 +291,7 @@ main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 </head>
 <body>
 <main>
-<div class="top"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" style="display:none;font-size:.85rem"></div><div class="pill" id="st" style="display:none">🔥 <b id="stn">0</b></div></div>
+<div class="top"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" style="display:none;font-size:.85rem"></div><div class="pill" id="st" style="display:none"><span class="flm">🔥</span> <b id="stn">0</b></div></div>
 <div id="app"></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -393,11 +410,11 @@ function total(){if(S.playing){const p=S.done[S.lv];return S.base+Math.max(p?p.p
 function sync(prog){
   if(!DB||!S.nm||!S.nim)return;
   cl("...");
-  const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,room:ROOM.id,t:firebase.firestore.FieldValue.serverTimestamp()};
+  const d={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),skor:total(),l:LV.map((_,i)=>S.done[i]?Math.round(S.done[i].acc*100):null),prog:String(prog).slice(0,60),sel:S.done.filter(Boolean).length,room:ROOM.id,str:S.playing?Math.max(0,Math.min(50,S.streak||0)):0,t:firebase.firestore.FieldValue.serverTimestamp()};
   return AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).set(d)).then(()=>{cl("ok");return true}).catch(()=>{cl("err");return false});
 }
 const stars=a=>a>=.85?"★★★":a>=.6?"★★☆":"★☆☆";
-function hud(){const ap=$("avp");if(ap){if(S.av){ap.innerHTML=avH(S.av);ap.style.display=""}else ap.style.display="none"}$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":"none";$("stn").textContent=S.streak}
+function hud(){const ap=$("avp");if(ap){if(S.av){ap.innerHTML=avH(S.av);ap.style.display=""}else ap.style.display="none"}$("sc").textContent=S.score;const stE=$("st");stE.style.display=S.streak>=2?"":"none";stE.classList.toggle("combo",S.streak===2);stE.classList.toggle("fire",S.streak>=3);$("stn").textContent=S.streak}
 function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
@@ -610,10 +627,10 @@ function dMs(t){return t&&t.toMillis?t.toMillis():Date.now()}
 const dRid=d=>d.room||(ROOMS.some(r=>r.id==="pdk")?"pdk":(ROOMS[0]||{}).id||"");
 function dMerge(){const m={};
   dDocs.filter(d=>dRid(d)===dRoom).forEach(d=>{const k=String(d.nim||"").trim();if(!k)return;
-    const o=m[k]||(m[k]={nama:d.nama,av:"",nim:k,skor:-1,l:RM().lv.map(()=>null),prog:"",t:0});
+    const o=m[k]||(m[k]={nama:d.nama,av:"",nim:k,skor:-1,l:RM().lv.map(()=>null),prog:"",str:0,t:0});
     if(d.skor>o.skor){o.skor=d.skor;o.nama=d.nama}if(d.av)o.av=d.av;
     (d.l||[]).forEach((x,i)=>{if(x!=null&&(o.l[i]==null||x>o.l[i]))o.l[i]=x});
-    const t=dMs(d.t);if(t>=o.t){o.t=t;o.prog=d.prog}});
+    const t=dMs(d.t);if(t>=o.t){o.t=t;o.prog=d.prog;o.str=(t>Date.now()-25000)?(d.str||0):0}});
   return Object.values(m).sort((a,b)=>b.skor-a.skor)}
 function dIni(n){return String(n).split(/\s+/).filter(Boolean).map(w=>w[0]).join("").toUpperCase().slice(0,4)}
 function dQr(){try{const q=qrcode(0,"M");q.addData(JOIN());q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ""}}
@@ -634,7 +651,8 @@ function dRekap(r,now){
 function dOrphan(){if(!dDocs.length)return "";const c={};dDocs.forEach(d=>{const k=dRid(d)||"(kosong)";c[k]=(c[k]||0)+1});
   return `<p class="err">Di database ada ${dDocs.length} hasil, tetapi tidak ada yang cocok dengan kamar ini (id: <b>${esc(dRoom)}</b>). Id kamar pada hasil: ${Object.entries(c).map(([k,n])=>"<b>"+esc(k)+"</b> ("+n+")").join(", ")}. Kemungkinan id kamar berubah setelah impor ulang data-bawaan.json.</p>`}
 function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n=RM().lv.length;
-  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
+  return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>{const fr=d.str>=3?"fire":d.str===2?"combo":"";
+  return `<div class="rw" data-pid="${esc(d.nim)}"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}${fr?`<span class="rwflm ${fr}"><i class="flm">🔥</i>${d.str}</span>`:""}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr ${fr}"><i data-sk="${d.skor/mx*100}" style="width:${d.skor/mx*100}%"></i></div></div><b data-sk="${d.skor}">${d.skor}</b></div>`}).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
 async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
   const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("jn_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
@@ -988,7 +1006,26 @@ const _muEnd=endLv;endLv=function(){_muEnd();music("lobby")};
 const _muFin=fin;fin=function(){_muFin();music("win")};
 function dMus(){return dView==="board"&&dGoM[dRoom]?"play":"lobby"}
 const _muPodX=dPodX;dPodX=function(){_muPodX();music(DOSEN?dMus():null)};
+/* ===== Animasi skor papan peringkat: hitung naik angka + bar bergerak + kedip saat skor berubah ===== */
+let dPrevSk={};
+function dBoardAnim(){
+  document.querySelectorAll(".rw[data-pid]").forEach(row=>{
+    const id=row.getAttribute("data-pid"),bEl=row.querySelector("b[data-sk]"),iEl=row.querySelector(".tr i[data-sk]");
+    if(!bEl||!iEl)return;
+    const nv=+bEl.getAttribute("data-sk"),nw=+iEl.getAttribute("data-sk"),had=id in dPrevSk,ov=had?dPrevSk[id]:nv;
+    dPrevSk[id]=nv;
+    if(!had||ov===nv){bEl.textContent=nv;iEl.style.width=nw+"%";return}
+    const ow=had?iEl.style.width:nw+"%";
+    iEl.style.transition="none";iEl.style.width=ow;
+    void iEl.offsetWidth;
+    iEl.style.transition="";iEl.style.width=nw+"%";
+    const t0=performance.now(),dur=700;
+    (function step(now){const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3);
+      bEl.textContent=Math.round(ov+(nv-ov)*e);
+      if(p<1)requestAnimationFrame(step)})(t0);
+    bEl.classList.remove("pop");void bEl.offsetWidth;bEl.classList.add("pop")})}
 const _muDraw=dDraw;dDraw=function(){_muDraw();if(DOSEN&&!$("pod"))music(dMus())};
+const _bdDraw=dDraw;dDraw=function(){_bdDraw();if(DOSEN&&dView==="board")dBoardAnim()};
 const _muDosen=dosen;dosen=function(){_muDosen();music("lobby")};
 const _muDLogin=dLogin;dLogin=function(){_muDLogin();music("lobby")};
 const _muPod=dPodium;dPodium=function(){_muPod();music("podium")};
