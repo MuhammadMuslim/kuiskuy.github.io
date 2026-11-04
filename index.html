@@ -287,6 +287,44 @@ main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 @keyframes ksPoint{to{transform:translateY(5px)}}
 @keyframes ksNoteOut{to{opacity:0;transform:scale(.6)}}
 @media (prefers-reduced-motion:reduce){.ks-note,.ks-note i{animation:none}.ks-note.off{display:none}}
+/* ===== Kado juara ===== */
+.kd{position:fixed;inset:0;z-index:90;background:radial-gradient(circle at 50% 30%,#6A2BC4,#1E0846 75%);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;text-align:center;overflow:auto;animation:kdBg .5s ease both}
+@keyframes kdBg{from{opacity:0}to{opacity:1}}
+.kd h2{font-size:clamp(1.5rem,5vw,2.2rem);margin:0 0 6px}
+.kd p{margin:0 0 6px;opacity:.9}
+.kd-stage{position:relative;width:260px;height:340px;margin:10px auto 0}
+.kd-hint{position:absolute;left:0;right:0;top:70px;font-weight:800;font-size:1.1rem;animation:kdHint 1.2s ease-in-out infinite}
+@keyframes kdHint{0%,100%{transform:translateY(0);opacity:.7}50%{transform:translateY(8px);opacity:1}}
+.kd.open .kd-hint{display:none}
+.kd-glow{position:absolute;left:50%;bottom:90px;width:30px;height:30px;margin-left:-15px;border-radius:50%;background:radial-gradient(circle,#fff 0,rgba(255,226,122,.85) 40%,rgba(255,210,63,0) 70%);opacity:0;pointer-events:none}
+.kd.open .kd-glow{animation:kdGlow 1.2s ease-out forwards}
+@keyframes kdGlow{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(14)}}
+.kd-box{position:absolute;left:50%;bottom:0;width:150px;height:150px;margin-left:-75px;padding:0;border:0;background:none;cursor:pointer;animation:kdBob 1.6s ease-in-out infinite;--k1:#E21B3C;--k2:#9E0F28}
+.kd.r2 .kd-box{--k1:#1368CE;--k2:#0B4592}
+.kd.r3 .kd-box{--k1:#26890C;--k2:#175507}
+.kd-box:focus-visible{outline:3px solid #FFD23F;outline-offset:6px;border-radius:12px}
+.kd-box:disabled{cursor:default}
+@keyframes kdBob{0%,100%{transform:translateY(0) rotate(-2deg)}25%{transform:translateY(-12px) rotate(3deg)}50%{transform:translateY(0) rotate(-3deg)}75%{transform:translateY(-6px) rotate(2deg)}}
+.kd-body{position:absolute;left:8px;right:8px;bottom:0;height:98px;border-radius:6px 6px 12px 12px;background:linear-gradient(90deg,var(--k2),var(--k1) 35%,var(--k1) 65%,var(--k2));box-shadow:0 6px 0 rgba(0,0,0,.3)}
+.kd-body::after,.kd-lid::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:26px;margin-left:-13px;background:linear-gradient(90deg,#E8A317,#FFE27A 50%,#E8A317)}
+.kd-lid{position:absolute;left:0;right:0;bottom:92px;height:44px;border-radius:10px;background:linear-gradient(90deg,var(--k2),var(--k1) 35%,var(--k1) 65%,var(--k2));box-shadow:0 4px 0 rgba(0,0,0,.25);transform-origin:left bottom;transition:transform .8s cubic-bezier(.3,1.5,.5,1),opacity .5s ease .45s}
+.kd-lid::after{content:"🎀";position:absolute;left:50%;top:-30px;margin-left:-.6em;font-size:2.2rem;line-height:1}
+.kd.open .kd-box{animation:kdShake .5s ease both}
+.kd.open .kd-lid{transform:translate(44px,-150px) rotate(38deg);opacity:0}
+@keyframes kdShake{0%{transform:scale(1)}30%{transform:scale(1.12,.9)}60%{transform:scale(.95,1.08)}100%{transform:scale(1)}}
+.kd-prize{position:absolute;left:50%;top:0;width:230px;margin-left:-115px;background:#fff;color:#1F1F2E;border-radius:18px;padding:12px 10px;box-shadow:0 6px 0 rgba(0,0,0,.3);opacity:0;transform:translateY(190px) scale(.2);pointer-events:none}
+.kd.open .kd-prize{animation:kdPrize .9s cubic-bezier(.3,1.5,.5,1) .35s forwards}
+@keyframes kdPrize{to{opacity:1;transform:none}}
+.kd-med{font-size:2.6rem;line-height:1.1}
+.kd-pt{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:3.4rem;line-height:1;color:#46178F}
+.kd-lb{font-weight:700;color:#6B6B80}
+.kd .btn{margin-top:10px}
+.kd-c .lv b{font-size:1.6rem}
+.kd-note{position:absolute;left:0;right:0;bottom:6px;font-size:.85rem;opacity:.9;pointer-events:none}
+.kdg{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:12px 0}
+.kdg label{display:flex;flex-direction:column;gap:4px;font-weight:700}
+.kdg input{width:100%;box-sizing:border-box}
+@media (prefers-reduced-motion:reduce){.kd-box,.kd-hint{animation:none}.kd-lid{transition:none}.kd.open .kd-prize{animation:none;opacity:1;transform:none}.kd.open .kd-box,.kd.open .kd-glow{animation:none}}
 </style>
 </head>
 <body>
@@ -525,7 +563,7 @@ function cd(i){S.cdRun=1;let n=3;const t=()=>{if(S.rdy!==i){S.cdRun=0;return}
   if(n<1){ovX();S.cdOk=1;S.rdy=null;S.cdRun=0;start(i);return}
   ov('<div style="text-align:center"><p>Bersiap…</p><div style="font-size:5rem;font-weight:800">'+n+'</div></div>');n--;setTimeout(t,1000)};t()}
 function goListen(){if(!DB||DOSEN||!ROOM||goU)return;goU=1;
-  AUTHP.then(()=>DB.collection("kamar").doc(ROOM.id).onSnapshot(d=>{const x=d.data()||{};GO=x.go===true;if(GO&&S.rdy!=null&&!S.cdRun)cd(S.rdy)},()=>{GOERR=true;if(S.rdy!=null&&!S.cdRun)cd(S.rdy)})).catch(()=>{GOERR=true})}
+  AUTHP.then(()=>DB.collection("kamar").doc(ROOM.id).onSnapshot(d=>{const x=d.data()||{};GO=x.go===true;kdOnSnap(x);if(GO&&S.rdy!=null&&!S.cdRun)cd(S.rdy)},()=>{GOERR=true;if(S.rdy!=null&&!S.cdRun)cd(S.rdy)})).catch(()=>{GOERR=true})}
 function jnTxt(){return S.jnOk===1?'<span style="color:var(--ok,#26890C)">✅ Kamu sudah bergabung. Dosen sudah melihat namamu.</span>':S.jnOk===2?'<span style="color:var(--bad)">⚠ Gagal bergabung. Periksa koneksi lalu ketuk Gabung lagi.</span>':''}
 function jnUi(t){const e=$("jn");if(e)e.innerHTML=t}
 function jnSch(){clearTimeout(jnT);S.jnOk=0;jnUi("");if(S.locked||!DB)return;if((S.nm||"").length>=2&&(S.nim||"").length>=6)jnT=setTimeout(joinRoom,1500)}
@@ -617,7 +655,7 @@ async function dPin(){if(dBusy)return;const v=$("pin").value.trim(),m=$("pinmsg"
     dFlagSet(u.uid);dAuthOk=true;dMsg="";dBusy=false;dListen()}
   catch(e){dBusy=false;b.disabled=false;b.textContent="Masuk ke dasbor";m.textContent=e&&e.code==="permission-denied"?"PIN salah. Coba lagi.":"Gagal masuk: "+((e&&e.code)||"koneksi")}}
 function dListen(){dStop();clearTimeout(dRetryT);dMsg="";dLive="conn";
-  dGoU=DB.collection("kamar").onSnapshot(s=>{dGoM={};s.docs.forEach(d=>{dGoM[d.id]=d.data().go===true});dDraw()},()=>{});
+  dGoU=DB.collection("kamar").onSnapshot(s=>{dGoM={};dKd={};s.docs.forEach(d=>{const x=d.data();dGoM[d.id]=x.go===true;dKd[d.id]={c:x.kdc,o:x.kdo}});if(dView==="kado"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#kdroot")))kdFresh=1;dDraw()},()=>{});
   dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dLive="on";dRetry=0;dLast=Date.now();dDraw()},e=>{dStop();
     if(e.code==="permission-denied"){dAuthOk=false;dFlagSet(null);dMsg="Sesi ditolak. Masuk lagi dengan PIN dosen.";dLogin();return}
     dLive="off";dMsg="Koneksi terputus ("+e.code+"). Menyambung ulang…";dDraw();
@@ -1155,6 +1193,101 @@ const _dRk6=dRekap;dRekap=function(r,now){return dView==="mkfix"?mkFixCard():_dR
 const _dDr5=dDraw;dDraw=function(){_dDr5();
   const b=document.querySelector("#app .bar"),e=b&&Array.from(b.children).find(x=>x.textContent==="Rekap");
   if(e&&!Array.from(b.children).some(x=>x.textContent==="Rekap mata kuliah"))e.insertAdjacentHTML("afterend",`<button class="btn ${dView==="mk"?"on":""}" onclick="dView='mk';dDraw()">Rekap mata kuliah</button>`)};
+
+/* ===== Kado juara: poin bonus untuk pemenang podium =====
+   Disimpan di dokumen kamar (Firestore): kdc = pengaturan poin, kdo = pengumuman terakhir.
+   Dosen menulis, mahasiswa hanya membaca, jadi tidak perlu mengubah aturan Firestore. */
+const kdKey=n=>String(n||"").trim().replace(/[.\/\[\]*~`]/g,"_").slice(0,40);
+const kdMed=["🥇","🥈","🥉"];
+let dKd={},kdFresh=0,kdMsg="",kdBad=0,kdT=null,kdRoomSeen="";
+function kdCfg(id){const c=(dKd[id||dRoom]||{}).c||{};
+  const n=(v,d)=>(v===null||v===undefined||v===""||!Number.isFinite(+v))?d:Math.max(0,Math.min(1000,Math.round(+v)));
+  return{on:c.on!==false,p:[n(c.p1,25),n(c.p2,15),n(c.p3,10)]}}
+function kdGo(){kdFresh=1;dDraw()}
+async function kdSave(){
+  if(!DB)return;const g=id=>$(id),on=g("kdon").checked,p=[1,2,3].map(i=>g("kdp"+i).value.trim());
+  if(p.some(v=>v===""||!/^\d+$/.test(v)||+v>1000)){kdMsg="Isi poin dengan angka bulat 0 sampai 1000.";kdBad=1;return kdGo()}
+  try{await DB.collection("kamar").doc(dRoom).update({kdc:{on,p1:+p[0],p2:+p[1],p3:+p[2]}});
+    (dKd[dRoom]=dKd[dRoom]||{}).c={on,p1:+p[0],p2:+p[1],p3:+p[2]};kdMsg="Pengaturan kado tersimpan.";kdBad=0}
+  catch(e){kdMsg=e&&e.code==="permission-denied"?"Firestore menolak penyimpanan. Pastikan kamu masuk sebagai dosen dan aturan koleksi kamar sudah dipasang.":"Gagal menyimpan: "+((e&&e.code)||"koneksi");kdBad=1}
+  kdGo()}
+function kdTarik(){if(!confirm("Tarik kado? Kado hilang dari portal mahasiswa yang belum membukanya. Pengumuman baru bisa dikirim lewat tombol Podium."))return;
+  DB.collection("kamar").doc(dRoom).update({kdo:firebase.firestore.FieldValue.delete()})
+   .then(()=>{(dKd[dRoom]=dKd[dRoom]||{}).o=null;kdMsg="Kado ditarik.";kdBad=0;kdGo()})
+   .catch(e=>{kdMsg="Gagal menarik kado: "+((e&&e.code)||"koneksi");kdBad=1;kdGo()})}
+function kdCard(){
+  const rm=RM(),c=kdCfg(),o=(dKd[dRoom]||{}).o,w=o&&o.w?Object.entries(o.w).sort((a,b)=>a[1].r-b[1].r):[];
+  const tsv=["Peringkat\tNama\tNIM\tBonus poin"].concat(w.map(([k,v])=>[v.r,v.n,k,v.p].join("\t"))).join("\n");
+  return `<div class="card ed" id="kdroot"><h2>🎁 Kado juara: ${esc(rm.nama)}</h2>
+  <p class="mut">Tiga peringkat teratas di podium mendapat kotak kado di portal mahasiswa. Kado muncul otomatis sekitar 9 detik setelah tombol <b>🏆 Podium</b> ditekan, yaitu setelah animasi juara 1 selesai. Pengaturan berlaku per kuis. Poin bonus dicatat terpisah dan tidak mengubah skor kuis maupun urutan peringkat.</p>
+  <label style="display:flex;gap:8px;align-items:center;font-weight:700"><input type="checkbox" id="kdon" ${c.on?"checked":""} style="width:auto"> Aktifkan kado untuk podium kuis ini</label>
+  <div class="kdg"><label>🥇 Juara 1 (poin)<input type="number" id="kdp1" min="0" max="1000" inputmode="numeric" value="${c.p[0]}"></label><label>🥈 Juara 2 (poin)<input type="number" id="kdp2" min="0" max="1000" inputmode="numeric" value="${c.p[1]}"></label><label>🥉 Juara 3 (poin)<input type="number" id="kdp3" min="0" max="1000" inputmode="numeric" value="${c.p[2]}"></label></div>
+  <button class="btn" onclick="kdSave()">Simpan pengaturan</button> <button class="btn ghost" onclick="dPodium()">🏆 Tampilkan podium &amp; kirim kado</button>
+  ${kdMsg?`<p class="${kdBad?"err":"mut"}" style="font-weight:700">${esc(kdMsg)}</p>`:""}
+  <h3 style="margin-top:18px">Pengumuman terakhir</h3>
+  ${w.length?`<p class="mut">Dikirim ${new Date(o.sesi).toLocaleString("id-ID")}. Mahasiswa melihat kado ini di portalnya.</p><div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th><th>Bonus</th></tr>${w.map(([k,v])=>`<tr><td>${kdMed[v.r-1]||v.r}</td><td>${esc(v.n)}</td><td>${esc(k)}</td><td><b>+${v.p}</b></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('kdtv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="kdTarik()">Tarik kado</button></p><textarea id="kdtv" readonly rows="3">${esc(tsv)}</textarea>`
+  :`<p class="mut">Belum ada kado yang diumumkan untuk kuis ini.</p>`}</div>`}
+/* Siapkan data pemenang saat podium ditekan, kirim setelah animasi juara 1 selesai */
+function kdPrep(){const id=dRoom,c=kdCfg(id);if(!DB||!c.on)return null;
+  const w={};dMerge().slice(0,3).forEach((d,i)=>{if(c.p[i]>0)w[kdKey(d.nim)]={r:i+1,p:c.p[i],n:String(d.nama||"").slice(0,60)}});
+  return Object.keys(w).length?{id,w}:null}
+function kdSend(p){
+  const note=m=>{const e=$("pod");if(!e)return;let n=e.querySelector(".kd-note");if(!n){n=document.createElement("div");n.className="kd-note";e.appendChild(n)}n.textContent=m};
+  const old=((dKd[p.id]||{}).o||{}).w;
+  if(old&&JSON.stringify(old)===JSON.stringify(p.w)){note("🎁 Kado sudah terkirim sebelumnya (tidak dikirim ulang)");return}
+  DB.collection("kamar").doc(p.id).update({kdo:{sesi:Date.now(),w:p.w}})
+   .then(()=>note("🎁 Kado terkirim ke "+Object.keys(p.w).length+" pemenang"))
+   .catch(e=>note("⚠ Kado gagal dikirim: "+((e&&e.code)||"koneksi")))}
+const _dPdK=dPodium;
+dPodium=function(replay){_dPdK();
+  const rb=document.querySelector("#pod .bar .btn.ghost");if(rb)rb.setAttribute("onclick","dPodium(true)");
+  if(replay===true)return;
+  clearTimeout(kdT);const p=kdPrep();if(p)kdT=setTimeout(()=>kdSend(p),9000)};
+const _dCtK=dCtl;
+dCtl=function(r){const c=kdCfg();
+  return _dCtK(r)+`<p style="color:#fff;margin:-4px 0 14px">🎁 Kado podium: ${c.on?"🥇 "+c.p[0]+" · 🥈 "+c.p[1]+" · 🥉 "+c.p[2]+" poin":"nonaktif"} · <a href="#" onclick="dView='kado';kdFresh=1;dDraw();return false" style="color:#FFD23F;font-weight:700">Atur kado</a></p>`};
+const _dRkK=dRekap;
+dRekap=function(r,now){return dView==="kado"?kdCard():_dRkK(r,now)};
+const _dDrK=dDraw;
+dDraw=function(){
+  if(dView==="kado"&&!kdFresh&&!bkFresh&&kdRoomSeen===dRoom&&$("kdroot"))return;
+  kdFresh=0;kdRoomSeen=dRoom;_dDrK();
+  const b=document.querySelector("#app .bar"),e=b&&Array.from(b.children).find(x=>x.textContent==="Papan peringkat");
+  if(e)e.insertAdjacentHTML("afterend",`<button class="btn ${dView==="kado"?"on":""}" onclick="dView='kado';kdFresh=1;dDraw()">🎁 Kado</button>`)};
+
+/* ===== Sisi mahasiswa: kotak kado muncul setelah dosen mengumumkan podium ===== */
+let KDO=null,kdSeen=null;
+function kdMine(){if(DOSEN||!KDO||!KDO.w||!S.nim||!ROOM)return null;const m=KDO.w[kdKey(S.nim)];
+  return m?{r:Math.min(3,Math.max(1,m.r|0||1)),p:Math.max(0,Math.min(1000,+m.p||0))}:null}
+const kdDone=()=>{try{return localStorage.getItem("kd_"+ROOM.id+"_"+KDO.sesi)==="1"}catch(e){return false}};
+function kdOnSnap(x){KDO=x&&x.kdo&&x.kdo.w&&x.kdo.sesi?x.kdo:null;kdChk()}
+function kdHome(){const old=document.getElementById("kdc");if(old)old.remove();
+  const m=kdMine(),hero=document.querySelector("#app .hero");if(!m||!hero)return;
+  hero.insertAdjacentHTML("afterend",kdDone()
+   ?`<div class="card kd-c" id="kdc"><b>🎁 Bonus kado: +${m.p} poin</b><p class="mut" style="margin:4px 0 0">${kdMed[m.r-1]} Juara ${m.r}. Poin bonus dari dosen.</p></div>`
+   :`<div class="card kd-c" id="kdc"><button class="lv" onclick="kdShow()"><b>🎁</b><div>Kado juara menunggumu<span>Ketuk untuk membuka kadonya</span></div><span class="stars">Buka ▶</span></button></div>`)}
+function kdChk(){if(DOSEN||!ROOM)return;const m=kdMine(),ov=document.getElementById("kd");
+  if(!m){if(ov)ov.remove();const c=document.getElementById("kdc");if(c)c.remove();return}
+  kdHome();
+  if(!kdDone()&&kdSeen!==KDO.sesi&&!S.playing&&!ov)kdShow()}
+function kdKeys(ev){if(ev.key==="Escape")kdX()}
+function kdShow(){const m=kdMine();if(!m||document.getElementById("kd")||kdDone())return;kdSeen=KDO.sesi;
+  const el=document.createElement("div");el.id="kd";el.className="kd r"+m.r;el.setAttribute("role","dialog");el.setAttribute("aria-label","Kado juara");
+  el.innerHTML=`<h2>🎉 Selamat, Juara ${m.r}!</h2><p>Dosen menyiapkan kado untukmu. Ketuk kotaknya!</p><div class="kd-stage"><div class="kd-hint" aria-hidden="true">👇 Ketuk kado</div><div class="kd-glow"></div><div class="kd-prize" aria-live="polite"><div class="kd-med">${kdMed[m.r-1]}</div><div class="kd-pt">+<b id="kdn">0</b></div><div class="kd-lb">poin bonus</div></div><button type="button" class="kd-box" id="kdb" onclick="kdOpen()" aria-label="Buka kado"><span class="kd-body"></span><span class="kd-lid"></span></button></div><button type="button" class="btn" id="kdx" onclick="kdX()">Nanti saja</button>`;
+  document.body.appendChild(el);addEventListener("keydown",kdKeys);$("kdb").focus()}
+function kdX(){const e=document.getElementById("kd");if(e)e.remove();removeEventListener("keydown",kdKeys);kdHome()}
+function kdOpen(){const el=document.getElementById("kd"),m=kdMine();if(!el||!m||el.classList.contains("open"))return;
+  el.classList.add("open");try{localStorage.setItem("kd_"+ROOM.id+"_"+KDO.sesi,"1")}catch(e){}
+  if(navigator.vibrate)try{navigator.vibrate(60)}catch(e){}
+  const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"];
+  el.insertAdjacentHTML("beforeend",`<div class="ks-cf" aria-hidden="true">${Array.from({length:70},(_,i)=>`<i style="--x:${(i*17)%100}%;--w:${6+(i*3)%8}px;--c:${cc[i%5]};--t:${2.4+(i%5)*.45}s;--d:${(i%12)*.08}s;--dx:${(i%2?1:-1)*(20+(i*11)%80)}px;--r:${240+(i*47)%420}deg"></i>`).join("")}</div>`);
+  const n=$("kdn"),tgt=m.p,done=()=>{if(n)n.textContent=tgt};
+  if(matchMedia("(prefers-reduced-motion:reduce)").matches)done();
+  else{let t0=null;const st=ts=>{if(t0===null)t0=ts;const k=Math.min(1,(ts-t0-700)/900);if(k>0&&n)n.textContent=Math.round(tgt*(1-Math.pow(1-k,3)));if(k<1)requestAnimationFrame(st);else done()};requestAnimationFrame(st);setTimeout(done,2200)}
+  const b=$("kdb");b.disabled=true;b.setAttribute("aria-label","Kado sudah dibuka");
+  const x=$("kdx");x.textContent="Selesai";const p=el.querySelector("p");if(p)p.textContent="Kado kamu berisi poin bonus dari dosen:"}
+const _hmK=home;
+home=function(){_hmK();kdChk()};
 
 if(!DOSEN&&!ROOM_ID)pick();
 cloudInit();loadX().then(()=>{
