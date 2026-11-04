@@ -274,7 +274,7 @@ main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 </head>
 <body>
 <main>
-<div class="top"><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" style="display:none;font-size:.85rem"></div><div class="pill" id="st" style="display:none">🔥 <b id="stn">0</b></div></div>
+<div class="top"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" style="display:none;font-size:.85rem"></div><div class="pill" id="st" style="display:none">🔥 <b id="stn">0</b></div></div>
 <div id="app"></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -363,7 +363,7 @@ const cur=(p,adv,lg)=>({lv:S.lv,qi:S.qi+(adv?1:0),right:S.right,lp:S.lp,streak:S
 function pgSave(c){try{localStorage.setItem(pgKey(),JSON.stringify({nm:S.nm,nim:S.nim,done:Array.from(S.done,v=>v||null),cur:c||null}))}catch(e){}}
 function pgLoad(){try{const o=JSON.parse(localStorage.getItem(pgKey()));if(!o||!o.nim)return false;S.nm=o.nm;S.nim=o.nim;S.done=(o.done||[]).map(v=>v||undefined);S.cur=o.cur||null;S.locked=true;return true}catch(e){return false}}
 function pgCheck(){if(!DB||!AUTHP||DOSEN||!ROOM)return;let sent=0;try{sent=localStorage.getItem("sent_"+ROOM.id)}catch(e){}if(!sent)return;
-AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).get()).then(d=>{if(d&&d.exists===false){try{localStorage.removeItem(pgKey());localStorage.removeItem(rvKey());localStorage.removeItem("sent_"+ROOM.id);localStorage.removeItem("mat_"+ROOM.id);localStorage.removeItem("tut_"+ROOM.id)}catch(e){}location.reload()}}).catch(()=>{})}
+AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).get()).then(d=>{if(d&&d.exists===false){try{localStorage.removeItem(pgKey());localStorage.removeItem(rvKey());localStorage.removeItem("sent_"+ROOM.id);localStorage.removeItem("mat_"+ROOM.id);localStorage.removeItem("tut_"+ROOM.id);localStorage.removeItem("jn_"+ROOM.id)}catch(e){}location.reload()}}).catch(()=>{})}
 function resume(){const c=S.cur,l=c&&LV[c.lv];S.cur=null;if(!c||!l||l.h){home();return}
 if(l.g){start(c.lv);return}
 S.lv=c.lv;S.qi=c.qi;S.right=c.right;S.lp=c.lp;S.streak=c.streak;S.base=c.base;S.lgAcc=c.lgAcc||0;S.pick=[];S.rv=c.rv||[];S.playing=true;S.ansd=false;S.score=S.base+S.lp;hud();
@@ -393,7 +393,7 @@ function sync(prog){
   return AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).set(d)).then(()=>{cl("ok");return true}).catch(()=>{cl("err");return false});
 }
 const stars=a=>a>=.85?"★★★":a>=.6?"★★☆":"★☆☆";
-function hud(){$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":"none";$("stn").textContent=S.streak}
+function hud(){const ap=$("avp");if(ap){if(S.av){ap.innerHTML=avH(S.av);ap.style.display=""}else ap.style.display="none"}$("sc").textContent=S.score;$("st").style.display=S.streak>=2?"":"none";$("stn").textContent=S.streak}
 function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
@@ -508,17 +508,21 @@ function goListen(){if(!DB||DOSEN||!ROOM||goU)return;goU=1;
 function jnTxt(){return S.jnOk===1?'<span style="color:var(--ok,#26890C)">✅ Kamu sudah bergabung. Dosen sudah melihat namamu.</span>':S.jnOk===2?'<span style="color:var(--bad)">⚠ Gagal bergabung. Periksa koneksi lalu ketuk Gabung lagi.</span>':''}
 function jnUi(t){const e=$("jn");if(e)e.innerHTML=t}
 function jnSch(){clearTimeout(jnT);S.jnOk=0;jnUi("");if(S.locked||!DB)return;if((S.nm||"").length>=2&&(S.nim||"").length>=6)jnT=setTimeout(joinRoom,1500)}
-function joinRoom(q){clearTimeout(jnT);if(S.locked||S.playing||S.done.some(Boolean))return;
+function joinRoom(q,lk){clearTimeout(jnT);if(S.locked||S.playing||S.done.some(Boolean))return;
   if((S.nm||"").length<2||(S.nim||"").length<3){jnUi('<span style="color:var(--bad)">Isi nama dan NIM dulu.</span>');return}
   if(!DB||!AUTHP){S.jnOk=2;jnUi(jnTxt());return}
   const k=S.nm+"|"+S.nim;S.jnK=k;jnUi('<span class="mut">Bergabung…</span>');
-  Promise.resolve(sync("Bergabung, belum mulai")).then(ok=>{if(S.jnK!==k)return;S.jnOk=ok?1:2;jnUi(jnTxt());if(!q){S.i1=1;introNext()}})}
+  Promise.resolve(sync("Bergabung, belum mulai")).then(ok=>{if(S.jnK!==k)return;S.jnOk=ok?1:2;jnUi(jnTxt());if(ok&&lk)jnLockSet();if(!q){S.i1=1;introNext()}})}
 const AVS=[["🦸 Pahlawan",["🦸‍♂️","🦸‍♀️","🦹","🥷","🧙‍♂️","🧚","🤺","🧛"]],["🐾 Hewan",["🐱","🐶","🦊","🐼","🦁","🐯","🐵","🐸","🐧","🦄","🐲","🐘","🐨","🐙"]],["🇮🇩 Nusantara",["🇮🇩","🦅","🦎","🦧","🐅","🦜","🎭","🥁","🌋","🎖️"]],["🎭 Karakter seru",["🤖","👽","👻","🎃","🦖","🧸","🤡","😎","🤠","🥳"]]];
 const DBS=[["pixel-art","Pixel"],["thumbs","Jempol"],["bottts","Robot"],["adventurer","Petualang"],["fun-emoji","Emoji seru"]],DBN=["Koko","Mika","Ravi","Sari","Bima","Nala"];
 function avH(a){a=String(a||"");const m=/^db:([a-z-]+):([A-Za-z]{1,20})$/.exec(a);return m?`<img class="avi" alt="" loading="lazy" src="https://api.dicebear.com/9.x/${m[1]}/svg?seed=${m[2]}">`:esc(a)}
-function avPick(b,a){if(S.locked)return;S.av=a;sv();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
+function avPick(b,a){if(S.locked||JL())return;S.av=a;sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
 function avCard(){return DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
-function nameCard(){return `<div class="card"><h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> Siapa namamu?</h3><input ${S.locked?"readonly ":""}placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${S.locked?"readonly ":""}placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()"><div class="avt">Pilih avatarmu</div>${avCard()}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${S.locked?`<p class="mut">Nama dan NIM terkunci di perangkat ini setelah kuis dimulai.</p>`:`<div style="margin-top:8px"><button class="btn" onclick="joinRoom()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div>`}
+function JL(){try{return localStorage.getItem("jn_"+ROOM.id)==="1"}catch(e){return false}}
+function nameCard(){const L=S.locked||JL();return `<div class="card"><h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> ${L?"Kamu sudah bergabung":"Siapa namamu?"}</h3><input ${L?"readonly ":""}placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${L?"readonly ":""}placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()">${L?"":`<div class="avt">Pilih avatarmu</div>${avCard()}`}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${L?`<p class="mut">Nama, NIM, dan avatar sudah terkunci di perangkat ini.</p>`:`<div style="margin-top:8px"><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div>`}
+function jnConfirm(){if((S.nm||"").length<2||(S.nim||"").length<3){joinRoom(0,0);return}
+  if(!confirm("Gabung sebagai:\n"+S.nm+"\nNIM "+S.nim+"\n\nSetelah bergabung, nama, NIM, dan avatar tidak bisa diubah. Lanjut?"))return;joinRoom(0,1)}
+function jnLockSet(){try{localStorage.setItem("jn_"+ROOM.id,"1")}catch(e){}const a=$("avc"),c=a&&a.closest(".card");if(c)c.outerHTML=nameCard()}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
 function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
@@ -626,7 +630,7 @@ function dOrphan(){if(!dDocs.length)return "";const c={};dDocs.forEach(d=>{const
 function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n=RM().lv.length;
   return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>`<div class="rw"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr"><i style="width:${d.skor/mx*100}%"></i></div></div><b>${d.skor}</b></div>`).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
 async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
-  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
+  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("jn_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
 
 /* ===== Pemuatan data kamar + level tambahan (Firestore koleksi "kamar" dan "soal") ===== */
