@@ -925,16 +925,21 @@ function muCtx(){if(MU.ctx)return MU.ctx;const C=window.AudioContext||window.web
   try{const c=new C();MU.ctx=c;MU.mg=c.createGain();MU.mg.gain.value=MU.on?.5:0;MU.mg.connect(c.destination);
     const b=c.createBuffer(1,c.sampleRate,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;MU.nb=b;return c}catch(e){return null}}
 function muTone(f,t,d,ty,v){const c=MU.ctx,o=c.createOscillator(),g=c.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(MU.tg);o.start(t);o.stop(t+d+.05)}
+function muEnd(f,t,d,v){const c=MU.ctx,o=c.createOscillator(),o2=c.createOscillator(),q=c.createBiquadFilter(),g=c.createGain();
+  o.type="square";o.frequency.value=f;o2.type="triangle";o2.frequency.value=f/2;
+  q.type="lowpass";q.Q.value=.7;q.frequency.value=2200;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.004);g.gain.setValueAtTime(v*.7,t+d*.45);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(q);o2.connect(q);q.connect(g);g.connect(MU.tg);o.start(t);o2.start(t);o.stop(t+d+.05);o2.stop(t+d+.05)}
 function muNoise(t,d,v,hp){const c=MU.ctx,s=c.createBufferSource(),g=c.createGain(),f=c.createBiquadFilter();s.buffer=MU.nb;f.type="highpass";f.frequency.value=hp;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(MU.tg);s.start(t);s.stop(t+d+.05)}
 function muKick(t,v){const c=MU.ctx,o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+.18);o.connect(g);g.connect(MU.tg);o.start(t);o.stop(t+.2)}
 /* bars: [nada bass, 8 nada melodi (0 = jeda)]; dr: 0 santai, 1 menegangkan, 2 meriah */
 const MT={
  lobby:{bpm:116,lt:"triangle",lv:.22,dr:0,bars:[[48,[72,0,76,0,79,0,76,0]],[41,[77,0,81,0,79,0,76,0]],[43,[74,0,77,0,79,0,77,0]],[48,[76,0,72,0,67,0,0,0]]]},
- play:{bpm:164,lt:"square",lv:.05,dr:1,pz:1,bars:[[45,[76,0,76,0,0,72,0,69]],[43,[74,0,74,0,0,71,0,67]],[41,[72,0,72,0,0,69,0,65]],[40,[71,0,71,0,68,0,71,76]]]},
+ play:{bpm:132,lt:"square",lv:.05,dr:1,pz:1,bars:[[45,[0,0,0,0,0,0,0,0]],[44,[0,0,0,0,0,0,0,72]],[43,[0,0,0,0,0,0,0,0]],[42,[0,0,0,0,0,0,76,75]]]},
  win:{bpm:128,lt:"square",lv:.07,dr:2,bars:[[48,[72,0,76,0,79,79,0,76]],[41,[77,0,81,77,84,0,81,0]],[43,[79,0,83,0,86,86,0,83]],[48,[84,0,0,79,84,0,0,0]]]}};
 function muStep(T,i,t){const sd=60/T.bpm/2,b=T.bars[(i>>3)%T.bars.length],k=i&7,n=b[1][k];
   if(n)muTone(mF(n),t,sd*(T.dr===1?.9:1.7),T.lt,T.lv);
-  if(T.pz)muTone(mF(b[0]+(k%2?12:0)),t,sd*.6,"triangle",.32);
+  if(T.pz){if([1,1,0,1,1,0,1,0][k]){const pn=b[0]+(k===1||k===4?12:0);muEnd(mF(pn+12),t,sd*.45,.2)}}
   else if(k%2===0)muTone(mF(b[0]+(k%4===2?(T.dr?12:7):0)),t,sd*1.8,"triangle",.2);
   if(T.dr===0){if(k===0||k===4)muKick(t,.22);if(k%2)muNoise(t,.04,.03,7000)}
   else if(T.dr===1){if(k===0||k===4)muKick(t,.3);if(k===2||k===6)muNoise(t,.1,.1,1800);muNoise(t,.03,.035,8000)}
@@ -981,7 +986,9 @@ const _muLogQ=logQ;logQ=function(){music("play");_muLogQ()};
 const _muPz=pzStart;pzStart=function(){music("play");_muPz()};
 const _muEnd=endLv;endLv=function(){_muEnd();music("lobby")};
 const _muFin=fin;fin=function(){_muFin();music("win")};
-const _muPodX=dPodX;dPodX=function(){_muPodX();music(DOSEN?"lobby":null)};
+function dMus(){return dView==="board"&&dGoM[dRoom]?"play":"lobby"}
+const _muPodX=dPodX;dPodX=function(){_muPodX();music(DOSEN?dMus():null)};
+const _muDraw=dDraw;dDraw=function(){_muDraw();if(DOSEN&&!$("pod"))music(dMus())};
 const _muDosen=dosen;dosen=function(){_muDosen();music("lobby")};
 const _muDLogin=dLogin;dLogin=function(){_muDLogin();music("lobby")};
 const _muPod=dPodium;dPodium=function(){_muPod();music("podium")};
