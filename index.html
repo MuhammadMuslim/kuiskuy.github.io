@@ -28,7 +28,29 @@ main{max-width:640px;margin:0 auto;padding:16px 16px 48px}
 .rw .tr.fire i{background:linear-gradient(90deg,#FFD23F,#FF8A3D,#E21B3C);box-shadow:0 0 14px rgba(255,107,53,.8);animation:fireBar .5s ease-in-out infinite alternate}
 @keyframes fireBar{0%{filter:brightness(1)}100%{filter:brightness(1.4)}}
 @keyframes flmFlick{0%{transform:scale(1) translateY(0) rotate(-4deg);filter:drop-shadow(0 0 2px #FFD23F)}100%{transform:scale(1.22) translateY(-2px) rotate(5deg);filter:drop-shadow(0 0 9px #FF6B35)}}
-.sp{flex:1}
+.sp{flex:1;min-width:0}
+.top{flex-wrap:nowrap}.top>.pill{flex:none}
+#avp{min-width:44px;text-align:center;line-height:1.2}#avp .avi{width:1.5em;height:1.5em;vertical-align:middle}
+.pill#cl{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;color:#fff}
+.pill#cl svg{width:22px;height:22px;display:block;overflow:visible}
+.pill#cl .cc,.pill#cl .cg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pill#cl .cg{stroke-width:2.2;opacity:0}
+.pill#cl.conn svg{animation:clFloat 2.4s ease-in-out infinite}
+.pill#cl.send .cg{opacity:1;animation:clUp .9s ease-in-out infinite}
+.pill#cl.send svg{animation:clPulse .9s ease-in-out infinite}
+.pill#cl.ok{background:rgba(70,200,110,.35)}
+.pill#cl.ok .cg{opacity:1;stroke-dasharray:14;stroke-dashoffset:14;animation:clCheck .45s .15s ease-out forwards}
+.pill#cl.ok svg{animation:clPop .55s ease-out}
+.pill#cl.err{background:rgba(226,27,60,.55)}
+.pill#cl.err .cg{opacity:1}
+.pill#cl.err svg{animation:clShake .5s ease-in-out}
+@keyframes clFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes clPulse{0%,100%{opacity:.75}50%{opacity:1}}
+@keyframes clUp{0%{transform:translateY(3px);opacity:0}50%{opacity:1}100%{transform:translateY(-3px);opacity:0}}
+@keyframes clCheck{to{stroke-dashoffset:0}}
+@keyframes clPop{0%{transform:scale(.7)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes clShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+@media (prefers-reduced-motion:reduce){.pill#cl svg,.pill#cl .cg{animation:none!important}.pill#cl.ok .cg{stroke-dashoffset:0}}
 .card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:14px;box-shadow:0 4px 0 rgba(0,0,0,.18)}
 .hero{text-align:center;background:transparent;box-shadow:none;color:#fff;padding:8px 0 4px}
 .hero h1{font-size:2.1rem;margin-bottom:6px}
@@ -329,7 +351,7 @@ main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 </head>
 <body>
 <main>
-<div class="top"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" style="display:none;font-size:.85rem"></div><div class="pill" id="st" style="display:none"><span class="flm">🔥</span> <b id="stn">0</b></div></div>
+<div class="top"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" role="status" style="display:none"></div><div class="pill" id="st" style="display:none"><span class="flm">🔥</span> <b id="stn">0</b></div></div>
 <div id="app"></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -443,7 +465,8 @@ function cloudInit(){
       else if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
     AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
 }
-function cl(s){if(s==="ok"&&ROOM)try{localStorage.setItem("sent_"+ROOM.id,"1")}catch(e){}const el=$("cl");if(!DB){el.style.display="none";return}el.style.display="";el.textContent=s==="ok"?"☁ Tersimpan":s==="err"?"⚠ Gagal kirim":s==="conn"?"☁ Terhubung":"☁ Mengirim…"}
+const CLG={ok:'<path class="cg" d="M9 12.5l2.2 2.2L15.5 10.5"/>',"...":'<path class="cg" d="M12 16v-5M9.5 12.8L12 10.2l2.5 2.6"/>',err:'<path class="cg" d="M12 9.5v3.5M12 15.8v.1"/>',conn:""},CLT={ok:"Tersimpan",err:"Gagal kirim, periksa koneksi",conn:"Terhubung","...":"Mengirim…"};
+function cl(s){if(s==="ok"&&ROOM)try{localStorage.setItem("sent_"+ROOM.id,"1")}catch(e){}const el=$("cl");if(!DB){el.style.display="none";return}const k=CLT[s]?s:"...";el.style.display="";el.className="pill "+(k==="..."?"send":k);el.title=CLT[k];el.setAttribute("aria-label",CLT[k]);el.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path class="cc" d="M7 18.5a4 4 0 0 1-.6-7.95A5.6 5.6 0 0 1 17 9a4.75 4.75 0 0 1 .5 9.5H7z"/>'+CLG[k]+'</svg>'}
 function total(){if(S.playing){const p=S.done[S.lv];return S.base+Math.max(p?p.pts:0,S.lp)}return myScore()}
 function sync(prog){
   if(!DB||!S.nm||!S.nim)return;
