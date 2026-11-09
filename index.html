@@ -242,6 +242,71 @@ a.btn{display:inline-block;text-decoration:none}
 .dl .logo{font-size:3rem;margin-bottom:4px}
 .dpw{display:flex;gap:8px;align-items:center}.dpw input{flex:1;margin-top:10px}.dpw .btn{margin-top:10px;padding:12px 14px}
 .dl .go{width:100%}
+/* ===== Maskot siput di login dosen ===== */
+@property --gl{syntax:"<color>";inherits:true;initial-value:#7a9cff}
+
+.sn-hd{text-align:center;color:#fff;margin:14px auto 0}
+.sn-hd span{display:inline-flex;gap:8px;align-items:center;font-size:.78rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+.sn-hd i{width:8px;height:8px;border-radius:50%;transition:background .3s,box-shadow .3s}
+.sn-hd b{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:clamp(48px,17vw,84px);line-height:1;letter-spacing:-.035em;margin:6px 0 8px;text-shadow:0 4px 24px rgba(0,0,0,.25)}
+.sn-hd p{margin:0;font-size:1.05rem;opacity:.75}
+.sn-hd b,.sn-hd p{transition:filter .17s,opacity .17s,transform .17s}
+.sn-hd.out b,.sn-hd.out p{filter:blur(14px);opacity:0;transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){.sn-hd b,.sn-hd p{transition:none}}
+.dl{margin-top:150px;position:relative;overflow:visible}
+.sn-w{position:relative;width:220px;max-width:80%;margin:-132px auto 10px;--gl:#7a9cff;transition:--gl .4s}
+.sn-w::before{content:"";position:absolute;left:50%;top:70%;width:280px;height:150px;transform:translate(-50%,-50%);background:radial-gradient(closest-side,var(--gl),transparent);opacity:.6;pointer-events:none}
+.sn-w[data-s=hide]{--gl:#ff8fb8}.sn-w[data-s=peek]{--gl:#ffb938}.sn-w[data-s=err]{--gl:#ff4a63}.sn-w[data-s=ok]{--gl:#3fdc84}
+.sn{position:relative;display:block;width:100%;height:auto;overflow:visible}
+.sn .st{transition:transform .38s cubic-bezier(.3,1.5,.5,1)}
+.sn-w[data-s=hide] .st{transform:translateY(38px)}
+.sn-w[data-s=peek] .st{transform:translateY(12px)}
+.sn .pu{transition:transform .12s}
+.sn .ce,.sn .mi,.sn .me,.sn .mo,.sn .bl{opacity:0;transition:opacity .2s}
+.sn .bl{opacity:.75}
+.sn-w[data-s=idle] .mi,.sn-w[data-s=err] .me,.sn-w[data-s=ok] .mo{opacity:1}
+.sn-w[data-s=hide] .ce,.sn-w[data-s=hide] .mi,.sn-w[data-s=peek] .mi{opacity:1}
+.sn .hd{transform-origin:60px 108px}
+.sn-w[data-s=err] .hd{animation:snNo .8s ease-in-out}
+.sn-w[data-s=ok] .sn{animation:snYes .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes snNo{0%,100%{transform:rotate(0)}12%{transform:rotate(-13deg) translateX(-3px)}30%{transform:rotate(11deg) translateX(3px)}50%{transform:rotate(-9deg) translateX(-2px)}70%{transform:rotate(6deg)}85%{transform:rotate(-2deg)}}
+@keyframes snNoS{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}75%{transform:rotate(-2deg)}}
+/* siput berjalan bolak-balik di tepi atas kartu (hanya saat state awal) */
+.sn-w{animation:snWalk 18s linear infinite}
+.sn-w:not([data-s=idle]){animation-play-state:paused}
+@keyframes snWalk{0%{translate:0 0;scale:1 1}25%{translate:calc(var(--rg,80px)*-1) 0;scale:1 1}27%{translate:calc(var(--rg,80px)*-1) 0;scale:-1 1}75%{translate:var(--rg,80px) 0;scale:-1 1}77%{translate:var(--rg,80px) 0;scale:1 1}100%{translate:0 0;scale:1 1}}
+.sn .ft{transform-origin:188px 99px}.sn .sh{transform-origin:132px 100px}
+/* tidur saat PIN disembunyikan: mata menutup, napas pelan, zzz melayang; terbangun setelah beberapa detik */
+.sn .zz{pointer-events:none}
+.sn .zz text{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;fill:#fff;stroke:rgba(0,0,0,.28);stroke-width:.6px;paint-order:stroke;opacity:0;transform-box:fill-box;transform-origin:center}
+.sn-w[data-s=hide] .zz text{animation:snZ 2.7s ease-in-out infinite}
+.sn-w[data-s=hide] .zz .z2{animation-delay:.9s}.sn-w[data-s=hide] .zz .z3{animation-delay:1.8s}
+@keyframes snZ{0%{opacity:0;transform:translate(0,8px) scale(.6)}25%{opacity:1}75%{opacity:1}100%{opacity:0;transform:translate(8px,-20px) scale(1.15)}}
+.sn-w[data-s=hide] .sh{animation:snBr 2.6s ease-in-out infinite}
+.sn-w[data-s=hide] .hd{animation:snNod 2.6s ease-in-out infinite}
+@keyframes snBr{0%,100%{scale:1}50%{scale:1.035}}
+@keyframes snNod{0%,100%{rotate:0deg}50%{rotate:3deg}}
+.sn-w.wk .sn{animation:snYes .6s .35s cubic-bezier(.3,1.6,.5,1)}
+.sn .hd,.sn .ft{transition:transform .6s cubic-bezier(.5,0,.25,1)}
+.sn .sh{transition:translate .5s}.sn .zz{transition:transform .5s}
+.sn-w.in .hd{transform:translate(60px,-22px) scale(.4);animation:none}
+.sn-w.in .ft{transform:translateX(-30px) scale(.38,.55)}
+.sn-w.in .sh{translate:0 3px}
+.sn-w.in .zz{transform:translate(58px,-6px)}
+@media (prefers-reduced-motion:reduce){.sn .hd,.sn .ft,.sn .sh,.sn .zz{transition:none}.sn-w[data-s=hide] .zz text{animation:none;opacity:1}.sn-w[data-s=hide] .sh,.sn-w[data-s=hide] .hd,.sn-w.wk .sn{animation:none}}
+.sn .st.a{transform-origin:50px 60px}.sn .st.b{transform-origin:72px 60px}
+.sn-w[data-s=idle] .ft{animation:snFt 1.3s ease-in-out infinite}
+.sn-w[data-s=idle] .hd{animation:snHd 1.3s ease-in-out infinite}
+.sn-w[data-s=idle] .sh{animation:snSh 1.3s ease-in-out infinite}
+.sn-w[data-s=idle] .st.a{animation:snSw 1.3s ease-in-out infinite}
+.sn-w[data-s=idle] .st.b{animation:snSw 1.3s ease-in-out -.22s infinite}
+@keyframes snFt{0%,100%{scale:1 1}45%{scale:1.1 .95}}
+@keyframes snHd{0%,100%{translate:0 0;rotate:0deg}45%{translate:-15px 1px;rotate:-4deg}}
+@keyframes snSh{0%,100%{rotate:0deg;translate:0 0}22%{rotate:3deg;translate:1px -2px}45%{rotate:-5deg;translate:-6px 0}72%{rotate:2deg;translate:-2px -2px}}
+@keyframes snSw{0%,100%{rotate:5deg}45%{rotate:-9deg}}
+@keyframes snYes{0%{transform:translateY(0)}40%{transform:translateY(-16px)}100%{transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){.sn .st,.sn .pu,.sn-w{transition:none}.sn-w[data-s=ok] .sn{animation:none}.sn-w[data-s=err] .hd{animation:snNoS .45s ease-in-out}}
+
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .stats div{background:rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:10px 12px;text-align:center}
 .stats b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}.stats span{font-size:.8rem;opacity:.85}
@@ -362,11 +427,41 @@ main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 .kdg label{display:flex;flex-direction:column;gap:4px;font-weight:700}
 .kdg input{width:100%;box-sizing:border-box}
 @media (prefers-reduced-motion:reduce){.kd-box,.kd-hint{animation:none}.kd-lid{transition:none}.kd.open .kd-prize{animation:none;opacity:1;transform:none}.kd.open .kd-box,.kd.open .kd-glow{animation:none}}
+.dsn .top{display:none}.dsn main{max-width:1000px}
+
+/* ===== Tema tampilan (diatur dosen, berlaku untuk semua layar dosen dan mahasiswa) =====
+   default = tampilan ungu asli. siang = langit biru, matahari, awan bergerak. malam = bintang dan bulan. */
+#kfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+html[data-tema="siang"]{--bg:#1565C0;--bg2:#4FA8F5}
+html[data-tema="malam"]{--bg:#060A24;--bg2:#1A1458}
+html[data-tema="siang"] .ks,html[data-tema="siang"] .ks-dev,html[data-tema="siang"] .top,html[data-tema="siang"] .bar h1,html[data-tema="siang"] .kj{text-shadow:0 1px 3px rgba(0,30,90,.5)}
+html[data-tema="siang"] .btn,html[data-tema="siang"] .card,html[data-tema="siang"] .ov>div,html[data-tema="siang"] .ks-t b,html[data-tema="siang"] .ks-note,html[data-tema="siang"] .ks-s,html[data-tema="siang"] input{text-shadow:none}
+html[data-tema="siang"] .ks-card{background:rgba(8,38,100,.38)}
+html[data-tema="siang"] .ks::before{opacity:.5}
+html[data-tema="malam"] .ks::before{opacity:.6}
+.kfx-sun{position:absolute;top:5%;right:7%;width:min(120px,26vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 38%,#FFFBD0,#FFD93B 55%,#FFB300);box-shadow:0 0 50px 18px rgba(255,214,70,.5);animation:kfxPulse 4s ease-in-out infinite alternate}
+.kfx-sun::before{content:"";position:absolute;inset:-70%;border-radius:50%;background:repeating-conic-gradient(rgba(255,235,130,.5) 0 7deg,transparent 7deg 22deg);-webkit-mask:radial-gradient(circle,transparent 26%,#000 28%,#000 40%,transparent 62%);mask:radial-gradient(circle,transparent 26%,#000 28%,#000 40%,transparent 62%);animation:kfxSpin 50s linear infinite}
+@keyframes kfxPulse{from{transform:scale(1)}to{transform:scale(1.07)}}
+@keyframes kfxSpin{to{transform:rotate(360deg)}}
+.kfx-cl{position:absolute;top:var(--y);left:calc(var(--l)*1vw);font-size:var(--s);width:9em;height:2.8em;border-radius:2.8em;background:#fff;opacity:var(--a);animation:kfxCloud var(--dur) linear var(--d) infinite}
+.kfx-cl::before,.kfx-cl::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.kfx-cl::before{width:3.6em;height:3.6em;left:1.4em;top:-1.8em}
+.kfx-cl::after{width:4.8em;height:4.8em;right:1.2em;top:-2.4em}
+@keyframes kfxCloud{from{transform:translateX(calc(-1vw*var(--l) - 14em))}to{transform:translateX(calc(100vw - 1vw*var(--l) + 2em))}}
+.kfx-moon{position:absolute;top:7%;right:9%;width:min(84px,20vw);aspect-ratio:1;border-radius:50%;box-shadow:inset -24px -4px 0 0 #FFF2B5,0 0 34px 6px rgba(255,242,181,.28);animation:kfxMoon 6s ease-in-out infinite alternate}
+@keyframes kfxMoon{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.kfx-st{position:absolute;left:var(--x);top:var(--y);width:var(--z);height:var(--z);border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.7);opacity:.2;animation:kfxTw var(--d) ease-in-out var(--o) infinite}
+@keyframes kfxTw{0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
+.kfx-sh{position:absolute;left:var(--x);top:var(--y);width:120px;height:2px;border-radius:2px;background:linear-gradient(90deg,#fff,transparent);opacity:0;transform:rotate(-30deg);animation:kfxSh 11s linear var(--o) infinite}
+@keyframes kfxSh{0%{opacity:0;transform:translate(0,0) rotate(-30deg)}2%{opacity:1}9%,100%{opacity:0;transform:translate(-260px,150px) rotate(-30deg)}}
+.tpk span{color:#fff;font-weight:700;margin-right:4px}.tpk small{color:#fff;opacity:.8}
+@media (prefers-reduced-motion:reduce){#kfx *,#kfx *::before{animation:none!important}.kfx-sh{display:none}.kfx-st{opacity:.8}}
 </style>
+<script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
 </head>
 <body>
 <main>
-<div class="top"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" role="status" style="display:none"></div><div class="pill" id="st" style="display:none"><span class="flm">🔥</span> <b id="stn">0</b></div></div>
+<div class="top" style="display:none"><div class="pill" id="avp" style="display:none;padding:4px 10px;font-size:1.25rem"></div><div class="pill">⭐ <b id="sc">0</b></div><div class="sp"></div><div class="pill" id="cl" role="status" style="display:none"></div><div class="pill" id="st" style="display:none"><span class="flm">🔥</span> <b id="stn">0</b></div></div>
 <div id="app"></div>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
@@ -490,7 +585,7 @@ function sync(prog){
   return AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).set(d)).then(()=>{cl("ok");return true}).catch(()=>{cl("err");return false});
 }
 const stars=a=>a>=.85?"★★★":a>=.6?"★★☆":"★☆☆";
-function hud(){const ap=$("avp");if(ap){if(S.av){ap.innerHTML=avH(S.av);ap.style.display=""}else ap.style.display="none"}$("sc").textContent=S.score;const stE=$("st");stE.style.display=S.streak>=2?"":"none";stE.classList.toggle("combo",S.streak===2);stE.classList.toggle("fire",S.streak>=3);$("stn").textContent=S.streak}
+function hud(){const tp=document.querySelector(".top");if(tp&&!DOSEN)tp.style.display="";const ap=$("avp");if(ap){if(S.av){ap.innerHTML=avH(S.av);ap.style.display=""}else ap.style.display="none"}$("sc").textContent=S.score;const stE=$("st");stE.style.display=S.streak>=2?"":"none";stE.classList.toggle("combo",S.streak===2);stE.classList.toggle("fire",S.streak>=3);$("stn").textContent=S.streak}
 function stop(){if(S.tm){clearInterval(S.tm);S.tm=null}}
 function timer(sec,fn){stop();const t0=Date.now(),b=$("tbar"),w=$("tbox");S.t0=t0;S.tm=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);b.style.width=(left/sec*100)+"%";w.classList.toggle("low",left<=5);$("tl").textContent=Math.ceil(left);if(left<=0){stop();fn()}},100)}
 function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="tl"></b></span></div><div class="tb" id="tbox"><i id="tbar"></i></div>`}
@@ -648,7 +743,7 @@ function dosen(){
   A.onAuthStateChanged(u=>{
     if(!u){dStop();dAuthOk=false;dLogin();return}
     if(dAuthOk)return;
-    if(dFlag()===u.uid){dAuthOk=true;dListen()}else dLogin()});
+    if(dFlag()===u.uid){dAuthOk=true;dListen()}else if(!dBusy&&!$("pin"))dLogin()});
 }
 let dGoM={},dGoU=null;
 function dStop(){if(dUnsub){dUnsub();dUnsub=null}if(dGoU){dGoU();dGoU=null}dDocs=[]}
@@ -682,19 +777,39 @@ let dAuthOk=false,dBusy=false,dLast=0,dLive="off",dRetry=0,dRetryT=null;
 const dFlag=()=>{try{return sessionStorage.getItem("dosen_ok")}catch(e){return null}};
 function dFlagSet(v){try{v?sessionStorage.setItem("dosen_ok",v):sessionStorage.removeItem("dosen_ok")}catch(e){}}
 function dLogin(){dBusy=false;
-  $("app").innerHTML=`<div class="card dl pop"><div class="logo">🛡️</div><h2>Portal Dosen</h2><p class="mut">Masuk dengan PIN dosen untuk membuka rekap, papan peringkat, dan bank soal.</p><div class="dpw"><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan PIN">👁</button></div><button class="btn go" id="pinbtn" onclick="dPin()">Masuk ke dasbor</button><p id="pinmsg" style="color:var(--bad);font-weight:700;min-height:1.4em">${esc(dMsg)}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
-  setTimeout(()=>{const p=$("pin");if(p)p.focus()},50)}
-function dShowPin(b){const p=$("pin");p.type=p.type==="password"?"text":"password";b.textContent=p.type==="password"?"👁":"🙈"}
+  $("app").innerHTML=`${snHdH(dMsg?"err":"idle",dMsg)}<div class="card dl pop"><div class="sn-w" id="sn" data-s="${dMsg?'err':'idle'}" role="img" aria-label="Maskot siput"><svg class="sn" viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="snB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9B0"/><stop offset="1" stop-color="#F6B67E"/></linearGradient><linearGradient id="snS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA86B"/><stop offset="1" stop-color="#EE6A33"/></linearGradient></defs><ellipse cx="112" cy="116" rx="84" ry="6" fill="#000" opacity=".18"/><path class="ft" d="M34 86H188a13 13 0 0 1 0 26H34Z" fill="url(#snB)"/><g class="hd"><g class="st a"><path d="M50 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="26" r="8" fill="#fff"/><circle class="pu" cx="50" cy="26" r="3.6" fill="#1F1F2E"/></g><g class="st b"><path d="M72 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="72" cy="26" r="8" fill="#fff"/><circle class="pu" cx="72" cy="26" r="3.6" fill="#1F1F2E"/></g><path d="M34 112V76a26 26 0 0 1 52 0V112Z" fill="url(#snB)"/><path class="ce a" d="M44 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="ce" d="M66 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><circle class="bl" cx="43" cy="86" r="4" fill="#FF9AA8"/><circle class="bl" cx="77" cy="86" r="4" fill="#FF9AA8"/><path class="mi" d="M54 88q6 5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="me" d="M54 92q6-5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="mo" d="M51 86q9 11 18 0Z" fill="#7a2e2e" stroke="#5a3a2a" stroke-width="2" stroke-linejoin="round"/></g><g class="sh"><circle cx="132" cy="64" r="36" fill="url(#snS)"/><path d="M132 64a3 3 0 0 1 3 3a6 6 0 0 1-6 6a9 9 0 0 1-9-9a12 12 0 0 1 12-12a15 15 0 0 1 15 15a18 18 0 0 1-18 18" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/></g><g class="zz" aria-hidden="true"><text class="z1" x="62" y="44" font-size="13">z</text><text class="z2" x="74" y="34" font-size="17">Z</text><text class="z3" x="88" y="22" font-size="21">Z</text></g></svg></div><h2>Portal Dosen</h2><p class="mut">Masuk dengan PIN dosen untuk membuka rekap, papan peringkat, dan bank soal.</p><div class="dpw"><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan PIN"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button></div><button class="btn go" id="pinbtn" onclick="dPin()">Masuk ke dasbor</button><p id="pinmsg" hidden></p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
+  snInit();setTimeout(()=>{const p=$("pin");if(p)p.focus()},50)}
+const OPEN_I=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`,SLASH_I=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>`;
+function dShowPin(b){const p=$("pin");p.type=p.type==="password"?"text":"password";const sh=p.type!=="password";b.innerHTML=sh?OPEN_I:SLASH_I;b.setAttribute("aria-label",sh?"Sembunyikan PIN":"Tampilkan PIN");p.focus();snAw=0;snSet(p.type==="password"?"hide":"peek")}
+/* Maskot: mata mengikuti kursor, menutup mata saat isi PIN, mengintip saat PIN ditampilkan */
+const SNT={idle:["Watching","Siput mengikuti kursormu.","#6c8cff"],hide:["Zzz…","Siput tidur, mata ditutup.","#ff7aa8"],peek:["Peeking","PIN terlihat, siput mengintip.","#ffb938"],err:["Oops","PIN salah. Siput geleng kepala.","#ff4a63"],ok:["Welcome","PIN benar. Mata dibuka.","#3fdc84"]};
+function snHdH(v,sub){const t=SNT[v];return `<div class="sn-hd" id="snh" aria-live="polite"><span><i style="background:${t[2]};box-shadow:0 0 8px ${t[2]}"></i>Portal Dosen</span><b>${t[0]}</b><p>${esc(sub||t[1])}</p></div>`}
+function snHd(v,sub){const h=$("snh"),t=SNT[v];if(!h||!t)return;const put=()=>{const i=h.querySelector("i");h.querySelector("b").textContent=t[0];h.querySelector("p").textContent=sub||t[1];i.style.background=t[2];i.style.boxShadow="0 0 8px "+t[2];h.classList.remove("out")};
+  h.classList.add("out");clearTimeout(h._t);h._t=setTimeout(put,170)}
+const SN_IN=3000,SN_WAKE=7000;let snAw=0;
+function snIn(){const e=$("sn");if(!e||e.dataset.s!=="hide")return;e.classList.add("in");snHd("hide","Siput masuk rumah, tidur nyenyak.")}
+function snWake(){const e=$("sn");if(!e||e.dataset.s!=="hide")return;snAw=1;snSet("idle");e.classList.remove("wk");void e.offsetWidth;e.classList.add("wk");setTimeout(()=>e.classList.remove("wk"),1100)}
+function snSet(v){clearTimeout(window._snET);const e=$("sn");if(e&&e.dataset.s!==v){clearTimeout(window._snZT);clearTimeout(window._snWT);e.classList.remove("in");e.dataset.s=v;snHd(v);if(v==="hide"){window._snZT=setTimeout(snIn,SN_IN);window._snWT=setTimeout(snWake,SN_WAKE)}}}
+function snBack(ms){clearTimeout(window._snET);window._snET=setTimeout(()=>{const e=$("sn");if(e&&e.dataset.s==="err")snSet("idle")},ms)}
+function snErr(msg){const e=$("sn");if(!e)return;clearTimeout(window._snZT);clearTimeout(window._snWT);e.classList.remove("in");e.dataset.s="";void e.offsetWidth;e.dataset.s="err";snHd("err",msg);snBack(2200)}
+function snLook(x,y){const fl=Math.sign(parseFloat(getComputedStyle($("sn")).scale)||1)||1;document.querySelectorAll("#sn .pu").forEach(u=>{const r=u.previousElementSibling.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=x-cx,dy=y-cy,d=Math.hypot(dx,dy)||1,k=Math.min(3.4,d/18);u.style.transform="translate("+(dx/d*k*fl).toFixed(2)+"px,"+(dy/d*k).toFixed(2)+"px)"})}
+let snPm=0;
+function snRg(){const w=$("sn");if(!w)return;const c=w.closest(".card");w.style.setProperty("--rg",Math.max(16,Math.round((c.clientWidth-w.offsetWidth*.78)/2-6))+"px")}
+function snInit(){const p=$("pin");if(!p)return;if($("sn").dataset.s==="err")snBack(2600);snRg();if(!window._snRz){window._snRz=1;addEventListener("resize",snRg)}
+  const t0=Date.now();p.addEventListener("focus",()=>{if(Date.now()-t0<600)return;snAw=0;if(!/ok|err/.test($("sn").dataset.s))snSet(p.type==="password"?"hide":"peek")});
+  p.addEventListener("input",()=>{if(!snAw&&$("sn").dataset.s!=="ok")snSet(p.type==="password"?"hide":"peek")});p.addEventListener("pointerdown",()=>{snAw=0;if(!/ok|err/.test($("sn").dataset.s))snSet(p.type==="password"?"hide":"peek")});
+  p.addEventListener("blur",e=>{const t=e.relatedTarget;if(t&&t.closest&&t.closest(".dpw"))return;if($("sn").dataset.s!=="ok")snSet("idle")});
+  if(!snPm){snPm=1;document.addEventListener("pointermove",e=>{if($("sn")&&/idle|peek/.test($("sn").dataset.s))snLook(e.clientX,e.clientY)},{passive:true})}}
 function dLogout(){dStop();clearTimeout(dRetryT);dAuthOk=false;dLive="off";dFlagSet(null);dMsg="";firebase.auth().signOut().then(dLogin,dLogin)}
 function dRefresh(){dListen();loadX(true).then(()=>dDraw())}
 async function dPin(){if(dBusy)return;const v=$("pin").value.trim(),m=$("pinmsg"),b=$("pinbtn");
-  if(!v){m.textContent="Isi PIN dulu.";return}
+  if(!v){snErr("Isi PIN dulu.");return}
   dBusy=true;b.disabled=true;b.textContent="Memeriksa…";m.textContent="";
   try{const A=firebase.auth();let u=A.currentUser;if(!u)u=(await A.signInAnonymously()).user;
     await DB.collection("dosen").doc(u.uid).set({pin:v});
     await DB.collection("hasil").limit(1).get();
-    dFlagSet(u.uid);dAuthOk=true;dMsg="";dBusy=false;dListen()}
-  catch(e){dBusy=false;b.disabled=false;b.textContent="Masuk ke dasbor";m.textContent=e&&e.code==="permission-denied"?"PIN salah. Coba lagi.":"Gagal masuk: "+((e&&e.code)||"koneksi")}}
+    dFlagSet(u.uid);dAuthOk=true;dMsg="";snSet("ok");b.textContent="Berhasil ✓";setTimeout(()=>{dBusy=false;dListen()},1000)}
+  catch(e){snErr(e&&e.code==="permission-denied"?"":"Gagal masuk: "+((e&&e.code)||"koneksi"));dBusy=false;b.disabled=false;b.textContent="Masuk ke dasbor"}}
 function dListen(){dStop();clearTimeout(dRetryT);dMsg="";dLive="conn";
   dGoU=DB.collection("kamar").onSnapshot(s=>{dGoM={};dKd={};s.docs.forEach(d=>{const x=d.data();dGoM[d.id]=x.go===true;dKd[d.id]={c:x.kdc,o:x.kdo}});if(dView==="kado"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#kdroot")))kdFresh=1;dDraw()},()=>{});
   dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dLive="on";dRetry=0;dLast=Date.now();dDraw()},e=>{dStop();
@@ -1332,7 +1447,33 @@ const _hmK=home;
 home=function(){_hmK();kdChk()};
 
 if(!DOSEN&&!ROOM_ID)pick();
-cloudInit();loadX().then(()=>{
+/* ===== Tema tampilan: hanya dosen yang menyimpan, semua orang membaca dari Firestore (kamar/_tampilan) ===== */
+let KTEMA="default",kTmU=null;
+function kTemaFx(t){let el=document.getElementById("kfx");
+  if(t!=="siang"&&t!=="malam"){if(el)el.remove();return}
+  if(!el){el=document.createElement("div");el.id="kfx";el.setAttribute("aria-hidden","true");document.body.appendChild(el)}
+  if(t==="siang")el.innerHTML='<div class="kfx-sun"></div>'+Array.from({length:7},(_,i)=>`<div class="kfx-cl" style="--l:${(i*23+5)%90};--y:${6+(i*13)%52}%;--s:${13+(i*5)%11}px;--dur:${46+(i*9)%34}s;--d:-${(i*11)%40}s;--a:${(.55+(i%4)*.1).toFixed(2)}"></div>`).join("");
+  else el.innerHTML='<div class="kfx-moon"></div>'+Array.from({length:46},(_,i)=>`<i class="kfx-st" style="--x:${(i*37+11)%97}%;--y:${(i*53+7)%88}%;--z:${1.5+(i%3)}px;--d:${(2.2+(i%5)*.7).toFixed(1)}s;--o:-${((i%7)*.6).toFixed(1)}s"></i>`).join("")+Array.from({length:2},(_,i)=>`<i class="kfx-sh" style="--x:${60+i*25}%;--y:${8+i*14}%;--o:${i*5}s"></i>`).join("");
+}
+function kTemaApply(t){t=t==="siang"||t==="malam"?t:"default";
+  const h=document.documentElement;if(t==="default")h.removeAttribute("data-tema");else h.setAttribute("data-tema",t);
+  try{localStorage.setItem("tema_cache",t)}catch(e){}
+  if(t===KTEMA&&(t==="default"||document.getElementById("kfx")))return;
+  KTEMA=t;kTemaFx(t)}
+function kTemaListen(){if(kTmU||!DB)return;
+  const go=()=>{kTmU=DB.collection("kamar").doc("_tampilan").onSnapshot(d=>{const x=d.exists?d.data():null;kTemaApply(x&&x.tema)},()=>{kTmU=null})};
+  if(DOSEN)go();else if(AUTHP)AUTHP.then(go).catch(()=>{})}
+async function kTemaSet(t){const old=KTEMA;kTemaApply(t);
+  if(!DB){if(typeof dDraw==="function")dDraw();return}
+  try{await DB.collection("kamar").doc("_tampilan").set({tema:t,t:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
+  catch(e){kTemaApply(old);alert("Gagal menyimpan tampilan: "+((e&&e.code)||"koneksi")+". Pastikan kamu masuk sebagai dosen dan aturan koleksi kamar sudah dipasang.")}
+  dDraw()}
+const kTemaOpts=[["default","🎨 Default"],["siang","☀️ Siang"],["malam","🌙 Malam"]];
+const _tpkL=dListen;dListen=function(){_tpkL();kTemaListen()};
+const _tpkD=dDraw;dDraw=function(){_tpkD();if(!DOSEN)return;const b=document.querySelector("#app .bar");if(!b)return;
+  b.insertAdjacentHTML("afterend",`<div class="bar tpk" role="group" aria-label="Tampilan untuk semua layar"><span>Tampilan semua layar:</span>${kTemaOpts.map(o=>`<button type="button" class="btn ${KTEMA===o[0]?"on":"ghost w"}" aria-pressed="${KTEMA===o[0]}" onclick="kTemaSet('${o[0]}')">${o[1]}</button>`).join("")}<small>Mahasiswa ikut otomatis</small></div>`)};
+
+cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")||"default"}catch(e){}kTemaApply(c);if(!DOSEN)kTemaListen()})();loadX().then(()=>{
   if(!DOSEN&&!ROOM_ID){if(!ROOMS.length&&useCache())mergeX([]);
     const c=document.querySelector(".ks-c");
     const AR=ROOMS.filter(r=>!r.ar);if(c&&AR.length===1)c.insertAdjacentHTML("beforeend",`<a class="btn ks-go" href="?kamar=${encodeURIComponent(AR[0].id)}">Mulai kuis ▶</a>`);
