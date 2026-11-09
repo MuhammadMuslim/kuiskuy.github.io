@@ -429,33 +429,83 @@ main{padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:reduce){.kd-box,.kd-hint{animation:none}.kd-lid{transition:none}.kd.open .kd-prize{animation:none;opacity:1;transform:none}.kd.open .kd-box,.kd.open .kd-glow{animation:none}}
 .dsn .top{display:none}.dsn main{max-width:1000px}
 
+/* ===== Splash layar penuh: menyesuaikan ukuran layar, tidak lagi kecil di tengah ===== */
+main.wide{max-width:none;padding-left:0;padding-right:0;--L:min(calc((100vw - 48px)/7.8),15vh,150px)}
+main.wide .ks{margin:0;padding:0 clamp(14px,4vw,64px);min-height:calc(100vh - 118px);min-height:calc(100dvh - 118px);-webkit-mask-image:none;mask-image:none}
+main.wide .ks-c{width:min(100%,1180px);padding:clamp(20px,4vh,56px) 0}
+main.wide .ks-t{gap:calc(var(--L)*.1);margin-bottom:clamp(14px,3vh,34px)}
+main.wide .ks-t b{width:var(--L);height:auto;aspect-ratio:56/66;font-size:calc(var(--L)*.62);border-radius:calc(var(--L)*.22);box-shadow:0 calc(var(--L)*.09) 0 rgba(0,0,0,.28)}
+main.wide .ks-sh{font-size:clamp(1.6rem,calc(1rem + 3vmin),3rem);margin-bottom:clamp(10px,2.4vh,26px)}
+main.wide .ks-note{font-size:clamp(.9rem,calc(.7rem + 1.2vmin),1.35rem)}
+main.wide .ks-s{font-size:clamp(1.1rem,calc(.8rem + 1.9vmin),2.3rem);margin-bottom:clamp(16px,3.4vh,40px)}
+main.wide .ks-card{max-width:min(92vw,780px);font-size:clamp(1rem,calc(.75rem + 1.3vmin),1.55rem);padding:clamp(14px,2.6vmin,30px) clamp(18px,3.4vmin,40px);border-radius:clamp(16px,2.4vmin,26px)}
+main.wide .ks-card span{font-size:clamp(1.6rem,calc(1rem + 2.6vmin),3rem)}
+main.wide .kj{max-width:min(92vw,640px);margin-top:clamp(16px,3.2vh,38px)}
+main.wide .kj p{font-size:clamp(1rem,calc(.75rem + 1.2vmin),1.5rem);margin-bottom:clamp(8px,1.4vh,14px)}
+main.wide .kj input{padding:clamp(12px,2.2vmin,22px) 14px;font-size:clamp(1.2rem,calc(.9rem + 1.6vmin),2rem);border-radius:clamp(12px,1.8vmin,18px)}
+main.wide .kj .btn{padding:clamp(12px,2.2vmin,22px) clamp(18px,3.2vmin,36px);font-size:clamp(1rem,calc(.8rem + 1.1vmin),1.6rem);border-radius:clamp(12px,1.8vmin,18px)}
+main.wide .kj .kjm{font-size:clamp(.92rem,calc(.7rem + 1vmin),1.25rem)}
+main.wide .ks-dots i{width:clamp(10px,1.6vmin,16px);height:clamp(10px,1.6vmin,16px)}
+main.wide .ks-bar{width:min(340px,60%);height:clamp(8px,1.2vmin,12px)}
+main.wide .ks-go{font-size:clamp(1rem,calc(.8rem + 1.2vmin),1.6rem)}
+
 /* ===== Tema tampilan (diatur dosen, berlaku untuk semua layar dosen dan mahasiswa) =====
-   default = tampilan ungu asli. siang = langit biru, matahari, awan bergerak. malam = bintang dan bulan. */
+   default = tampilan ungu asli (tidak diubah). siang = matahari bergerak, awan. malam = bulan berganti fase, bintang, bintang jatuh.
+   Lapisan #kfx berada di belakang semua halaman, jadi animasi ikut ke menu apa pun yang dibuka. */
 #kfx{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
-html[data-tema="siang"]{--bg:#1565C0;--bg2:#4FA8F5}
-html[data-tema="malam"]{--bg:#060A24;--bg2:#1A1458}
+html[data-tema="siang"]{--bg:#0B5ED7;--bg2:#6DB9FA}
+html[data-tema="malam"]{--bg:#02030F;--bg2:#241A66}
+html[data-tema="siang"] body::before{background:linear-gradient(180deg,#0B5ED7 0%,#2F8CEB 50%,#6DB9FA 100%)}
+html[data-tema="malam"] body::before{background:linear-gradient(180deg,#02030F 0%,#0B1040 55%,#2A1B6B 100%)}
 html[data-tema="siang"] .ks,html[data-tema="siang"] .ks-dev,html[data-tema="siang"] .top,html[data-tema="siang"] .bar h1,html[data-tema="siang"] .kj{text-shadow:0 1px 3px rgba(0,30,90,.5)}
 html[data-tema="siang"] .btn,html[data-tema="siang"] .card,html[data-tema="siang"] .ov>div,html[data-tema="siang"] .ks-t b,html[data-tema="siang"] .ks-note,html[data-tema="siang"] .ks-s,html[data-tema="siang"] input{text-shadow:none}
-html[data-tema="siang"] .ks-card{background:rgba(8,38,100,.38)}
-html[data-tema="siang"] .ks::before{opacity:.5}
-html[data-tema="malam"] .ks::before{opacity:.6}
-.kfx-sun{position:absolute;top:5%;right:7%;width:min(120px,26vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 38%,#FFFBD0,#FFD93B 55%,#FFB300);box-shadow:0 0 50px 18px rgba(255,214,70,.5);animation:kfxPulse 4s ease-in-out infinite alternate}
+/* splash ikut tema: bentuk melayang dan kilau ungu diganti oleh sun/awan atau bulan/bintang */
+html[data-tema] .ks-bg,html[data-tema] .ks-st{display:none}
+html[data-tema="siang"] .ks::before{background:radial-gradient(circle at 50% 38%,rgba(255,255,255,.22),transparent 55%);animation:none;filter:blur(20px)}
+html[data-tema="malam"] .ks::before{background:radial-gradient(circle at 25% 30%,rgba(110,90,255,.28),transparent 42%),radial-gradient(circle at 78% 70%,rgba(40,120,255,.22),transparent 44%);opacity:.8}
+html[data-tema="siang"] .ks-card{background:rgba(8,38,100,.38);box-shadow:0 0 0 1px rgba(255,255,255,.18) inset}
+html[data-tema="malam"] .ks-card{background:rgba(12,14,60,.5);box-shadow:0 0 0 1px rgba(160,170,255,.22) inset}
+html[data-tema="malam"] .ks-dots i{background:#FFF2B5}
+html[data-tema="siang"] .ov{background:rgba(6,34,92,.55)}
+html[data-tema="malam"] .ov{background:rgba(2,3,22,.7)}
+/* layar podium dan hadiah ikut tema */
+html[data-tema="siang"] .pod,html[data-tema="siang"] .kd{background:linear-gradient(180deg,#0B5ED7,#6DB9FA)}
+html[data-tema="malam"] .pod,html[data-tema="malam"] .kd{background:linear-gradient(180deg,#02030F,#241A66)}
+html[data-tema] .pod::before,html[data-tema] .kd::before{content:"";position:fixed;inset:0 -5%;z-index:-1;pointer-events:none;background-repeat:no-repeat}
+html[data-tema="siang"] .pod::before,html[data-tema="siang"] .kd::before{background-image:radial-gradient(circle at 86% 14%,#FFF8C4 0 4%,rgba(255,214,70,.55) 6%,transparent 20%),radial-gradient(ellipse 16% 5% at 22% 22%,rgba(255,255,255,.75),transparent 72%),radial-gradient(ellipse 20% 6% at 72% 55%,rgba(255,255,255,.6),transparent 72%),radial-gradient(ellipse 14% 4% at 30% 78%,rgba(255,255,255,.5),transparent 72%);animation:kfxDrift 26s ease-in-out infinite alternate}
+html[data-tema="malam"] .pod::before,html[data-tema="malam"] .kd::before{background-image:radial-gradient(circle at 84% 14%,#FFF2B5 0 3%,rgba(255,242,181,.25) 3.6%,transparent 12%),radial-gradient(2px 2px at 12% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 28% 62%,#fff,transparent),radial-gradient(2px 2px at 41% 12%,#cfe3ff,transparent),radial-gradient(1.5px 1.5px at 55% 74%,#fff,transparent),radial-gradient(2px 2px at 67% 38%,#fff,transparent),radial-gradient(1.5px 1.5px at 76% 86%,#fff3c4,transparent),radial-gradient(2px 2px at 8% 80%,#fff,transparent),radial-gradient(1.5px 1.5px at 92% 52%,#cfe3ff,transparent),radial-gradient(2px 2px at 36% 38%,#fff,transparent);animation:kfxPodTw 3.4s ease-in-out infinite alternate}
+@keyframes kfxDrift{from{transform:translateX(-3vw)}to{transform:translateX(3vw)}}
+@keyframes kfxPodTw{from{opacity:.55}to{opacity:1}}
+
+/* ----- siang ----- */
+.kfx-dawn{position:absolute;inset:0;background:radial-gradient(130% 62% at 50% 108%,rgba(255,138,60,.7),rgba(255,190,110,.25) 45%,transparent 72%);opacity:0;animation:kfxDawn 100s linear var(--st) infinite}
+@keyframes kfxDawn{0%{opacity:.95}20%{opacity:0}80%{opacity:0}100%{opacity:.95}}
+.kfx-sunx{position:absolute;top:0;left:0;animation:kfxSunX 100s linear var(--st) infinite}
+@keyframes kfxSunX{from{transform:translateX(-22vw)}to{transform:translateX(104vw)}}
+.kfx-sun{position:relative;width:var(--sz);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 40% 38%,#FFFBD0,#FFD93B 55%,#FFB300);box-shadow:0 0 calc(var(--sz)*.5) calc(var(--sz)*.18) rgba(255,214,70,.5);animation:kfxSunY 100s cubic-bezier(.37,0,.63,1) var(--st) infinite,kfxSunTint 100s linear var(--st) infinite}
+@keyframes kfxSunY{0%,100%{transform:translateY(68vh)}50%{transform:translateY(5vh)}}
+@keyframes kfxSunTint{0%,100%{filter:hue-rotate(-24deg) saturate(1.45)}22%,78%{filter:none}}
 .kfx-sun::before{content:"";position:absolute;inset:-70%;border-radius:50%;background:repeating-conic-gradient(rgba(255,235,130,.5) 0 7deg,transparent 7deg 22deg);-webkit-mask:radial-gradient(circle,transparent 26%,#000 28%,#000 40%,transparent 62%);mask:radial-gradient(circle,transparent 26%,#000 28%,#000 40%,transparent 62%);animation:kfxSpin 50s linear infinite}
-@keyframes kfxPulse{from{transform:scale(1)}to{transform:scale(1.07)}}
 @keyframes kfxSpin{to{transform:rotate(360deg)}}
-.kfx-cl{position:absolute;top:var(--y);left:calc(var(--l)*1vw);font-size:var(--s);width:9em;height:2.8em;border-radius:2.8em;background:#fff;opacity:var(--a);animation:kfxCloud var(--dur) linear var(--d) infinite}
+.kfx-cl{position:absolute;top:var(--y);left:0;font-size:var(--s);width:9em;height:2.8em;border-radius:2.8em;background:#fff;opacity:var(--a);animation:kfxCloud var(--dur) linear var(--d) infinite}
 .kfx-cl::before,.kfx-cl::after{content:"";position:absolute;background:#fff;border-radius:50%}
 .kfx-cl::before{width:3.6em;height:3.6em;left:1.4em;top:-1.8em}
 .kfx-cl::after{width:4.8em;height:4.8em;right:1.2em;top:-2.4em}
-@keyframes kfxCloud{from{transform:translateX(calc(-1vw*var(--l) - 14em))}to{transform:translateX(calc(100vw - 1vw*var(--l) + 2em))}}
-.kfx-moon{position:absolute;top:7%;right:9%;width:min(84px,20vw);aspect-ratio:1;border-radius:50%;box-shadow:inset -24px -4px 0 0 #FFF2B5,0 0 34px 6px rgba(255,242,181,.28);animation:kfxMoon 6s ease-in-out infinite alternate}
-@keyframes kfxMoon{from{transform:translateY(0)}to{transform:translateY(-8px)}}
-.kfx-st{position:absolute;left:var(--x);top:var(--y);width:var(--z);height:var(--z);border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.7);opacity:.2;animation:kfxTw var(--d) ease-in-out var(--o) infinite}
-@keyframes kfxTw{0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:1;transform:scale(1.25)}}
-.kfx-sh{position:absolute;left:var(--x);top:var(--y);width:120px;height:2px;border-radius:2px;background:linear-gradient(90deg,#fff,transparent);opacity:0;transform:rotate(-30deg);animation:kfxSh 11s linear var(--o) infinite}
-@keyframes kfxSh{0%{opacity:0;transform:translate(0,0) rotate(-30deg)}2%{opacity:1}9%,100%{opacity:0;transform:translate(-260px,150px) rotate(-30deg)}}
+@keyframes kfxCloud{from{transform:translateX(-100%)}to{transform:translateX(100vw)}}
+
+/* ----- malam ----- */
+.kfx-moonx{position:absolute;top:0;left:0;animation:kfxMoonX 120s linear var(--st) infinite}
+@keyframes kfxMoonX{from{transform:translateX(-20vw)}to{transform:translateX(104vw)}}
+.kfx-moon{display:block;width:var(--sz);height:var(--sz);overflow:visible;animation:kfxMoonY 120s cubic-bezier(.37,0,.63,1) var(--st) infinite}
+@keyframes kfxMoonY{0%,100%{transform:translateY(64vh)}50%{transform:translateY(5vh)}}
+.kfx-st{position:absolute;left:var(--x);top:var(--y);width:var(--z);height:var(--z);border-radius:50%;background:var(--c,#fff);box-shadow:0 0 calc(var(--z)*2.2) calc(var(--z)*.5) var(--c,#fff);opacity:.2;animation:kfxTw var(--d) ease-in-out var(--o) infinite}
+@keyframes kfxTw{0%,100%{opacity:.15;transform:scale(.7)}50%{opacity:1;transform:scale(1.3)}}
+.kfx-mw{position:absolute;left:-20%;top:28%;width:140%;height:26%;background:radial-gradient(ellipse at 50% 50%,rgba(150,140,255,.16),transparent 70%);transform:rotate(-24deg);filter:blur(8px)}
+.kfx-sh{position:absolute;left:var(--x);top:var(--y);width:var(--len);height:2px;border-radius:2px;background:linear-gradient(90deg,#fff,rgba(255,255,255,.4) 40%,transparent);opacity:0;transform:rotate(-30deg);animation:kfxSh var(--dur) linear var(--o) infinite}
+.kfx-sh::before{content:"";position:absolute;left:-2px;top:-2px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 8px 3px rgba(255,255,255,.8)}
+@keyframes kfxSh{0%{opacity:0;transform:translate(0,0) rotate(-30deg)}1.5%{opacity:1}6%,100%{opacity:0;transform:translate(-36vw,21vw) rotate(-30deg)}}
 .tpk span{color:#fff;font-weight:700;margin-right:4px}.tpk small{color:#fff;opacity:.8}
-@media (prefers-reduced-motion:reduce){#kfx *,#kfx *::before{animation:none!important}.kfx-sh{display:none}.kfx-st{opacity:.8}}
+/* animasi tema sengaja selalu aktif (tidak mengikuti prefers-reduced-motion) agar matahari, awan, bulan, dan bintang tetap bergerak */
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
 </head>
@@ -609,6 +659,7 @@ const gl=["▲","◆","●"],bg=Array.from({length:14},(_,i)=>`<span style="--x:
 const tl=[..."KuisKuy"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${c}</b>`).join("");
 const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:36},(_,i)=>`<i style="--x:${(i*29)%100}%;--w:${6+(i*3)%7}px;--c:${cc[i%5]};--t:${2.6+(i%5)*.45}s;--d:${(i%9)*.12+.3}s;--dx:${(i%2?1:-1)*(20+(i*11)%60)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
 const st=Array.from({length:9},(_,i)=>`<em style="--x:${(i*37+8)%92}%;--y:${(i*23+6)%80}%;--s:${12+(i*5)%14}px;--d:${(i%5)*.45}s">✦</em>`).join("");
+{const mn=document.querySelector("main");if(mn)mn.classList.add("wide")}
 $("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><div class="ks-note" role="note"><i aria-hidden="true">👇</i>Ketuk hurufnya, coba!</div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><span>📱</span>Pindai QR code atau buka tautan kuis dari dosenmu untuk masuk ke kamar.</div><form class="kj" onsubmit="return kjGo(event)"><p>atau masukkan kode join</p><div style="display:flex;gap:8px"><input id="kjc" placeholder="KODE" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kode join kuis"><button class="btn" type="submit">Masuk ▶</button></div><div class="kjm" id="kjm" role="status"></div></form><div class="ks-dots" aria-hidden="true"><i></i><i></i><i></i></div><div class="ks-bar" aria-hidden="true"><i></i></div></div></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
 const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
@@ -1450,11 +1501,27 @@ if(!DOSEN&&!ROOM_ID)pick();
 /* ===== Tema tampilan: hanya dosen yang menyimpan, semua orang membaca dari Firestore (kamar/_tampilan) ===== */
 let KTEMA="default",kTmU=null;
 function kTemaFx(t){let el=document.getElementById("kfx");
+  if(window.kMoonT){clearInterval(window.kMoonT);window.kMoonT=0}
   if(t!=="siang"&&t!=="malam"){if(el)el.remove();return}
   if(!el){el=document.createElement("div");el.id="kfx";el.setAttribute("aria-hidden","true");document.body.appendChild(el)}
-  if(t==="siang")el.innerHTML='<div class="kfx-sun"></div>'+Array.from({length:7},(_,i)=>`<div class="kfx-cl" style="--l:${(i*23+5)%90};--y:${6+(i*13)%52}%;--s:${13+(i*5)%11}px;--dur:${46+(i*9)%34}s;--d:-${(i*11)%40}s;--a:${(.55+(i%4)*.1).toFixed(2)}"></div>`).join("");
-  else el.innerHTML='<div class="kfx-moon"></div>'+Array.from({length:46},(_,i)=>`<i class="kfx-st" style="--x:${(i*37+11)%97}%;--y:${(i*53+7)%88}%;--z:${1.5+(i%3)}px;--d:${(2.2+(i%5)*.7).toFixed(1)}s;--o:-${((i%7)*.6).toFixed(1)}s"></i>`).join("")+Array.from({length:2},(_,i)=>`<i class="kfx-sh" style="--x:${60+i*25}%;--y:${8+i*14}%;--o:${i*5}s"></i>`).join("");
+  const R=(i,k)=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-Math.floor(v)};
+  if(t==="siang"){
+    const L=[[10,14,4,24,160,220,.42],[16,22,20,50,100,150,.5],[26,36,54,84,60,90,.55]];
+    el.innerHTML='<div class="kfx-dawn" style="--st:-22s"></div><div class="kfx-sunx" style="--st:-22s"><div class="kfx-sun" style="--sz:clamp(96px,16vmin,200px);--st:-22s"></div></div>'
+    +Array.from({length:15},(_,i)=>{const g=L[i%3],n=Math.floor(i/3);return `<div class="kfx-cl" style="--y:${(g[2]+R(i,1)*(g[3]-g[2])).toFixed(1)}%;--s:${(g[0]+R(i,2)*(g[1]-g[0])).toFixed(1)}px;--dur:${(g[4]+R(i,3)*(g[5]-g[4])).toFixed(0)}s;--d:-${(R(i,4)*g[5]).toFixed(0)}s;--a:${g[6]}"></div>`}).join("")}
+  else{
+    const cs=["#fff","#fff","#fff","#cfe3ff","#fff3c4"];
+    el.innerHTML='<div class="kfx-mw"></div>'
+    +Array.from({length:120},(_,i)=>{const big=i%10===0;return `<i class="kfx-st" style="--x:${(R(i,1)*100).toFixed(1)}%;--y:${(R(i,2)*92).toFixed(1)}%;--z:${(big?3+R(i,3)*1.6:1+R(i,3)*1.8).toFixed(1)}px;--c:${cs[i%5]};--d:${(2+R(i,4)*4).toFixed(1)}s;--o:-${(R(i,5)*6).toFixed(1)}s"></i>`}).join("")
+    +'<div class="kfx-moonx" style="--st:-30s"><svg class="kfx-moon" id="kmoon" style="--sz:clamp(76px,12vmin,150px);--st:-30s" viewBox="0 0 100 100"><defs><clipPath id="kmc"><path id="kmcp"/></clipPath><radialGradient id="kmg" cx="40%" cy="38%" r="70%"><stop offset="0" stop-color="#FFFCE6"/><stop offset="1" stop-color="#F1E0A0"/></radialGradient></defs><circle cx="50" cy="50" r="49.5" fill="#9fb0ff" opacity=".12"/><g clip-path="url(#kmc)"><circle cx="50" cy="50" r="50" fill="url(#kmg)"/><circle cx="36" cy="34" r="8" fill="#cdbb78" opacity=".4"/><circle cx="62" cy="58" r="11" fill="#cdbb78" opacity=".36"/><circle cx="44" cy="74" r="5" fill="#cdbb78" opacity=".4"/><circle cx="68" cy="30" r="4" fill="#cdbb78" opacity=".36"/></g></svg></div>'
+    +Array.from({length:5},(_,i)=>`<i class="kfx-sh" style="--x:${(42+R(i,7)*56).toFixed(0)}%;--y:${(R(i,8)*38).toFixed(0)}%;--len:${(110+R(i,9)*90).toFixed(0)}px;--dur:${(9+R(i,10)*8).toFixed(1)}s;--o:${(i*2.1+R(i,11)*2).toFixed(1)}s"></i>`).join("");
+    kMoonPh();window.kMoonT=setInterval(kMoonPh,250)}
 }
+/* fase bulan: siklus 44 detik dari bulan baru, sabit, separuh, cembung, purnama, lalu menyusut kembali */
+function kMoonPh(){const m=document.getElementById("kmoon"),c=document.getElementById("kmcp");if(!m||!c)return;
+  const p=((Date.now()%44000)/44000),a=Math.cos(2*Math.PI*p),rx=Math.abs(a)*50,wax=p<.5,s1=wax?1:0,s2=wax?(a>0?0:1):(a>0?1:0),k=(1-a)/2;
+  c.setAttribute("d",`M50 0A50 50 0 0 ${s1} 50 100A${rx.toFixed(2)} 50 0 0 ${s2} 50 0Z`);
+  m.style.filter=`drop-shadow(0 0 ${(6+k*24).toFixed(0)}px rgba(255,242,181,${(.12+k*.45).toFixed(2)}))`}
 function kTemaApply(t){t=t==="siang"||t==="malam"?t:"default";
   const h=document.documentElement;if(t==="default")h.removeAttribute("data-tema");else h.setAttribute("data-tema",t);
   try{localStorage.setItem("tema_cache",t)}catch(e){}
