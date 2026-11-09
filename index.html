@@ -477,6 +477,13 @@ html[data-tema="malam"] .pod::before,html[data-tema="malam"] .kd::before{backgro
 @keyframes kfxDrift{from{transform:translateX(-3vw)}to{transform:translateX(3vw)}}
 @keyframes kfxPodTw{from{opacity:.55}to{opacity:1}}
 
+/* ----- default: bentuk melayang + aurora ungu di semua halaman ----- */
+.kfx-ab{position:absolute;inset:-20%;background:radial-gradient(circle at 20% 25%,rgba(226,27,60,.28),transparent 40%),radial-gradient(circle at 80% 20%,rgba(19,104,206,.34),transparent 42%),radial-gradient(circle at 55% 85%,rgba(216,158,0,.24),transparent 40%);filter:blur(30px);animation:ksAur 14s ease-in-out infinite alternate}
+.kfx-sp{position:absolute;bottom:-12%;left:var(--x);font-size:var(--s);color:var(--c);opacity:0;animation:kfxSpUp var(--dur) linear var(--d) infinite}
+@keyframes kfxSpUp{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.3}90%{opacity:.3}100%{transform:translateY(-112vh) rotate(320deg);opacity:0}}
+html:not([data-tema]) .ks-bg{display:none}
+@media (prefers-reduced-motion:reduce){.kfx-ab{animation:none}.kfx-sp{animation:none;opacity:.15;bottom:auto;top:var(--y)}}
+
 /* ----- siang ----- */
 .kfx-dawn{position:absolute;inset:0;background:radial-gradient(130% 62% at 50% 108%,rgba(255,138,60,.7),rgba(255,190,110,.25) 45%,transparent 72%);opacity:0;animation:kfxDawn 100s linear var(--st) infinite}
 @keyframes kfxDawn{0%{opacity:.95}20%{opacity:0}80%{opacity:0}100%{opacity:.95}}
@@ -504,10 +511,47 @@ html[data-tema="malam"] .pod::before,html[data-tema="malam"] .kd::before{backgro
 .kfx-sh{position:absolute;left:var(--x);top:var(--y);width:var(--len);height:2px;border-radius:2px;background:linear-gradient(90deg,#fff,rgba(255,255,255,.4) 40%,transparent);opacity:0;transform:rotate(-30deg);animation:kfxSh var(--dur) linear var(--o) infinite}
 .kfx-sh::before{content:"";position:absolute;left:-2px;top:-2px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 8px 3px rgba(255,255,255,.8)}
 @keyframes kfxSh{0%{opacity:0;transform:translate(0,0) rotate(-30deg)}1.5%{opacity:1}6%,100%{opacity:0;transform:translate(-36vw,21vw) rotate(-30deg)}}
+
+/* ----- hujan badai ----- */
+html[data-tema="badai"]{--bg:#0A0F1E;--bg2:#2A3553}
+html[data-tema="badai"] body::before{background:linear-gradient(180deg,#05070F 0%,#121A30 50%,#2B3656 100%)}
+html[data-tema="badai"] .ks::before{background:radial-gradient(circle at 30% 30%,rgba(90,120,200,.22),transparent 45%),radial-gradient(circle at 75% 75%,rgba(60,90,170,.2),transparent 45%);animation:none;opacity:.8}
+html[data-tema="badai"] .ks-card{background:rgba(10,14,34,.55);box-shadow:0 0 0 1px rgba(150,170,230,.22) inset}
+html[data-tema="badai"] .ks-dots i{background:#BFD3FF}
+html[data-tema="badai"] .ov{background:rgba(3,5,18,.75)}
+html[data-tema="badai"] .pod,html[data-tema="badai"] .kd{background:linear-gradient(180deg,#05070F,#2B3656)}
+html[data-tema="badai"] .pod::before,html[data-tema="badai"] .kd::before{background-image:radial-gradient(ellipse 30% 9% at 20% 12%,rgba(70,85,125,.7),transparent 72%),radial-gradient(ellipse 34% 10% at 75% 20%,rgba(55,70,110,.65),transparent 72%),radial-gradient(ellipse 26% 8% at 50% 6%,rgba(80,95,135,.6),transparent 72%);animation:kfxDrift 22s ease-in-out infinite alternate}
+.kfx-sd{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.45),transparent 55%)}
+.kfx-dc{position:absolute;top:var(--y);left:0;font-size:var(--s);width:9em;height:2.8em;border-radius:2.8em;background:var(--cc);opacity:var(--a);filter:blur(2px);animation:kfxCloud var(--dur) linear var(--d) infinite}
+.kfx-dc::before,.kfx-dc::after{content:"";position:absolute;background:var(--cc);border-radius:50%}
+.kfx-dc::before{width:3.6em;height:3.6em;left:1.4em;top:-1.8em}
+.kfx-dc::after{width:4.8em;height:4.8em;right:1.2em;top:-2.4em}
+.kfx-mist{position:absolute;left:-10%;right:-10%;bottom:-6%;height:32%;background:radial-gradient(ellipse at 50% 100%,rgba(160,180,225,.28),transparent 70%);animation:kfxDrift 14s ease-in-out infinite alternate}
+.kfx-rn{position:absolute;top:0;left:var(--x);width:var(--w);height:var(--h);border-radius:2px;background:linear-gradient(180deg,transparent,rgba(200,218,255,var(--a)));animation:kfxRain var(--t) linear var(--d) infinite;will-change:transform}
+@keyframes kfxRain{from{transform:translate(0,-20vh) rotate(12deg)}to{transform:translate(-26vh,125vh) rotate(12deg)}}
+.kfx-fl{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse 90% 70% at var(--lx,50%) 0,rgba(225,233,255,.9),rgba(150,170,255,.3) 45%,transparent 78%)}
+.kfx-fl.go{animation:kfxFlash 1s ease-out}
+@keyframes kfxFlash{0%{opacity:0}5%{opacity:1}12%{opacity:.15}20%{opacity:.85}32%{opacity:.1}100%{opacity:0}}
+.kfx-bolt{position:absolute;inset:0;opacity:0;animation:kfxFlash 1s ease-out;filter:drop-shadow(0 0 6px #BCD0FF) drop-shadow(0 0 16px #7C9CFF)}
+.kfx-bolt svg{width:100%;height:100%;display:block}
+
+/* ----- satelit dan roket (malam) ----- */
+.kfx-orx{position:absolute;left:50%;top:32%;animation:kfxOrbX 24s ease-in-out infinite alternate}
+.kfx-ory{animation:kfxOrbY 24s ease-in-out -12s infinite alternate}
+@keyframes kfxOrbX{from{transform:translateX(-40vw)}to{transform:translateX(40vw)}}
+@keyframes kfxOrbY{from{transform:translateY(-15vh)}to{transform:translateY(15vh)}}
+.kfx-sat{display:block;width:clamp(44px,7vmin,70px);height:auto;margin:-12px 0 0 -30px;filter:drop-shadow(0 0 5px rgba(160,190,255,.45));animation:kfxSpin 36s linear infinite}
+.kfx-sbl{animation:kfxTw 1.4s ease-in-out infinite}
+.kfx-rk{position:absolute;left:var(--x);bottom:-230px;width:26px;display:flex;flex-direction:column;align-items:center;animation:kfxRk var(--T) cubic-bezier(.5,0,.9,.6) var(--d) infinite}
+.kfx-rk svg{display:block;flex:none}
+.kfx-rfl{flex:none;width:12px;height:34px;margin-top:-2px;border-radius:50% 50% 50% 50%/18% 18% 82% 82%;background:linear-gradient(180deg,#fff,#FFD23F 35%,#FF6B35 70%,transparent);transform-origin:top;animation:kfxFl .12s ease-in-out infinite alternate}
+.kfx-rtr{flex:none;width:9px;height:130px;margin-top:-10px;border-radius:6px;background:linear-gradient(180deg,rgba(255,220,160,.7),rgba(200,210,255,.25) 40%,transparent);filter:blur(3px)}
+@keyframes kfxFl{from{transform:scale(.85,.8)}to{transform:scale(1.15,1.25)}}
+@keyframes kfxRk{0%{transform:translate(0,0) rotate(var(--r)) scale(1);opacity:0}2%{transform:translate(0,0) rotate(var(--r)) scale(1);opacity:1}43%{transform:translate(var(--dx),-135vh) rotate(var(--r)) scale(.45);opacity:1}47%{transform:translate(var(--dx),-135vh) rotate(var(--r)) scale(.45);opacity:0}100%{transform:translate(var(--dx),-135vh) rotate(var(--r)) scale(.45);opacity:0}}
 .tpk span{color:#fff;font-weight:700;margin-right:4px}.tpk small{color:#fff;opacity:.8}
 /* animasi tema sengaja selalu aktif (tidak mengikuti prefers-reduced-motion) agar matahari, awan, bulan, dan bintang tetap bergerak */
 </style>
-<script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
+<script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
 </head>
 <body>
 <main>
@@ -1253,25 +1297,29 @@ const _muFin=fin;fin=function(){_muFin();music("win")};
 function dMus(){return dView==="board"&&dGoM[dRoom]?"play":"lobby"}
 const _muPodX=dPodX;dPodX=function(){_muPodX();music(DOSEN?dMus():null)};
 /* ===== Animasi skor papan peringkat: hitung naik angka + bar bergerak + kedip saat skor berubah ===== */
-let dPrevSk={};
+let dPrevSk={},dBdKey="";
 function dBoardAnim(){
-  document.querySelectorAll(".rw[data-pid]").forEach(row=>{
+  const key=dTema==="default"?dRoom:"",fresh=!!key&&key!==dBdKey;dBdKey=key;
+  const calm=window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches;
+  document.querySelectorAll(".rw[data-pid]").forEach((row,idx)=>{
     const id=row.getAttribute("data-pid"),bEl=row.querySelector("b[data-sk]"),iEl=row.querySelector(".tr i[data-sk]");
     if(!bEl||!iEl)return;
-    const nv=+bEl.getAttribute("data-sk"),nw=+iEl.getAttribute("data-sk"),had=id in dPrevSk,ov=had?dPrevSk[id]:nv;
-    dPrevSk[id]=nv;
-    if(!had||ov===nv){bEl.textContent=nv;iEl.style.width=nw+"%";return}
-    const ow=had?iEl.style.width:nw+"%";
-    iEl.style.transition="none";iEl.style.width=ow;
+    const nv=+bEl.getAttribute("data-sk"),nw=+iEl.getAttribute("data-sk");
+    const prev=(!fresh&&id in dPrevSk)?dPrevSk[id]:[0,0];
+    const ov=prev[0],ow=prev[1];
+    dPrevSk[id]=[nv,nw];
+    if(calm||ov===nv){bEl.textContent=nv;iEl.style.width=nw+"%";return}
+    const delay=fresh?idx*90:0;
+    iEl.style.transition="none";iEl.style.width=ow+"%";bEl.textContent=ov;
     void iEl.offsetWidth;
-    iEl.style.transition="";iEl.style.width=nw+"%";
-    const t0=performance.now(),dur=700;
-    (function step(now){const p=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-p,3);
+    iEl.style.transition="width .9s cubic-bezier(.2,.9,.3,1) "+delay+"ms";iEl.style.width=nw+"%";
+    const t0=performance.now()+delay,dur=900;
+    (function step(now){const p=Math.min(1,Math.max(0,(now-t0)/dur)),e=1-Math.pow(1-p,3);
       bEl.textContent=Math.round(ov+(nv-ov)*e);
-      if(p<1)requestAnimationFrame(step)})(t0);
-    bEl.classList.remove("pop");void bEl.offsetWidth;bEl.classList.add("pop")})}
+      if(p<1)requestAnimationFrame(step)})(performance.now());
+    setTimeout(()=>{bEl.classList.remove("pop");void bEl.offsetWidth;bEl.classList.add("pop")},delay+700)})}
 const _muDraw=dDraw;dDraw=function(){_muDraw();if(DOSEN&&!$("pod"))music(dMus())};
-const _bdDraw=dDraw;dDraw=function(){_bdDraw();if(DOSEN&&dView==="board")dBoardAnim()};
+const _bdDraw=dDraw;dDraw=function(){_bdDraw();if(DOSEN&&dView==="board")dBoardAnim();else dBdKey=""};
 const _muDosen=dosen;dosen=function(){_muDosen();music("lobby")};
 const _muDLogin=dLogin;dLogin=function(){_muDLogin();music("lobby")};
 const _muPod=dPodium;dPodium=function(){_muPod();music("podium")};
@@ -1500,12 +1548,47 @@ home=function(){_hmK();kdChk()};
 if(!DOSEN&&!ROOM_ID)pick();
 /* ===== Tema tampilan: hanya dosen yang menyimpan, semua orang membaca dari Firestore (kamar/_tampilan) ===== */
 let KTEMA="default",kTmU=null;
+
+/* ===== Tema hujan badai: awan gelap, hujan miring, kilat acak + gemuruh petir ===== */
+function kStorm(el){
+  const R=(i,k)=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-Math.floor(v)};
+  const cc=["#141b30","#1e2740","#2a3454","#38446a"];
+  const clouds=Array.from({length:12},(_,i)=>`<div class="kfx-dc" style="--y:${(R(i,1)*34-4).toFixed(1)}%;--s:${(30+R(i,2)*44).toFixed(0)}px;--dur:${(55+R(i,3)*60).toFixed(0)}s;--d:-${(R(i,4)*100).toFixed(0)}s;--a:${(.55+R(i,5)*.4).toFixed(2)};--cc:${cc[i%4]}"></div>`).join("");
+  const rain=Array.from({length:150},(_,i)=>{const far=i%3===0;return `<i class="kfx-rn" style="--x:${(R(i,6)*135-5).toFixed(1)}%;--w:${far?1:1.8}px;--h:${(far?22+R(i,7)*26:44+R(i,7)*60).toFixed(0)}px;--a:${far?.35:.7};--t:${(far?.9+R(i,8)*.5:.55+R(i,8)*.35).toFixed(2)}s;--d:-${(R(i,9)*2).toFixed(2)}s"></i>`}).join("");
+  el.innerHTML='<div class="kfx-sd"></div>'+clouds+'<div class="kfx-mist"></div>'+rain+'<div class="kfx-fl" id="kfl"></div>';
+  const nx=()=>{window.kBoltT=setTimeout(()=>{kBolt();nx()},3500+Math.random()*6500)};
+  window.kBoltT=setTimeout(()=>{kBolt();nx()},1500)}
+function kBolt(){const el=document.getElementById("kfx"),fl=document.getElementById("kfl");if(!el||!fl||document.hidden)return;
+  let x=15+Math.random()*70,y=0,d="M"+x.toFixed(1)+" 0",br="";const lx=x,top=50+Math.random()*30;
+  while(y<top){y+=5+Math.random()*9;x+=(Math.random()-.5)*14;d+="L"+x.toFixed(1)+" "+y.toFixed(1);
+    if(!br&&y>20&&Math.random()<.45){let bx=x,by=y;br="M"+bx.toFixed(1)+" "+by.toFixed(1);for(let k=0;k<3;k++){bx+=(Math.random()<.5?-1:1)*(4+Math.random()*7);by+=5+Math.random()*7;br+="L"+bx.toFixed(1)+" "+by.toFixed(1)}}}
+  const b=document.createElement("div");b.className="kfx-bolt";
+  b.innerHTML='<svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="'+d+(br?br:"")+'" fill="none" stroke="#fff" stroke-width="3" vector-effect="non-scaling-stroke" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+  el.appendChild(b);setTimeout(()=>b.remove(),1100);
+  fl.style.setProperty("--lx",lx.toFixed(0)+"%");fl.classList.remove("go");void fl.offsetWidth;fl.classList.add("go");
+  setTimeout(muThunder,450+Math.random()*1000)}
+function muThunder(){try{if(!MU.ok||!MU.on||!MU.ctx||MU.ctx.state!=="running"||!MU.nb||!MU.mg)return;
+  const c=MU.ctx,t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+  s.buffer=MU.nb;s.loop=true;f.type="lowpass";f.frequency.setValueAtTime(420,t);f.frequency.exponentialRampToValueAtTime(70,t+2.4);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.5,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+2.6);
+  s.connect(f);f.connect(g);g.connect(MU.mg);s.start(t);s.stop(t+2.7)}catch(e){}}
+
+/* ===== Tema malam: satelit mengorbit sambil berputar, roket meluncur ke angkasa ===== */
+const KSAT='<svg class="kfx-sat" viewBox="0 0 80 40" aria-hidden="true"><g stroke="#0d1540" stroke-width=".8"><rect x="1" y="9" width="26" height="22" rx="1.5" fill="#3F6FD1"/><rect x="53" y="9" width="26" height="22" rx="1.5" fill="#3F6FD1"/></g><g stroke="#9DBBFF" stroke-width=".7" opacity=".85"><path d="M9.7 9V31M18.3 9V31M1 20H27M53 20H79M61.7 9V31M70.3 9V31"/></g><rect x="27" y="18" width="4" height="4" fill="#8892A8"/><rect x="49" y="18" width="4" height="4" fill="#8892A8"/><rect x="31" y="12" width="18" height="16" rx="3" fill="#E4E8F2" stroke="#8892A8" stroke-width=".8"/><rect x="34" y="15" width="12" height="4" rx="1" fill="#B8C0D6"/><path d="M40 12V6" stroke="#C9D0E4" stroke-width="1.2"/><path d="M34.5 6a5.5 3 0 0 0 11 0Z" fill="#F4F6FC"/><circle class="kfx-sbl" cx="40" cy="24" r="1.8" fill="#FF4A63"/></svg>';
+const KRKT='<svg viewBox="0 0 24 56" width="26" aria-hidden="true"><path d="M5 32L0 46V52L5 44Z" fill="#E21B3C"/><path d="M19 32L24 46V52L19 44Z" fill="#E21B3C"/><path d="M12 0C17 8 19 18 19 30V44H5V30C5 18 7 8 12 0Z" fill="#E8ECF5"/><path d="M12 0C15 5 16.6 10 17.3 15H6.7C7.4 10 9 5 12 0Z" fill="#E21B3C"/><circle cx="12" cy="26" r="4" fill="#1368CE" stroke="#9fb4e8" stroke-width="1.4"/><rect x="8" y="44" width="8" height="4" rx="1" fill="#6B7390"/></svg>';
+const KSPACE='<div class="kfx-orx"><div class="kfx-ory">'+KSAT+'</div></div>'
+ +[['16%','12deg','27vh','5s','34s'],['78%','-12deg','-27vh','17s','41s']].map(a=>`<div class="kfx-rk" style="--x:${a[0]};--r:${a[1]};--dx:${a[2]};--d:${a[3]};--T:${a[4]}">${KRKT}<i class="kfx-rfl"></i><i class="kfx-rtr"></i></div>`).join("");
 function kTemaFx(t){let el=document.getElementById("kfx");
   if(window.kMoonT){clearInterval(window.kMoonT);window.kMoonT=0}
-  if(t!=="siang"&&t!=="malam"){if(el)el.remove();return}
+  if(window.kBoltT){clearTimeout(window.kBoltT);window.kBoltT=0}
+  if(t!=="default"&&t!=="siang"&&t!=="malam"&&t!=="badai"){if(el)el.remove();return}
   if(!el){el=document.createElement("div");el.id="kfx";el.setAttribute("aria-hidden","true");document.body.appendChild(el)}
   const R=(i,k)=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-Math.floor(v)};
-  if(t==="siang"){
+  if(t==="default"){
+    const sh=["▲","◆","●","■","★"],cs=["#FF5A6E","#5AA2FF","#FFD23F","#8CF08C","#fff"];
+    el.innerHTML='<div class="kfx-ab"></div>'+Array.from({length:22},(_,i)=>`<span class="kfx-sp" style="--x:${(R(i,1)*96).toFixed(1)}%;--y:${(R(i,6)*90).toFixed(0)}%;--s:${(18+R(i,2)*34).toFixed(0)}px;--dur:${(14+R(i,3)*16).toFixed(1)}s;--d:-${(R(i,4)*30).toFixed(1)}s;--c:${cs[i%5]}">${sh[i%5]}</span>`).join("")}
+  else if(t==="badai"){kStorm(el)}
+  else if(t==="siang"){
     const L=[[10,14,4,24,160,220,.42],[16,22,20,50,100,150,.5],[26,36,54,84,60,90,.55]];
     el.innerHTML='<div class="kfx-dawn" style="--st:-22s"></div><div class="kfx-sunx" style="--st:-22s"><div class="kfx-sun" style="--sz:clamp(96px,16vmin,200px);--st:-22s"></div></div>'
     +Array.from({length:15},(_,i)=>{const g=L[i%3],n=Math.floor(i/3);return `<div class="kfx-cl" style="--y:${(g[2]+R(i,1)*(g[3]-g[2])).toFixed(1)}%;--s:${(g[0]+R(i,2)*(g[1]-g[0])).toFixed(1)}px;--dur:${(g[4]+R(i,3)*(g[5]-g[4])).toFixed(0)}s;--d:-${(R(i,4)*g[5]).toFixed(0)}s;--a:${g[6]}"></div>`}).join("")}
@@ -1515,6 +1598,7 @@ function kTemaFx(t){let el=document.getElementById("kfx");
     +Array.from({length:120},(_,i)=>{const big=i%10===0;return `<i class="kfx-st" style="--x:${(R(i,1)*100).toFixed(1)}%;--y:${(R(i,2)*92).toFixed(1)}%;--z:${(big?3+R(i,3)*1.6:1+R(i,3)*1.8).toFixed(1)}px;--c:${cs[i%5]};--d:${(2+R(i,4)*4).toFixed(1)}s;--o:-${(R(i,5)*6).toFixed(1)}s"></i>`}).join("")
     +'<div class="kfx-moonx" style="--st:-30s"><svg class="kfx-moon" id="kmoon" style="--sz:clamp(76px,12vmin,150px);--st:-30s" viewBox="0 0 100 100"><defs><clipPath id="kmc"><path id="kmcp"/></clipPath><radialGradient id="kmg" cx="40%" cy="38%" r="70%"><stop offset="0" stop-color="#FFFCE6"/><stop offset="1" stop-color="#F1E0A0"/></radialGradient></defs><circle cx="50" cy="50" r="49.5" fill="#9fb0ff" opacity=".12"/><g clip-path="url(#kmc)"><circle cx="50" cy="50" r="50" fill="url(#kmg)"/><circle cx="36" cy="34" r="8" fill="#cdbb78" opacity=".4"/><circle cx="62" cy="58" r="11" fill="#cdbb78" opacity=".36"/><circle cx="44" cy="74" r="5" fill="#cdbb78" opacity=".4"/><circle cx="68" cy="30" r="4" fill="#cdbb78" opacity=".36"/></g></svg></div>'
     +Array.from({length:5},(_,i)=>`<i class="kfx-sh" style="--x:${(42+R(i,7)*56).toFixed(0)}%;--y:${(R(i,8)*38).toFixed(0)}%;--len:${(110+R(i,9)*90).toFixed(0)}px;--dur:${(9+R(i,10)*8).toFixed(1)}s;--o:${(i*2.1+R(i,11)*2).toFixed(1)}s"></i>`).join("");
+    el.insertAdjacentHTML("beforeend",KSPACE);
     kMoonPh();window.kMoonT=setInterval(kMoonPh,250)}
 }
 /* fase bulan: siklus 44 detik dari bulan baru, sabit, separuh, cembung, purnama, lalu menyusut kembali */
@@ -1522,10 +1606,10 @@ function kMoonPh(){const m=document.getElementById("kmoon"),c=document.getElemen
   const p=((Date.now()%44000)/44000),a=Math.cos(2*Math.PI*p),rx=Math.abs(a)*50,wax=p<.5,s1=wax?1:0,s2=wax?(a>0?0:1):(a>0?1:0),k=(1-a)/2;
   c.setAttribute("d",`M50 0A50 50 0 0 ${s1} 50 100A${rx.toFixed(2)} 50 0 0 ${s2} 50 0Z`);
   m.style.filter=`drop-shadow(0 0 ${(6+k*24).toFixed(0)}px rgba(255,242,181,${(.12+k*.45).toFixed(2)}))`}
-function kTemaApply(t){t=t==="siang"||t==="malam"?t:"default";
+function kTemaApply(t){t=t==="siang"||t==="malam"||t==="badai"?t:"default";
   const h=document.documentElement;if(t==="default")h.removeAttribute("data-tema");else h.setAttribute("data-tema",t);
   try{localStorage.setItem("tema_cache",t)}catch(e){}
-  if(t===KTEMA&&(t==="default"||document.getElementById("kfx")))return;
+  if(t===KTEMA&&document.getElementById("kfx"))return;
   KTEMA=t;kTemaFx(t)}
 function kTemaListen(){if(kTmU||!DB)return;
   const go=()=>{kTmU=DB.collection("kamar").doc("_tampilan").onSnapshot(d=>{const x=d.exists?d.data():null;kTemaApply(x&&x.tema)},()=>{kTmU=null})};
@@ -1535,7 +1619,7 @@ async function kTemaSet(t){const old=KTEMA;kTemaApply(t);
   try{await DB.collection("kamar").doc("_tampilan").set({tema:t,t:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})}
   catch(e){kTemaApply(old);alert("Gagal menyimpan tampilan: "+((e&&e.code)||"koneksi")+". Pastikan kamu masuk sebagai dosen dan aturan koleksi kamar sudah dipasang.")}
   dDraw()}
-const kTemaOpts=[["default","🎨 Default"],["siang","☀️ Siang"],["malam","🌙 Malam"]];
+const kTemaOpts=[["default","🎨 Default"],["siang","☀️ Siang"],["malam","🌙 Malam"],["badai","⛈️ Hujan badai"]];
 const _tpkL=dListen;dListen=function(){_tpkL();kTemaListen()};
 const _tpkD=dDraw;dDraw=function(){_tpkD();if(!DOSEN)return;const b=document.querySelector("#app .bar");if(!b)return;
   b.insertAdjacentHTML("afterend",`<div class="bar tpk" role="group" aria-label="Tampilan untuk semua layar"><span>Tampilan semua layar:</span>${kTemaOpts.map(o=>`<button type="button" class="btn ${KTEMA===o[0]?"on":"ghost w"}" aria-pressed="${KTEMA===o[0]}" onclick="kTemaSet('${o[0]}')">${o[1]}</button>`).join("")}<small>Mahasiswa ikut otomatis</small></div>`)};
