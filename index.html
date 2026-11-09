@@ -646,6 +646,21 @@ html[data-tema="badai"] .pod::before,html[data-tema="badai"] .kd::before{backgro
 .kfx-dbr .dbi{display:inline-block;font-style:normal;will-change:rotate}
 @keyframes kfxDbr{from{transform:translateX(105vw)}to{transform:translateX(-12vw)}}
 .tpk span{color:#fff;font-weight:700;margin-right:4px}.tpk small{color:#fff;opacity:.8}
+/* ----- hujan badai: angin kencang (garis embusan, embusan kuat berkala, dedaunan beterbangan) ----- */
+.kfx-wd{position:absolute;inset:0;overflow:hidden}
+.kfx-ws{position:absolute;top:var(--y);left:0;width:var(--w);height:auto;opacity:0;animation:kfxWs var(--t) linear var(--d) infinite;will-change:transform,opacity}
+@keyframes kfxWs{0%{transform:translateX(112vw);opacity:0}12%{opacity:var(--a)}85%{opacity:var(--a)}100%{transform:translateX(-45vw);opacity:0}}
+.kfx-wg{position:absolute;inset:0;opacity:0}
+.kfx-wd.gust .kfx-wg{animation:kfxGustOp 6s ease-in-out 1}
+@keyframes kfxGustOp{0%{opacity:0}35%{opacity:1}65%{opacity:.85}100%{opacity:0}}
+.kfx-wgl{position:absolute;top:0;bottom:0;left:0;width:70vw;opacity:0;background:linear-gradient(90deg,transparent,rgba(190,208,245,.14) 35%,rgba(190,208,245,.2) 55%,transparent);transform:translateX(110vw)}
+.kfx-wd.gust .kfx-wgl{animation:kfxGustSw 5s ease-in-out 1}
+@keyframes kfxGustSw{0%{transform:translateX(110vw);opacity:0}25%{opacity:1}75%{opacity:1}100%{transform:translateX(-80vw);opacity:0}}
+.kfx-lf{position:absolute;top:var(--y);left:0;font-size:var(--s);line-height:1;animation:kfxLfX var(--dur) linear var(--d) infinite;will-change:transform}
+.kfx-lf i{display:inline-block;font-style:normal;animation:kfxLfY var(--sp) ease-in-out infinite alternate,kfxLfR calc(var(--sp)*2.2) linear infinite;will-change:transform,translate}
+@keyframes kfxLfX{from{transform:translate(112vw,0)}to{transform:translate(-14vw,var(--up))}}
+@keyframes kfxLfY{from{translate:0 -3.2vh}to{translate:0 3.2vh}}
+@keyframes kfxLfR{to{rotate:var(--ro)}}
 /* animasi tema sengaja selalu aktif (tidak mengikuti prefers-reduced-motion) agar matahari, awan, bulan, dan bintang tetap bergerak */
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
@@ -1652,9 +1667,9 @@ function kStorm(el){
   const cc=["#141b30","#1e2740","#2a3454","#38446a"];
   const clouds=Array.from({length:12},(_,i)=>`<div class="kfx-dc" style="--y:${(R(i,1)*34-4).toFixed(1)}%;--s:${(30+R(i,2)*44).toFixed(0)}px;--dur:${(55+R(i,3)*60).toFixed(0)}s;--d:-${(R(i,4)*100).toFixed(0)}s;--a:${(.55+R(i,5)*.4).toFixed(2)};--cc:${cc[i%4]}"></div>`).join("");
   const rain=Array.from({length:150},(_,i)=>{const far=i%3===0;return `<i class="kfx-rn" style="--x:${(R(i,6)*135-5).toFixed(1)}%;--w:${far?1:1.8}px;--h:${(far?22+R(i,7)*26:44+R(i,7)*60).toFixed(0)}px;--a:${far?.35:.7};--t:${(far?.9+R(i,8)*.5:.55+R(i,8)*.35).toFixed(2)}s;--d:-${(R(i,9)*2).toFixed(2)}s"></i>`}).join("");
-  el.innerHTML='<div class="kfx-sd"></div>'+clouds+'<div class="kfx-mist"></div>'+KFLOOD+rain+'<div class="kfx-fl" id="kfl"></div>';
+  el.innerHTML='<div class="kfx-sd"></div>'+clouds+'<div class="kfx-mist"></div>'+KFLOOD+rain+KWIND+'<div class="kfx-fl" id="kfl"></div>';
   const nx=()=>{window.kBoltT=setTimeout(()=>{kBolt();nx()},3500+Math.random()*6500)};
-  window.kBoltT=setTimeout(()=>{kBolt();nx()},1500);kWaveStart()}
+  window.kBoltT=setTimeout(()=>{kBolt();nx()},1500);kWaveStart();kLoop("kAmbT2",muSnore,3600,3600,900);kLoop("kAmbT3",kWind,1200,4200,700)}
 /* perahu & sampah mengapung: tinggi dan kemiringan dihitung dari kurva gelombang yang sama (KWAVE) dan disinkronkan dengan animasi CSS-nya */
 function kWaveStart(){
   if(window.kWaveRaf){cancelAnimationFrame(window.kWaveRaf);window.kWaveRaf=0}
@@ -1699,10 +1714,45 @@ function kBolt(aim){const el=document.getElementById("kfx"),fl=document.getEleme
   setTimeout(muThunder,fp?150:450+Math.random()*1000)}
 function muThunder(){try{if(!MU.ok||!MU.on||!MU.ctx||MU.ctx.state!=="running"||!MU.nb||!MU.mg)return;
   const c=MU.ctx,t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
-  s.buffer=MU.nb;s.loop=true;f.type="lowpass";f.frequency.setValueAtTime(420,t);f.frequency.exponentialRampToValueAtTime(70,t+2.4);
-  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.5,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+2.6);
+  s.buffer=MU.nb;s.loop=true;f.type="lowpass";f.frequency.setValueAtTime(650,t);f.frequency.exponentialRampToValueAtTime(90,t+2.4);
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(1.3,t+.08);g.gain.exponentialRampToValueAtTime(.0001,t+2.6);
   s.connect(f);f.connect(g);g.connect(MU.mg);s.start(t);s.stop(t+2.7)}catch(e){}}
-
+/* dengkur katak yang tidur di perahu: tarik napas (naik) lalu hembus bergetar, 3,6 dtk selaras animasi "z z z" */
+function muSnore(){try{if(!kAmbOk())return;const bt=document.querySelector(".kfx-bt");if(!bt||bt.classList.contains("zap"))return;
+  const c=MU.ctx,t=c.currentTime+.03,v=.3,
+    s=c.createOscillator(),s2=c.createOscillator(),am=c.createGain(),lfo=c.createOscillator(),lg=c.createGain(),g=c.createGain(),lp=c.createBiquadFilter(),
+    ns=c.createBufferSource(),nf=c.createBiquadFilter(),ng=c.createGain();
+  s.type="sawtooth";s.frequency.setValueAtTime(52,t);s.frequency.linearRampToValueAtTime(74,t+.85);s.frequency.setValueAtTime(64,t+.95);s.frequency.linearRampToValueAtTime(46,t+2.1);
+  s2.type="square";s2.frequency.setValueAtTime(104,t);s2.frequency.linearRampToValueAtTime(148,t+.85);s2.frequency.setValueAtTime(128,t+.95);s2.frequency.linearRampToValueAtTime(92,t+2.1);
+  am.gain.value=.5;lfo.frequency.value=26;lg.gain.value=.5;lfo.connect(lg);lg.connect(am.gain);
+  lp.type="lowpass";lp.frequency.value=520;lp.Q.value=.8;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v*.7,t+.85);g.gain.linearRampToValueAtTime(v*.2,t+.95);g.gain.linearRampToValueAtTime(v,t+1.3);g.gain.setValueAtTime(v*.9,t+1.6);g.gain.exponentialRampToValueAtTime(.0001,t+2.2);
+  const m2=c.createGain();m2.gain.value=.45;s.connect(am);s2.connect(m2);m2.connect(am);am.connect(g);g.connect(lp);lp.connect(MU.mg);
+  ns.buffer=MU.nb;ns.loop=true;nf.type="bandpass";nf.frequency.value=380;nf.Q.value=.9;
+  ng.gain.setValueAtTime(.0001,t);ng.gain.linearRampToValueAtTime(.15,t+.8);ng.gain.setValueAtTime(.04,t+.95);ng.gain.linearRampToValueAtTime(.14,t+1.3);ng.gain.exponentialRampToValueAtTime(.0001,t+2.2);
+  ns.connect(nf);nf.connect(ng);ng.connect(MU.mg);
+  [s,s2,lfo,ns].forEach(x=>{x.start(t);x.stop(t+2.3)})}catch(e){}}
+/* ===== Angin badai: gerakan angin (garis embusan + dedaunan beterbangan) dan suara angin yang menderu bergelombang ===== */
+function kWind(){
+  const w=document.getElementById("kwd");
+  if(w&&!document.hidden){w.classList.remove("gust");void w.offsetWidth;w.classList.add("gust")}
+  try{if(!kAmbOk())return;
+    const c=MU.ctx,t=c.currentTime+.03,D=4.8+Math.random()*2.4,pk=t+D*.42,end=t+D,
+      mk=(type,f0,f1,f2,q)=>{const f=c.createBiquadFilter();f.type=type;f.Q.value=q;f.frequency.setValueAtTime(f0,t);f.frequency.linearRampToValueAtTime(f1,pk);f.frequency.linearRampToValueAtTime(f2,end);return f},
+      env=(g,v)=>{g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,pk);g.gain.exponentialRampToValueAtTime(.0001,end)},
+      src=()=>{const n=c.createBufferSource();n.buffer=MU.nb;n.loop=true;return n},
+      n1=src(),n2=src(),n3=src(),
+      body=mk("bandpass",340,860,420,.8),whi=mk("bandpass",950,1550,1050,11),rum=mk("lowpass",150,260,130,.7),
+      g1=c.createGain(),g2=c.createGain(),g3=c.createGain(),
+      fl=c.createOscillator(),fg=c.createGain(),tr=c.createGain();
+    env(g1,.18);env(g2,.07);env(g3,.14);
+    /* turbulensi: gain badan angin bergetar pelan */
+    tr.gain.value=.82;fl.frequency.value=5.5+Math.random()*2;fg.gain.value=.18;fl.connect(fg);fg.connect(tr.gain);
+    n1.connect(body);body.connect(tr);tr.connect(g1);g1.connect(MU.mg);
+    n2.connect(whi);whi.connect(g2);g2.connect(MU.mg);
+    n3.connect(rum);rum.connect(g3);g3.connect(MU.mg);
+    [n1,n2,n3].forEach(x=>x.start(t,Math.random()*.9));fl.start(t);
+    [n1,n2,n3,fl].forEach(x=>x.stop(end+.1))}catch(e){}}
 /* ===== Tema malam: satelit mengorbit sambil berputar, roket meluncur ke angkasa ===== */
 const KSAT='<svg class="kfx-sat" viewBox="0 0 80 40" aria-hidden="true"><g stroke="#0d1540" stroke-width=".8"><rect x="1" y="9" width="26" height="22" rx="1.5" fill="#3F6FD1"/><rect x="53" y="9" width="26" height="22" rx="1.5" fill="#3F6FD1"/></g><g stroke="#9DBBFF" stroke-width=".7" opacity=".85"><path d="M9.7 9V31M18.3 9V31M1 20H27M53 20H79M61.7 9V31M70.3 9V31"/></g><rect x="27" y="18" width="4" height="4" fill="#8892A8"/><rect x="49" y="18" width="4" height="4" fill="#8892A8"/><rect x="31" y="12" width="18" height="16" rx="3" fill="#E4E8F2" stroke="#8892A8" stroke-width=".8"/><rect x="34" y="15" width="12" height="4" rx="1" fill="#B8C0D6"/><path d="M40 12V6" stroke="#C9D0E4" stroke-width="1.2"/><path d="M34.5 6a5.5 3 0 0 0 11 0Z" fill="#F4F6FC"/><circle class="kfx-sbl" cx="40" cy="24" r="1.8" fill="#FF4A63"/></svg>';
 const KRKT='<svg viewBox="0 0 24 56" width="26" aria-hidden="true"><path d="M5 32L0 46V52L5 44Z" fill="#E21B3C"/><path d="M19 32L24 46V52L19 44Z" fill="#E21B3C"/><path d="M12 0C17 8 19 18 19 30V44H5V30C5 18 7 8 12 0Z" fill="#E8ECF5"/><path d="M12 0C15 5 16.6 10 17.3 15H6.7C7.4 10 9 5 12 0Z" fill="#E21B3C"/><circle cx="12" cy="26" r="4" fill="#1368CE" stroke="#9fb4e8" stroke-width="1.4"/><rect x="8" y="44" width="8" height="4" rx="1" fill="#6B7390"/></svg>';
@@ -1710,7 +1760,7 @@ const KSPACE='<div class="kfx-orx"><div class="kfx-ory">'+KSAT+'</div></div>'
  +[['16%','12deg','27vh','5s','34s'],['78%','-12deg','-27vh','17s','41s']].map(a=>`<div class="kfx-rk" style="--x:${a[0]};--r:${a[1]};--dx:${a[2]};--d:${a[3]};--T:${a[4]}">${KRKT}<i class="kfx-rfl"></i><i class="kfx-rtr"></i></div>`).join("");
 
 /* ===== Efek suara suasana: kokok ayam (siang), jangkrik + burung hantu (malam). Dibuat WebAudio, ikut tombol 🔊 ===== */
-function kAmbStop(){["kAmbT","kAmbT2","kRooT"].forEach(k=>{if(window[k]){clearTimeout(window[k]);window[k]=0}})}
+function kAmbStop(){["kAmbT","kAmbT2","kAmbT3","kRooT"].forEach(k=>{if(window[k]){clearTimeout(window[k]);window[k]=0}})}
 function kAmbOk(){return !!(MU.ok&&MU.on&&MU.ctx&&MU.ctx.state==="running"&&MU.mg&&!document.hidden)}
 function kLoop(key,fn,a,b,first){const go=()=>{window[key]=setTimeout(()=>{fn();go()},a+Math.random()*(b-a))};window[key]=setTimeout(()=>{fn();go()},first)}
 function muRoo(vol){try{if(!kAmbOk())return;const c=MU.ctx,t=c.currentTime+.03,v=vol||.14;
@@ -1788,6 +1838,17 @@ const KCOOP='<div class="kfx-coopw" id="kroo"><div class="kfx-bub">Kukuruyuuuk!<
  +KROO+'</svg></div>';
 const KGRASS='<svg class="kfx-gr" viewBox="0 0 1200 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40Q200 8 420 36T820 30T1200 34V100H0Z" fill="#3E9B34"/><path d="M0 62Q250 40 520 58T1200 52V100H0Z" fill="#2F7F29"/></svg>';
 
+/* ===== Hiasan angin badai: garis embusan melengkung, embusan kuat berkala, dan dedaunan beterbangan ===== */
+const KWIND=(()=>{const R=(i,k)=>{const v=Math.sin(i*12.9898+k*78.233)*43758.5453;return v-Math.floor(v)};
+  const ws=(i,k,strong)=>{const L=strong?280+R(i,k+1)*260:150+R(i,k+1)*170,y=strong?(R(i,k+2)*88).toFixed(1):(R(i,k+2)*92).toFixed(1),dur=strong?(.9+R(i,k+3)*.7):(2+R(i,k+3)*2.2),dl=(R(i,k+4)*dur).toFixed(2),a=strong?(.32+R(i,k+5)*.3):(.12+R(i,k+5)*.16),sw=strong?2.2:1.4;
+    const r=(4+R(i,k+6)*6).toFixed(1);
+    return `<svg class="kfx-ws" viewBox="0 0 ${L.toFixed(0)} 24" style="--y:${y}%;--w:${L.toFixed(0)}px;--t:${dur.toFixed(2)}s;--d:-${dl}s;--a:${a.toFixed(2)}" aria-hidden="true"><path d="M0 14C${(L*.3).toFixed(0)} 10 ${(L*.55).toFixed(0)} 16 ${(L*.8).toFixed(0)} 12S${(L-14).toFixed(0)} 6 ${(L-8).toFixed(0)} 9A${r} ${r} 0 1 0 ${(L-16).toFixed(0)} ${(14+ +r*.6).toFixed(0)}" fill="none" stroke="rgba(214,228,255,1)" stroke-width="${sw}" stroke-linecap="round"/></svg>`};
+  const lf=["🍃","🍂","🍃","🍁","🍂","🍃","🍂","🍃"];
+  return '<div class="kfx-wd" id="kwd"><div class="kfx-wgl"></div>'
+    +Array.from({length:12},(_,i)=>ws(i,20,false)).join("")
+    +'<div class="kfx-wg">'+Array.from({length:10},(_,i)=>ws(i,60,true)).join("")+'</div>'
+    +Array.from({length:8},(_,i)=>`<span class="kfx-lf" style="--y:${(8+R(i,1)*66).toFixed(1)}%;--s:${(16+R(i,2)*14).toFixed(0)}px;--dur:${(4.5+R(i,3)*4).toFixed(1)}s;--d:-${(R(i,4)*8).toFixed(1)}s;--up:${(R(i,5)*50-25).toFixed(0)}vh;--sp:${(1.1+R(i,6)*1.2).toFixed(2)}s;--ro:${(R(i,7)>.5?1:-1)*(360+Math.round(R(i,8)*360))}deg"><i>${lf[i]}</i></span>`).join("")
+    +'</div>'})();
 /* ===== Hiasan hujan badai: banjir + katak tidur di perahu tempurung kelapa sambil memegang payung ===== */
 const KFROG='<svg viewBox="0 -32 140 136" aria-hidden="true"><defs><clipPath id="kcan"><path d="M40 14C40 -14 62 -26 84 -26C106 -26 128 -14 128 14Q117 8 106 14Q95 8 84 14Q73 8 62 14Q51 8 40 14Z"/></clipPath></defs>'
  +'<path d="M8 52H112C112 84 88 100 60 100C32 100 8 84 8 52Z" fill="#5B3517"/><ellipse cx="60" cy="52" rx="52" ry="9" fill="#7A4A22"/><ellipse cx="60" cy="52" rx="46" ry="6" fill="#2E1A0B"/>'
