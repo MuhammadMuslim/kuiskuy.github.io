@@ -680,6 +680,64 @@ html[data-tema="badai"] .pod::before,html[data-tema="badai"] .kd::before{backgro
 @keyframes kfxLfY{from{translate:0 -3.2vh}to{translate:0 3.2vh}}
 @keyframes kfxLfR{to{rotate:var(--ro)}}
 /* animasi tema sengaja selalu aktif (tidak mengikuti prefers-reduced-motion) agar matahari, awan, bulan, dan bintang tetap bergerak */
+/* ===== Tombol: tekan terasa nyata, pill hapus ala contoh, ikon kecil di tombol lain ===== */
+.btn{transition:transform .12s,filter .15s}
+@media (hover:hover){.btn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.06)}}
+.btn:active:not(:disabled){transform:translateY(2px) scale(.97)}
+.btn:focus-visible{outline:3px solid #FFD23F;outline-offset:2px}
+.btn.kdel{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;position:relative;color:#fff;background:linear-gradient(135deg,#F04D6E,#C4142F);border-radius:999px;padding:10px 18px 10px 13px;box-shadow:0 4px 0 rgba(0,0,0,.28),0 6px 18px rgba(226,27,60,.32);transition:width .42s cubic-bezier(.65,0,.25,1),padding .42s cubic-bezier(.65,0,.25,1),box-shadow .3s,transform .12s,filter .15s}
+.akr .btn.kdel{margin-top:0;padding:8px 14px 8px 11px}
+.btn.kdel.sm{margin:0;padding:6px 12px 6px 9px;font-size:.88rem}
+.kdel .ki{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;overflow:visible;transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+.kdel .kb-lid{transform-box:view-box;transform-origin:4px 7px;transition:transform .25s cubic-bezier(.3,1.6,.5,1)}
+.kdel .kb-bd{fill:currentColor;fill-opacity:0;transition:fill-opacity .3s}
+.kdel .kb-st{transition:stroke .3s}
+.kdel .kd-t{display:inline-block;margin-left:8px;white-space:nowrap;transition:max-width .42s cubic-bezier(.65,0,.25,1),margin .42s}
+.kdel .kd-t span{display:inline-block}
+@media (hover:hover){.kdel:hover .kb-lid{transform:rotate(-20deg) translate(-.5px,-1px)}}
+.kdel.tilt .ki{transform:rotate(-42deg)}
+.kdel.tilt .kb-lid{transform:rotate(-32deg) translate(-1px,-2px)}
+.kdel.full .kb-bd{fill-opacity:1}
+.kdel.full .kb-st{stroke:#C4142F}
+.kdel.shr .kd-t{overflow:hidden}
+.kdel.circ{padding:0!important}
+.kdel.circ .kd-t{margin-left:0}
+.kdel::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:3px solid transparent;border-top-color:#fff;border-right-color:#FFD23F;opacity:0;transition:opacity .25s;pointer-events:none}
+.kdel.spin::after{opacity:1;animation:kdSpin .8s linear infinite}
+.kdel.spin{box-shadow:0 0 0 3px rgba(255,255,255,.16),0 0 26px rgba(240,77,110,.9)}
+.kdel.eat{pointer-events:none}
+@keyframes kdSpin{to{transform:rotate(360deg)}}
+.kgone{opacity:0;transform:translateX(26px);transition:opacity .28s,transform .28s}
+.kcrumb{position:fixed;z-index:9999;width:7px;height:7px;margin:-3px 0 0 -3px;border-radius:2px;pointer-events:none}
+.btn[data-ki]{display:inline-flex;align-items:center;justify-content:center;gap:.5em}
+.ki2{display:inline-flex;width:1.15em;height:1.15em;flex:none}
+.ki2 svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
+.ki2 svg *{transform-box:fill-box}
+.ki2 svg,.ki2 .kd2,.ki2 .ka-lid,.ki2 .kar2{transition:transform .25s cubic-bezier(.3,1.5,.5,1)}
+.kc{stroke-dasharray:1;stroke-dashoffset:1;animation:kDraw .4s .05s ease-out forwards}
+.btn.kok{background:var(--okB)!important;color:var(--ok)!important;box-shadow:inset 0 0 0 2px var(--ok)!important}
+.kar{display:inline-block;margin-left:.45em;transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
+.kar:first-child{margin:0 .45em 0 0}
+@media (hover:hover){.btn:hover .kar{transform:translateX(4px)}.btn:hover .ki2[data-k=plus] svg{transform:rotate(90deg)}.btn:hover .ki2[data-k=reload] svg{transform:rotate(60deg)}.btn:hover .ki2[data-k=copy] .kd2,.btn:hover .ki2[data-k=dup] .kd2{transform:translate(-2px,-2px)}.btn:hover .ki2[data-k=edit] svg{transform:rotate(-12deg)}.btn:hover .ki2[data-k=arch] .ka-lid{transform:translateY(-2px)}.btn:hover .ki2[data-k=down] .kar2{transform:translateY(2px)}.btn:hover .ki2[data-k=up] .kar2{transform:translateY(-2px)}}
+.btn:active .kar{transform:translateX(9px)}
+.ki2.go[data-k=reload] svg{animation:kSpin .7s cubic-bezier(.4,0,.2,1)}
+.ki2.go[data-k=plus] svg{animation:kPlus .45s ease-out}
+.ki2.go[data-k=save] svg{animation:kDrop .5s ease-out}
+.ki2.go[data-k=edit] svg{animation:kWrite .6s ease-in-out}
+.ki2.go[data-k=dup] svg{animation:kPop .45s ease-out}
+.ki2.go[data-k=arch] .ka-lid{animation:kLid .5s ease-in-out}
+.ki2.go[data-k=down] .kar2{animation:kDown .5s ease-in-out}
+.ki2.go[data-k=up] .kar2{animation:kUp .5s ease-in-out}
+@keyframes kDraw{to{stroke-dashoffset:0}}
+@keyframes kSpin{to{transform:rotate(360deg)}}
+@keyframes kPlus{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.35)}100%{transform:rotate(360deg) scale(1)}}
+@keyframes kDrop{0%,100%{transform:translateY(0)}40%{transform:translateY(4px) scale(.9)}70%{transform:translateY(-2px)}}
+@keyframes kWrite{0%,100%{transform:rotate(0) translateX(0)}25%{transform:rotate(-14deg) translateX(-2px)}50%{transform:rotate(8deg) translateX(2px)}75%{transform:rotate(-8deg) translateX(-1px)}}
+@keyframes kPop{0%{transform:scale(1)}40%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes kLid{0%,100%{transform:translateY(0)}35%{transform:translateY(-4px)}60%{transform:translateY(1px)}}
+@keyframes kDown{0%,100%{transform:translateY(0)}40%{transform:translateY(5px)}}
+@keyframes kUp{0%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion:reduce){.ki2 *,.ki2,.kar{animation:none!important;transition:none!important}}
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
 </head>
@@ -767,10 +825,10 @@ let dAk=null,dAkErr="";
 function dAkLoad(){DB.collection("mahasiswa").get().then(q=>{dAk=q.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(x.nama).localeCompare(String(y.nama)));dAkErr="";dDraw()}).catch(e=>{dAk=[];dAkErr=(e&&e.code)||"koneksi";dDraw()})}
 function dAkun(){if(dAk===null){dAk="load";dAkLoad()}
   if(dAk==="load")return `<div class="card mt"><p>Memuat akun mahasiswa…</p></div>`;
-  const rows=dAk.map(a=>`<div class="akr"><div><b>${esc(a.nama)}</b><span class="mut"> · NIM ${esc(a.nim)}${a.dibuat&&a.dibuat.toDate?" · "+a.dibuat.toDate().toLocaleDateString("id-ID"):""}</span></div><button class="btn ghost" onclick="dAkDel('${esc(a.id)}')">Hapus profil</button></div>`).join("");
+  const rows=dAk.map(a=>`<div class="akr"><div><b>${esc(a.nama)}</b><span class="mut"> · NIM ${esc(a.nim)}${a.dibuat&&a.dibuat.toDate?" · "+a.dibuat.toDate().toLocaleDateString("id-ID"):""}</span></div>${kBinBtn("dAkDel('"+esc(a.id)+"',this)","Hapus profil mahasiswa")}</div>`).join("");
   return `<div class="card mt"><h2>Akun mahasiswa (${dAk.length})</h2><p class="mut">Mahasiswa yang lupa kata sandi: hapus profilnya di sini, lalu hapus juga pengguna <b>NIM@kuis.app</b> di Firebase Console → Authentication → Users. Setelah itu mahasiswa bisa mendaftar ulang. Hasil kuis lama tetap tersimpan.</p>${dAkErr?`<p class="err">Gagal memuat: ${esc(dAkErr)}</p>`:""}<button class="btn ghost" onclick="dAk=null;dDraw()">⟳ Muat ulang daftar</button>${rows||'<p class="mut">Belum ada akun.</p>'}</div>`}
-async function dAkDel(id){if(!confirm("Hapus profil NIM "+id+"? Mahasiswa harus mendaftar ulang setelah akunnya juga dihapus di Firebase Authentication."))return;
-  try{await DB.collection("mahasiswa").doc(id).delete();dAk=null;dDraw()}catch(e){alert("Gagal menghapus profil: "+((e&&e.code)||"koneksi"))}}
+async function dAkDel(id,b){if(!confirm("Hapus profil NIM "+id+"? Mahasiswa harus mendaftar ulang setelah akunnya juga dihapus di Firebase Authentication."))return;
+  await trEat(b,b&&b.closest(".akr"));try{await DB.collection("mahasiswa").doc(id).delete();dAk=null;dDraw()}catch(e){alert("Gagal menghapus profil: "+((e&&e.code)||"koneksi"));dDraw()}}
 const _dRekapA=dRekap;dRekap=function(r,now){return dView==="akun"?dAkun():_dRekapA(r,now)};
 const _dDrawA=dDraw;dDraw=function(){_dDrawA();const b=document.querySelector("#app .bar");if(b&&b.children[3]&&DU&&DU.admin)b.children[3].insertAdjacentHTML("afterend",`<button class="btn ${dView==="akun"?"on":""}" onclick="dView='akun';dDraw()">Akun mahasiswa</button>`)};
 /* ===== Admin: daftar dosen yang diizinkan + klaim kuis lama ===== */
@@ -779,7 +837,7 @@ function dZLoad(){DB.collection("dosen_izin").get().then(q=>{dZ=q.docs.map(d=>({
 function dDosenView(){if(!DU||!DU.admin)return `<div class="card mt"><p>Hanya admin yang bisa mengatur daftar dosen.</p></div>`;
   if(dZ===null){dZ="load";dZLoad()}
   if(dZ==="load")return `<div class="card mt"><p>Memuat daftar dosen…</p></div>`;
-  const rows=dZ.map(a=>`<div class="akr"><div><b>${esc(a.id)}</b>${a.admin?' <span class="mut">(admin)</span>':""}</div>${a.id===DU.email||a.admin?"":`<button class="btn ghost" onclick="dZDel('${esc(a.id)}')">Hapus</button>`}</div>`).join("");
+  const rows=dZ.map(a=>`<div class="akr"><div><b>${esc(a.id)}</b>${a.admin?' <span class="mut">(admin)</span>':""}</div>${a.id===DU.email||a.admin?"":kBinBtn("dZDel('"+esc(a.id)+"',this)","Cabut izin dosen","","Cabut")}</div>`).join("");
   return `<div class="card mt"><h2>Dosen yang diizinkan (${dZ.length})</h2><p class="mut">Hanya email di daftar ini yang bisa membuka dasbor dosen. Dosen baru mendaftar sendiri di halaman portal dosen (Daftar), lalu mengklik link verifikasi di emailnya. Tiap dosen hanya melihat dan mengubah kuis miliknya.</p>${dZErr?`<p class="err">Gagal memuat: ${esc(dZErr)}</p>`:""}${dZMsg?`<p style="font-weight:700">${esc(dZMsg)}</p>`:""}<input id="dzem" type="email" placeholder="Email dosen yang diizinkan" value="${esc(dZv)}" oninput="dZv=this.value" onkeydown="if(event.key==='Enter')dZAdd()"><button class="btn" onclick="dZAdd()">Izinkan</button> <button class="btn ghost" onclick="dZ=null;dZMsg='';dDraw()">⟳ Muat ulang</button>${rows}</div>`}
 async function dZAdd(){const em=(dZv||"").trim().toLowerCase();
   if(!/^[^\s@\/]+@[^\s@\/]+\.[^\s@\/]+$/.test(em)||/@kuis\.app$/.test(em)){dZMsg="Isi email dosen dengan benar.";return dDraw()}
@@ -787,8 +845,8 @@ async function dZAdd(){const em=(dZv||"").trim().toLowerCase();
   try{await DB.collection("dosen_izin").doc(em).set({admin:false,dibuat:firebase.firestore.FieldValue.serverTimestamp()});dZv="";dZMsg="Email diizinkan. Minta dosennya mendaftar di halaman portal dosen.";dZ=null}
   catch(e){dZMsg="Gagal: "+((e&&e.code)||"koneksi")}
   dDraw()}
-async function dZDel(id){if(!confirm("Cabut izin "+id+"? Dosen itu tidak bisa membuka dasbor lagi. Kuis miliknya tetap tersimpan."))return;
-  try{await DB.collection("dosen_izin").doc(id).delete();dZ=null;dZMsg="Izin dicabut."}catch(e){dZMsg="Gagal: "+((e&&e.code)||"koneksi")}
+async function dZDel(id,b){if(!confirm("Cabut izin "+id+"? Dosen itu tidak bisa membuka dasbor lagi. Kuis miliknya tetap tersimpan."))return;
+  await trEat(b,b&&b.closest(".akr"));try{await DB.collection("dosen_izin").doc(id).delete();dZ=null;dZMsg="Izin dicabut."}catch(e){dZMsg="Gagal: "+((e&&e.code)||"koneksi")}
   dDraw()}
 async function dKlaim(){const rs=ROOMS.filter(r=>!r.o&&!r.x);if(!rs.length||!DU||!DU.admin)return;
   if(!confirm("Klaim "+rs.length+" kuis lama ke akunmu ("+DU.email+")? Setelah ini hanya kamu yang bisa mengubahnya."))return;
@@ -1300,14 +1358,14 @@ function dRekap(r,now){
   const n=RM().lv.length,mx=rMax(RM());
   const tsv=["Nama\tNIM\t"+RM().lv.map((_,i)=>"L"+(i+1)).join("\t")+"\tSkor (maks "+mx+")"].concat(r.map(d=>[d.nama,d.nim,...d.l.map(x=>x==null?"":x),d.skor].join("\t"))).join("\n");
   return `<div class="card"><h2>${esc(RM().nama)}: rekap (${r.length} mahasiswa)</h2><p class="mut">Diperbarui otomatis. Satu NIM dihitung sekali dengan skor tertinggi. Persen = akurasi tiap level. Skor maksimal ${mx}.</p>`+
-  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${RM().lv.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${d.av?avH(d.av)+" ":""}${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="dReset()">Reset kamar ini</button></p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang bergabung di kamar ini.</p>${dOrphan()}`)+`</div>`}
+  (r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${RM().lv.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th><th>Status</th></tr>${r.map((d,i)=>`<tr><td>${i+1}</td><td>${d.av?avH(d.av)+" ":""}${esc(d.nama)}</td><td>${esc(d.nim)}</td>${d.l.map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.skor}</b></td><td>${now-d.t<60000?'<span class="live">● aktif</span> ':''}<span class="mut">${esc(d.prog)}</span></td></tr>`).join("")}</table></div><p><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button> ${kBinBtn("dReset(this)","Hapus semua hasil kamar ini","","Hapus hasil")}</p><textarea id="tv" readonly rows="3">${esc(tsv)}</textarea>`:`<p>Belum ada mahasiswa yang bergabung di kamar ini.</p>${dOrphan()}`)+`</div>`}
 function dOrphan(){if(!dDocs.length)return "";const c={};dDocs.forEach(d=>{const k=dRid(d)||"(kosong)";c[k]=(c[k]||0)+1});
   return `<p class="err">Di database ada ${dDocs.length} hasil, tetapi tidak ada yang cocok dengan kamar ini (id: <b>${esc(dRoom)}</b>). Id kamar pada hasil: ${Object.entries(c).map(([k,n])=>"<b>"+esc(k)+"</b> ("+n+")").join(", ")}. Kemungkinan id kamar berubah setelah impor ulang data-bawaan.json.</p>`}
 function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n=RM().lv.length;
   return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>{const fr=d.str>=3?"fire":d.str===2?"combo":"";
   return `<div class="rw" data-pid="${esc(d.nim)}"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}${fr?`<span class="rwflm ${fr}"><i class="flm">🔥</i>${d.str}</span>`:""}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr ${fr}"><i data-sk="${d.skor/mx*100}" style="width:${d.skor/mx*100}%"></i></div></div><b data-sk="${d.skor}">${d.skor}</b></div>`}).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
-async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
-  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=200){const b=DB.batch();ids.slice(i,i+200).forEach(id=>{b.delete(DB.collection("hasil").doc(id));b.delete(DB.collection("progres").doc(id))});await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("jn_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
+async function dReset(b){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
+  const cd=b&&b.closest(".card");await trEat(b,cd&&cd.querySelector(".tw"));const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=200){const b=DB.batch();ids.slice(i,i+200).forEach(id=>{b.delete(DB.collection("hasil").doc(id));b.delete(DB.collection("progres").doc(id))});await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("jn_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
 
 /* ===== Pemuatan data kamar + level tambahan (Firestore koleksi "kamar" dan "soal") ===== */
@@ -1431,20 +1489,20 @@ async function bkSaveLv(){bkSnap();if(bk.busy)return;const f=bk.f,rm=RM(),o=[f.o
     await loadX(true);bk.busy=false;bk.nl=false;bk.f={};bk.f0="";bk.rules=false;bk.lv=Math.max(0,RM().lv.length-1);
     bkMsg("Level tersimpan. Tambahkan soal berikutnya dengan tombol di bawah. Mahasiswa melihatnya setelah memuat ulang halaman.",0)}
   catch(e){bkErr(e)}}
-function bkDelLv(){const rm=RM(),gi=bkGi(),l=rm.lv[gi],x=!!l.x,same=rm.lv.filter(v=>!!v.x===x).length;
+function bkDelLv(b){const rm=RM(),gi=bkGi(),l=rm.lv[gi],x=!!l.x,same=rm.lv.filter(v=>!!v.x===x).length;
   if(rm.lv.length<2||(!x&&same<2))return bkMsg("Level bawaan terakhir tidak bisa dihapus. Kamar harus punya minimal 1 level.",1);
   if(!confirm("Hapus level \""+unesc(String(l.n))+"\" beserta semua soalnya? Hasil mahasiswa yang sudah tercatat bisa tidak cocok lagi (nomor level bergeser)."+(x?"":" Kalau data-bawaan.json diunggah ulang, level bawaan ini muncul kembali.")))return;
-  bkPersist(gi,(L,list,k)=>{list.splice(k,1)},"Level dihapus.")}
+  trEat(b,[...document.querySelectorAll("#bkroot .rq")]).then(()=>bkPersist(gi,(L,list,k)=>{list.splice(k,1)},"Level dihapus."))}
 function bkSaveQ(){bkSnap();const f=bk.f,gi=bkGi(),l=RM().lv[gi],i=bk.q,o=[f.o0,f.o1,f.o2].map(s=>(s||"").trim());
   if(!(f.q||"").trim()||o.some(s=>!s))return bkMsg("Isi pertanyaan dan ketiga opsi.",1);
   if(f.a===undefined||f.a==="")return bkMsg("Pilih jawaban yang benar.",1);
   if(new Set(o.map(s=>s.toLowerCase())).size!==3)return bkMsg("Ketiga opsi tidak boleh sama.",1);
   const old=i>=0?l.qs[i]:null,nq={q:bkFx(f.q,old&&old.q),o:o.map((s,j)=>bkFx(s,old&&old.o[j])),a:+f.a,e:bkFx(f.e||"",old&&old.e)};
   bkPersist(gi,L=>{if(i>=0)L.qs[i]={...L.qs[i],...nq};else L.qs.push(nq)},i>=0?"Soal diperbarui.":"Soal ditambahkan.")}
-function bkDelQ(i){const gi=bkGi(),l=RM().lv[gi];
+function bkDelQ(i,b){const gi=bkGi(),l=RM().lv[gi];
   if(l.qs.length<2)return bkMsg("Level harus punya minimal 1 soal. Untuk menghapus seluruh level, pakai tombol Hapus level.",1);
   if(!confirm("Hapus soal "+(i+1)+"? Nomor soal sesudahnya bergeser, jadi data review mahasiswa lama untuk level ini bisa tidak cocok."))return;
-  bkPersist(gi,L=>{L.qs.splice(i,1)},"Soal dihapus.")}
+  trEat(b,b&&b.closest(".rq")).then(()=>bkPersist(gi,L=>{L.qs.splice(i,1)},"Soal dihapus."))}
 function bkSaveMeta(){bkSnap();const f=bk.f,gi=bkGi(),l=RM().lv[gi];
   if(!(f.n||"").trim())return bkMsg("Nama level tidak boleh kosong.",1);
   bkPersist(gi,L=>{L.n=bkFx(f.n,l.n);L.d=bkFx(f.d||"",l.d);if(L.log){L.t=bkFx(f.t||"",l.t);L.e=bkFx(f.le||"",l.e)}},"Level diperbarui.")}
@@ -1474,7 +1532,7 @@ function dBank(){
   if(bk.meta)h+=`<div class="ex" id="bkform"><b>Edit level</b><input id="bkn" placeholder="Nama level" value="${v("n")}"><input id="bkd" placeholder="Deskripsi singkat" value="${v("d")}">`
     +(l.log?`<textarea id="bkt" placeholder="Instruksi di atas daftar log">${v("t")}</textarea><textarea id="bkle" placeholder="Penjelasan setelah level selesai">${v("le")}</textarea>`:"")
     +`<button class="btn" onclick="bkSaveMeta()" ${bk.busy?"disabled":""}>Simpan level</button> <button class="btn ghost" onclick="bkCancel()">Batal</button></div>`;
-  else h+=`<p><button class="btn ghost" style="margin:0 6px 0 0;padding:6px 12px" onclick="bkEditMeta()">Edit nama dan deskripsi level</button>`+((rm.lv.length<2||(!l.x&&rm.lv.filter(z=>!z.x).length<2))?`<span class="mut">(level bawaan terakhir, tidak bisa dihapus)</span>`:`<button class="btn ghost" style="margin:0;padding:6px 12px" onclick="bkDelLv()">Hapus level</button>`)+`</p>`;
+  else h+=`<p><button class="btn ghost" style="margin:0 6px 0 0;padding:6px 12px" onclick="bkEditMeta()">Edit nama dan deskripsi level</button>`+((rm.lv.length<2||(!l.x&&rm.lv.filter(z=>!z.x).length<2))?`<span class="mut">(level bawaan terakhir, tidak bisa dihapus)</span>`:kBinBtn("bkDelLv(this)","Hapus level ini","sm","Hapus level"))+`</p>`;
   const sm=`margin:4px 6px 0 0;padding:4px 10px`;
   if(l.log){
     const n=l.rows.filter(r=>r[3]).length;
@@ -1482,7 +1540,7 @@ function dBank(){
     h+=l.rows.map((r,i)=>bk.row===i?rForm(i):`<div class="rq ${r[3]?"no":""}"><b>${i+1}.</b> ${r[3]?"🚩":"▫️"} ${r[0]} ${r[1]}: ${r[2]}<br><button class="btn ghost" style="${sm}" onclick="bkEditRow(${i})">Edit</button></div>`).join("");
     h+=`<div class="rq" style="border-color:var(--c1)"><b>Penjelasan:</b> ${l.e||""}</div>`}
   else{
-    h+=l.qs.map((q,i)=>bk.q===i?qForm(i):`<div class="rq"><b>${i+1}.</b> ${q.q}<div class="a">${q.o.map((o,j)=>(j===q.a?"✅ ":"▫️ ")+"ABC"[j]+". "+o).join("<br>")}</div>${q.e?`<div class="mut" style="font-size:.9rem">Penjelasan: ${q.e}</div>`:""}<button class="btn ghost" style="${sm}" onclick="bkEditQ(${i})">Edit</button><button class="btn ghost" style="${sm}" onclick="bkDelQ(${i})">Hapus</button></div>`).join("");
+    h+=l.qs.map((q,i)=>bk.q===i?qForm(i):`<div class="rq"><b>${i+1}.</b> ${q.q}<div class="a">${q.o.map((o,j)=>(j===q.a?"✅ ":"▫️ ")+"ABC"[j]+". "+o).join("<br>")}</div>${q.e?`<div class="mut" style="font-size:.9rem">Penjelasan: ${q.e}</div>`:""}<button class="btn ghost" style="${sm}" onclick="bkEditQ(${i})">Edit</button>${kBinBtn("bkDelQ("+i+",this)","Hapus soal "+(i+1),"sm")}</div>`).join("");
     h+=bk.q===-1?qForm(-1):`<button class="btn" onclick="bkAddQ()">+ Tambah soal ke level ini</button>`}
   return h+impBox+`</div>`}
 const _dRk4=dRekap;dRekap=function(r,now){return dView==="bank"?dBank():_dRk4(r,now)};
@@ -1550,7 +1608,7 @@ function lvCard(l,gi){return `<div class="card ed"><b>Level ${gi+1}: ${l.h?"🙈
 function lvHide(){const rm=RM(),gi=bkGi(),l=rm.lv[gi];if(!l.h&&rm.lv.filter(x=>!x.h).length<2)return bkMsg("Minimal satu level harus tetap tampil untuk mahasiswa.",1);
   bkPersist(gi,L=>{if(L.h)delete L.h;else L.h=1},l.h?"Level dirilis. Mahasiswa melihatnya setelah memuat ulang halaman.":"Level disembunyikan. Mahasiswa tidak melihatnya setelah memuat ulang halaman.")}
 const _dBk=dBank;dBank=function(){const rm=RM();if(!rm||!DB)return _dBk();const gi=bkGi(),l=rm.lv[gi],c=(l?lvCard(l,gi):"")+pzCard(rm);
-  if(l&&l.g)return `<div class="card ed" id="bkroot"><h2>${esc(rm.nama)}: bank soal</h2><div class="rv-f">${rm.lv.map((x,i)=>`<button class="btn ${i===gi?"":"ghost"}" onclick="bkPick(${i})">L${i+1}${x.h?" 🙈":""}</button>`).join("")}</div>${bk.msg?`<p class="${bk.bad?"":"live"}" style="${bk.bad?"color:var(--bad);font-weight:700":""}">${esc(bk.msg)}</p>`:""}<p><b>${l.n}</b> · ${PZ[l.g]?PZ[l.g][1]:"Puzzle"}, ${l.items.length} item</p>${l.items.map((x,i)=>`<div class="rq"><b>${i+1}.</b> ${Array.isArray(x)?esc(x[0])+" → "+esc(x[1]):esc(x)}</div>`).join("")}<button class="btn ghost" onclick="bkDelLv()">Hapus level</button></div>`+c;
+  if(l&&l.g)return `<div class="card ed" id="bkroot"><h2>${esc(rm.nama)}: bank soal</h2><div class="rv-f">${rm.lv.map((x,i)=>`<button class="btn ${i===gi?"":"ghost"}" onclick="bkPick(${i})">L${i+1}${x.h?" 🙈":""}</button>`).join("")}</div>${bk.msg?`<p class="${bk.bad?"":"live"}" style="${bk.bad?"color:var(--bad);font-weight:700":""}">${esc(bk.msg)}</p>`:""}<p><b>${l.n}</b> · ${PZ[l.g]?PZ[l.g][1]:"Puzzle"}, ${l.items.length} item</p>${l.items.map((x,i)=>`<div class="rq"><b>${i+1}.</b> ${Array.isArray(x)?esc(x[0])+" → "+esc(x[1]):esc(x)}</div>`).join("")}${kBinBtn("bkDelLv(this)","Hapus level ini","","Hapus level")}</div>`+c;
   return _dBk()+c};
 
 /* ===== Tema papan peringkat dosen: default, ular tangga, balapan (kuda, karung, roket) ===== */
@@ -1732,12 +1790,12 @@ async function rmArsip(){const rm=RM();if(!rm||rm.x||rmUi.busy)return;const to=!
   try{await DB.collection("kamar").doc(rm.id).update({arsip:to,t:firebase.firestore.FieldValue.serverTimestamp()});
     await loadX(true);rmUi.busy=false;rmMsg(to?"Kamar diarsipkan. Tombol \"Tampilkan arsip\" di atas membukanya lagi.":"Kamar aktif kembali.",0)}
   catch(e){rmUi.busy=false;rmErr(e)}}
-async function rmDel(){const rm=RM();if(!rm||rm.x||rmUi.busy)return;
+async function rmDel(b){const rm=RM();if(!rm||rm.x||rmUi.busy)return;
   if(ROOMS.filter(r=>!r.x).length<2)return rmMsg("Kamar terakhir tidak bisa dihapus.",1);
   const ids=dDocs.filter(d=>dRid(d)===rm.id).map(d=>d.id);
   if(!confirm("Hapus kamar \""+rm.nama+"\" beserta semua level, soal, dan "+ids.length+" hasil mahasiswa di dalamnya? Tindakan ini tidak bisa dibatalkan. Kalau hanya ingin menyembunyikan, pakai Arsipkan."))return;
   if(prompt("Ketik HAPUS untuk memastikan:")!=="HAPUS")return;
-  rmUi.busy=true;
+  await trEat(b,b&&b.closest(".card"));rmUi.busy=true;
   try{for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()}
     const b=DB.batch();b.delete(DB.collection("kamar").doc(rm.id));b.delete(DB.collection("soal").doc(rm.id));await b.commit();
     await loadX(true);rmUi.busy=false;rmUi.mode="";rmMsg("Kamar dihapus.",0)}
@@ -1751,7 +1809,7 @@ function rmCard(rm){const u=rmUi,f=u.f||{},v=k=>esc(f[k]||""),x=!!rm.x;
   const mkIn=`<input id="rm_m" list="rmks" placeholder="Mata kuliah (samakan ejaannya agar terkelompok)" value="${v("m")}"><datalist id="rmks">${mks.map(m=>`<option value="${esc(m)}">`).join("")}</datalist>`;
   if(u.mode==="new")h+=`<div class="ex" id="rmform"><b>Kuis baru</b><input id="rm_n" placeholder="Nama kuis, mis. Kuis 2: Enkripsi Data" value="${v("n")}"><input id="rm_i" placeholder="Ikon (emoji)" maxlength="4" value="${v("i")}">${mkIn}<input id="rm_s" placeholder="Deskripsi singkat (opsional)" value="${v("s")}"><b>Level pertama</b><input id="rm_l" placeholder="Nama level" value="${v("l")}"><textarea id="rm_q" placeholder="Soal pertama: tulis pertanyaan">${v("q")}</textarea>${opt}<p class="mut" style="margin:6px 0 0">Pilih bulatan di samping jawaban yang benar. Level dan soal berikutnya ditambah di bank soal setelah kuis dibuat.</p><textarea id="rm_e" placeholder="Penjelasan jawaban benar">${v("e")}</textarea><button class="btn" onclick="rmSaveNew()" ${u.busy?"disabled":""}>Buat kuis</button> <button class="btn ghost" onclick="rmCancel()">Batal</button></div>`;
   else if(u.mode==="edit")h+=`<div class="ex" id="rmform"><b>Ubah info kamar</b><input id="rm_n" placeholder="Nama kuis" value="${v("n")}"><input id="rm_i" placeholder="Ikon (emoji)" maxlength="4" value="${v("i")}">${mkIn}<input id="rm_s" placeholder="Deskripsi singkat" value="${v("s")}"><input id="rm_k" placeholder="Keterangan (opsional)" value="${v("k")}"><button class="btn" onclick="rmSaveEdit()" ${u.busy?"disabled":""}>Simpan info</button> <button class="btn ghost" onclick="rmCancel()">Batal</button></div>`;
-  else h+=`<p><button class="btn" onclick="rmOpen('new')">＋ Kuis baru</button> <button class="btn ghost" onclick="rmDup()">Duplikat kamar ini</button>`+(x?`</p><p class="mut">Kamar ini berasal dari bank soal lama, jadi info, arsip, dan hapus tidak tersedia di sini.</p>`:` <button class="btn ghost" onclick="rmOpen('edit')">Ubah info kamar</button> <button class="btn ghost" onclick="rmArsip()">${rm.ar?"Aktifkan kembali":"Arsipkan"}</button> <button class="btn ghost" style="color:var(--bad);box-shadow:inset 0 0 0 2px var(--bad)" onclick="rmDel()">Hapus kamar</button></p>`);
+  else h+=`<p><button class="btn" onclick="rmOpen('new')">＋ Kuis baru</button> <button class="btn ghost" onclick="rmDup()">Duplikat kamar ini</button>`+(x?`</p><p class="mut">Kamar ini berasal dari bank soal lama, jadi info, arsip, dan hapus tidak tersedia di sini.</p>`:` <button class="btn ghost" onclick="rmOpen('edit')">Ubah info kamar</button> <button class="btn ghost" onclick="rmArsip()">${rm.ar?"Aktifkan kembali":"Arsipkan"}</button> ${kBinBtn("rmDel(this)","Hapus kamar","","Hapus kamar")}</p>`);
   return h+`</div>`}
 const _dBk3=dBank;dBank=function(){const rm=RM();return _dBk3()+(rm&&DB?rmCard(rm):"")};
 /* ===== Dua tingkat: Mata kuliah > Kuis ===== */
@@ -2176,6 +2234,69 @@ const kTemaOpts=[["default","🎨 Default"],["siang","☀️ Siang"],["malam","�
 const _tpkL=dListen;dListen=function(){_tpkL();kTemaListen()};
 const _tpkD=dDraw;dDraw=function(){_tpkD();if(!DOSEN)return;const b=document.querySelector("#app .bar");if(!b)return;
   b.insertAdjacentHTML("afterend",`<div class="bar tpk" role="group" aria-label="Tampilan untuk semua layar"><span>Tampilan semua layar:</span>${kTemaOpts.map(o=>`<button type="button" class="btn ${KTEMA===o[0]?"on":"ghost w"}" aria-pressed="${KTEMA===o[0]}" onclick="kTemaSet('${o[0]}')">${o[1]}</button>`).join("")}<small>Mahasiswa ikut otomatis</small></div>`)};
+
+/* ===== Tombol hapus ala contoh: huruf dimakan tong, tombol jadi lingkaran + cincin loading, lalu data dihapus ===== */
+const KBIN='<svg class="ki" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="kb-lid"><path d="M3.5 7h17"/><path d="M9.5 7V5.3c0-.7.5-1.3 1.3-1.3h2.4c.8 0 1.3.6 1.3 1.3V7"/></g><g class="kb-bd"><path d="M5.8 7l.9 12.3c.1 1 .9 1.7 1.9 1.7h6.8c1 0 1.8-.7 1.9-1.7L18.2 7z"/></g><path class="kb-st" d="M10 11v6M14 11v6"/></svg>';
+function kBinBtn(fn,label,cls,txt){return '<button type="button" class="btn kdel'+(cls?" "+cls:"")+'" onclick="'+fn+'" aria-label="'+label+'" title="'+label+'">'+KBIN+'<span class="kd-t">'+(txt||"Hapus")+'</span></button>'}
+function trCrumbs(x,y,cols){cols=cols||["#E21B3C","#FFD23F"];for(let i=0;i<8;i++){const c=document.createElement("span");c.className="kcrumb";c.style.cssText="left:"+x+"px;top:"+y+"px;background:"+cols[i%cols.length];document.body.appendChild(c);
+  const a=-Math.PI/2+(i-3.5)*.5,d=24+Math.random()*22;
+  c.animate([{transform:"translate(0,0) scale(1)",opacity:1},{transform:"translate("+Math.cos(a)*d+"px,"+(Math.sin(a)*d-6)+"px) scale(.2) rotate(200deg)",opacity:0}],{duration:520,easing:"ease-out"}).onfinish=()=>c.remove()}}
+function kdBack(b,tg){if(!b.isConnected)return;const ti=b.querySelector(".kd-t");(tg||[]).forEach(e=>e.classList.remove("kgone"));
+  b.classList.remove("spin","full","tilt","circ","shr");b.style.width=b._kw+"px";ti.style.maxWidth=b._kt+"px";ti.textContent=b._k0;ti.removeAttribute("aria-hidden");
+  ti.animate([{opacity:0},{opacity:1}],{duration:350,delay:200,fill:"backwards"});
+  setTimeout(()=>{b.classList.remove("eat");b.style.width=b.style.height="";ti.style.maxWidth=""},650)}
+let kHoldN=0,kHoldP=0;
+function kHold(on){kHoldN=Math.max(0,kHoldN+(on?1:-1));if(!kHoldN&&kHoldP){kHoldP=0;try{dDraw()}catch(e){}}}
+{const o=dDraw;dDraw=function(){if(kHoldN){kHoldP=1;return}return o.apply(this,arguments)}}
+function trEat(btn,tg){return new Promise(done=>{
+  const ti=btn&&btn.isConnected&&btn.querySelector(".kd-t"),ic=ti&&btn.querySelector(".ki"),T=(Array.isArray(tg)?tg:[tg]).filter(e=>e&&e.isConnected);
+  if(!ic){setTimeout(done,120);return}
+  const soft=matchMedia("(prefers-reduced-motion:reduce)").matches;let held=1;kHold(1);const rel=()=>{if(held){held=0;kHold(0)}};setTimeout(rel,9000);
+  const txt=ti.textContent,r0=btn.getBoundingClientRect(),H=r0.height;
+  btn._k0=txt;btn._kw=r0.width;btn._kt=ti.offsetWidth;
+  btn.classList.add("eat");btn.style.width=r0.width+"px";btn.style.height=H+"px";ti.style.maxWidth=btn._kt+"px";
+  ti.setAttribute("aria-hidden","true");ti.innerHTML=[...txt].map(c=>"<span>"+(c===" "?"&nbsp;":c)+"</span>").join("");
+  const L=[...ti.children],T0=200,gap=Math.min(80,560/L.length),dur=420;
+  btn.classList.add("tilt");
+  L.forEach((s,i)=>{const b=s.getBoundingClientRect(),m=ic.getBoundingClientRect(),dx=m.left+m.width*.5-(b.left+b.width/2),dy=m.top+m.height*.35-(b.top+b.height/2),q=i%2?1:-1;
+    s.animate((soft?[{transform:"none",opacity:1},{transform:"translate("+dx+"px,"+dy+"px) scale(.3)",opacity:0}]:[{transform:"none",opacity:1},{transform:"translate("+dx*.25+"px,"+(dy*.25-14)+"px) rotate("+q*20+"deg) scale(1.15)",opacity:1,offset:.3},{transform:"translate("+dx+"px,"+dy+"px) rotate("+q*80+"deg) scale(.1)",opacity:0}]),{duration:dur,delay:T0+i*gap,easing:"cubic-bezier(.5,0,.8,.5)",fill:"both"})});
+  const Te=T0+(L.length-1)*gap+dur,Tc=Te+300,Ts=Tc+440,Tg=Ts+700;
+  setTimeout(()=>{btn.classList.remove("tilt");btn.classList.add("full");ic.animate([{transform:"scale(1)"},{transform:"scale(1.25,.85)"},{transform:"scale(1)"}],{duration:260})},Te);
+  setTimeout(()=>{btn.classList.add("shr","circ");ti.style.maxWidth="0px";btn.style.width=H+"px"},Tc);
+  setTimeout(()=>btn.classList.add("spin"),Ts);
+  setTimeout(()=>T.forEach(e=>e.classList.add("kgone")),Tg);
+  setTimeout(()=>{rel();done();setTimeout(()=>{if(btn.isConnected&&btn.classList.contains("eat"))kdBack(btn,T)},5000)},Tg+280)})}
+
+/* ===== Tombol lain: ikon kecil + gerak khas tiap fungsi (dipasang otomatis ke setiap .btn) ===== */
+const KI={copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path class="kd2" d="M5 15V6a2 2 0 0 1 2-2h8"/>',
+ check:'<path class="kc" pathLength="1" d="M5 12.5l4.5 4.5L19 7.5"/>',
+ reload:'<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ save:'<path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4"/><path d="M8 20v-6h8v6"/>',
+ edit:'<path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/>',
+ dup:'<rect x="8" y="8" width="12" height="12" rx="2"/><path class="kd2" d="M4 16V6a2 2 0 0 1 2-2h10"/>',
+ arch:'<rect class="ka-lid" x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8"/><path d="M10 12h4"/>',
+ down:'<path class="kar2" d="M12 4v11M7 11l5 5 5-5"/><path d="M5 20h14"/>',
+ up:'<path class="kar2" d="M12 16V5M7 9l5-5 5 5"/><path d="M5 20h14"/>'};
+const kIco=k=>'<span class="ki2" data-k="'+k+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+KI[k]+'</svg></span>';
+const KMAP=[[/^salin/i,"copy"],[/^simpan(?!.*▶)/i,"save"],[/^(edit|ubah info)/i,"edit"],[/^duplikat/i,"dup"],[/^(arsipkan|aktifkan)/i,"arch"],[/^unggah/i,"up"],[/^unduh/i,"down"],[/^(muat ulang|buat kode baru)/i,"reload"]];
+function kDeco(){document.querySelectorAll(".btn:not([data-kd])").forEach(b=>{b.dataset.kd="1";
+  if(b.classList.contains("kdel")||b.childElementCount||!b.firstChild||b.firstChild.nodeType!==3)return;
+  let t=b.firstChild.nodeValue,k=null,m;
+  if(m=t.match(/^\s*(⟳|🔄|＋|\+|⬇)\s*/)){k={"⟳":"reload","🔄":"reload","＋":"plus","+":"plus","⬇":"down"}[m[1]];t=t.slice(m[0].length)}
+  else{const q=t.trim();for(const[r,x]of KMAP)if(r.test(q)){k=x;break}}
+  const lead=/^\s*▶\s*/.test(t),trail=/\s*▶\s*$/.test(t);
+  if(!k&&!lead&&!trail)return;
+  t=t.replace(/^\s*▶\s*/,"").replace(/\s*▶\s*$/,"");b.firstChild.nodeValue=t;
+  if(k){b.dataset.ki=k;b.dataset.k0=t.trim();b.insertAdjacentHTML("afterbegin",kIco(k))}
+  if(lead)b.insertAdjacentHTML("afterbegin",'<span class="kar">▶</span>');
+  if(trail)b.insertAdjacentHTML("beforeend",'<span class="kar">▶</span>')})}
+document.addEventListener("click",e=>{const b=e.target.closest&&e.target.closest(".btn[data-ki]");if(!b)return;
+  if(b.dataset.ki==="copy"&&/^Tersalin/.test(b.textContent.trim())){const o=b.dataset.k0;b.innerHTML=kIco("check")+"<span>Tersalin</span>";b.classList.add("kok");
+    const r=b.querySelector(".ki2").getBoundingClientRect();trCrumbs(r.left+r.width/2,r.top+r.height/2,["#26890C","#FFD23F","#1368CE"]);
+    clearTimeout(b._kt);b._kt=setTimeout(()=>{b.innerHTML=kIco("copy")+o;b.classList.remove("kok")},1800);return}
+  const i=b.querySelector(".ki2");if(i){i.classList.remove("go");void i.offsetWidth;i.classList.add("go")}});
+(function(){let r=0;new MutationObserver(()=>{if(r)return;r=requestAnimationFrame(()=>{r=0;kDeco()})}).observe(document.body,{childList:true,subtree:true});kDeco()})();
 
 cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")||"default"}catch(e){}kTemaApply(c);if(!DOSEN)kTemaListen()})();loadX().then(async()=>{
   if(!DOSEN&&!ROOM_ID){if(!ROOMS.length&&useCache())mergeX([]);
