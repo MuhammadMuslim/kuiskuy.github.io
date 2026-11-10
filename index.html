@@ -307,6 +307,22 @@ a.btn{display:inline-block;text-decoration:none}
 @keyframes snYes{0%{transform:translateY(0)}40%{transform:translateY(-16px)}100%{transform:translateY(0)}}
 @media (prefers-reduced-motion:reduce){.sn .st,.sn .pu,.sn-w{transition:none}.sn-w[data-s=ok] .sn{animation:none}.sn-w[data-s=err] .hd{animation:snNoS .45s ease-in-out}}
 
+/* ===== Siput di kartu nama dan NIM mahasiswa ===== */
+.sn-hd.sm b{font-size:clamp(34px,11vw,54px);margin:4px 0 6px}
+.sn-hd.sm p{font-size:.95rem}
+.ncw{position:relative}
+.nc{margin-top:140px;position:relative;overflow:visible;text-align:center}
+.nc .avg{text-align:center}
+.ncm{position:fixed;inset:0;z-index:70;background:rgba(20,8,45,.9);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);overflow:auto;overscroll-behavior:contain;padding:16px 16px calc(40px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column}
+.ncm .ncw{width:100%;max-width:420px;margin:auto}
+.nmx{position:absolute;right:10px;top:10px;width:34px;height:34px;padding:0;border-radius:50%;border:0;background:rgba(0,0,0,.08);color:var(--ink);font-size:1rem;line-height:1;cursor:pointer}
+.nmph{text-align:center}.nmph h3{margin:0 0 4px}
+.nmc{z-index:80}
+.nmc-id{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.06);border-radius:14px;padding:10px 12px;margin:4px 0 10px}
+.nmc-av{font-size:2rem;line-height:1;display:grid;place-items:center;width:46px;height:46px}.nmc-av .avi{width:46px;height:46px}
+.nmc-id b{display:block;font-family:"Bricolage Grotesque",system-ui,sans-serif;font-size:1.1rem;overflow-wrap:anywhere}.nmc-id span:not(.nmc-av){opacity:.75;font-size:.92rem}
+.nmc-b{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}.nmc-b .btn{margin-top:4px}
+.nmc .btn{background:var(--pri);color:var(--priT)}.nmc .btn.ghost{background:transparent;color:var(--pri);box-shadow:inset 0 0 0 2px var(--pri)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .stats div{background:rgba(255,255,255,.14);color:#fff;border-radius:14px;padding:10px 12px;text-align:center}
 .stats b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:1.5rem}.stats span{font-size:.8rem;opacity:.85}
@@ -822,18 +838,19 @@ function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)
 function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
 $("app").innerHTML=`<div class="prog"><span>📖 Materi · ${p+1}/${m.length}</span></div><div class="card mt pop"><h2>${x.j}</h2>${x.h}</div><div class="bar">${p?`<button class="btn ghost w" onclick="mat(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">Selesai, ke kuis ▶</button>`:`<button class="btn" onclick="mat(${p+1})">Lanjut ▶</button>`}</div>`;scrollTo(0,0)}
 function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;home();introNext()}
+function mkDup(){const n=x=>String(x||"").trim().toLowerCase().replace(/\s+/g," "),m=n(ROOM.mk),k=n(ROOM.nama);return !m||m===k||k.includes(m)}
 function home(){
 if(!ROOM){pick();return}
 goListen();stop();S.playing=false;S.score=myScore();S.streak=0;hud();
-let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1>${ROOM.mk?`<p style="margin:0;font-weight:700;opacity:.9">📚 ${esc(ROOM.mk)}</p>`:""}<p>${esc(ROOM.sub||"")}</p></div>`;
-h+=nameCard();if(!S.i1&&S.nm&&S.nim){S.i1=1;setTimeout(introNext,300)}
+let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1>${mkDup()?"":`<p style="margin:0;font-weight:700;opacity:.9">📚 ${esc(ROOM.mk)}</p>`}<p>${esc(ROOM.sub||"")}</p></div>`;
+h+=nameCard();if(!S.i1&&S.nm&&S.nim&&JL()){S.i1=1;setTimeout(introNext,300)}
 if(ROOM.mat&&ROOM.mat.length){const ok=matOk();h+=`<div class="card"><button class="lv" onclick="mat(0)"><b>📖</b><div>Materi<span>${ok?"Sudah dibaca. Buka lagi kapan saja.":"Baca materi dulu untuk membuka level kuis."}</span></div><span class="stars">${ok?"✅":"Baca ▶"}</span></button></div>`}
 LV.forEach((l,i)=>{if(l.h)return;const d=S.done[i],ok=LV.slice(0,i).every((x,k)=>x.h||S.done[k])&&matOk()&&!d;
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(LV.every((x,k)=>x.h||S.done[k]))h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
 h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" onclick="dFlagSet(null)" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
-$("app").innerHTML=h}
-function start(i){if(S.done[i])return;if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";return}
+$("app").innerHTML=h;snMhsInit();nmAuto()}
+function start(i){if(S.done[i])return;if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";snErr("Isi nama dan NIM dulu.");nmPop(1);return}
 if(!(matOk()&&tutOk())){introNext();return}
 if(gateOn()&&!S.cdOk){siap(i);return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
@@ -908,22 +925,46 @@ function jnTxt(){return S.jnOk===1?'<span style="color:var(--ok,#26890C)">✅ Ka
 function jnUi(t){const e=$("jn");if(e)e.innerHTML=t}
 function jnSch(){clearTimeout(jnT);S.jnOk=0;jnUi("");if(S.locked||!DB)return;if((S.nm||"").length>=2&&(S.nim||"").length>=6)jnT=setTimeout(joinRoom,1500)}
 function joinRoom(q,lk){clearTimeout(jnT);if(S.locked||S.playing||S.done.some(Boolean))return;
-  if((S.nm||"").length<2||(S.nim||"").length<3){jnUi('<span style="color:var(--bad)">Isi nama dan NIM dulu.</span>');return}
-  if(!DB||!AUTHP){S.jnOk=2;jnUi(jnTxt());return}
+  if((S.nm||"").length<2||(S.nim||"").length<3){jnUi('<span style="color:var(--bad)">Isi nama dan NIM dulu.</span>');snErr("Isi nama dan NIM dulu.");return}
+  if(!DB||!AUTHP){S.jnOk=2;jnUi(jnTxt());snErr("Gagal bergabung. Periksa koneksi.");return}
   const k=S.nm+"|"+S.nim;S.jnK=k;jnUi('<span class="mut">Bergabung…</span>');
-  Promise.resolve(sync("Bergabung, belum mulai")).then(ok=>{if(S.jnK!==k)return;S.jnOk=ok?1:2;jnUi(jnTxt());if(ok&&lk)jnLockSet();if(!q){S.i1=1;introNext()}})}
+  Promise.resolve(sync("Bergabung, belum mulai")).then(ok=>{if(S.jnK!==k)return;S.jnOk=ok?1:2;jnUi(jnTxt());if(ok&&lk)jnLockSet();if(ok)snOk();else snErr("Gagal bergabung. Periksa koneksi.");if(!q){S.i1=1;introNext()}})}
 const AVS=[["🦸 Pahlawan",["🦸‍♂️","🦸‍♀️","🦹","🥷","🧙‍♂️","🧚","🤺","🧛"]],["🐾 Hewan",["🐱","🐶","🦊","🐼","🦁","🐯","🐵","🐸","🐧","🦄","🐲","🐘","🐨","🐙"]],["🇮🇩 Nusantara",["🇮🇩","🦅","🦎","🦧","🐅","🦜","🎭","🥁","🌋","🎖️"]],["🎭 Karakter seru",["🤖","👽","👻","🎃","🦖","🧸","🤡","😎","🤠","🥳"]]];
 const DBS=[["pixel-art","Pixel"],["thumbs","Jempol"],["bottts","Robot"],["adventurer","Petualang"],["fun-emoji","Emoji seru"]],DBN=["Koko","Mika","Ravi","Sari","Bima","Nala"];
 function avH(a){a=String(a||"");const m=/^db:([a-z-]+):([A-Za-z]{1,20})$/.exec(a);return m?`<img class="avi" alt="" loading="lazy" src="https://api.dicebear.com/9.x/${m[1]}/svg?seed=${m[2]}">`:esc(a)}
 function avPick(b,a){if(S.locked||JL())return;S.av=a;sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
 function avCard(){return DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
 function JL(){try{return localStorage.getItem("jn_"+ROOM.id)==="1"}catch(e){return false}}
-function nameCard(){const L=S.locked||JL();return `<div class="card"><h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> ${L?"Kamu sudah bergabung":"Siapa namamu?"}</h3><input ${L?"readonly ":""}placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${L?"readonly ":""}placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()">${L?"":`<div class="avt">Pilih avatarmu</div>${avCard()}`}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${L?`<p class="mut">Nama, NIM, dan avatar sudah terkunci di perangkat ini.</p>${avWarn()}`:`<div style="margin-top:8px"><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div>`}
+function nameCard(L){if(L===undefined)L=S.locked||JL();if(!L)return nmPh();return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> ${L?"Kamu sudah bergabung":"Siapa namamu?"}</h3><input ${L?"readonly ":""}id="nmi" placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${L?"readonly ":""}id="nimi" placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()">${L?"":`<div class="avt">Pilih avatarmu</div>${avCard()}`}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${L?`<p class="mut">Nama, NIM, dan avatar sudah terkunci di perangkat ini.</p>${avWarn()}`:`<div style="margin-top:8px"><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div></div>`}
 function avWarn(){return AVOFF&&S.av?'<div style="color:var(--bad);font-size:.85rem;margin-top:6px">\u26a0 Avatar belum terkirim ke dosen (aturan Firestore menolak field av). Beri tahu dosen.</div>':""}
 const _jnTxt0=jnTxt;jnTxt=function(){return _jnTxt0()+avWarn()};
 function jnConfirm(){if((S.nm||"").length<2||(S.nim||"").length<3){joinRoom(0,0);return}
-  if(!confirm("Gabung sebagai:\n"+S.nm+"\nNIM "+S.nim+"\n\nSetelah bergabung, nama, NIM, dan avatar tidak bisa diubah. Lanjut?"))return;joinRoom(0,1)}
-function jnLockSet(){try{localStorage.setItem("jn_"+ROOM.id,"1")}catch(e){}const a=$("avc"),c=a&&a.closest(".card");if(c)c.outerHTML=nameCard()}
+  const o=$("nmc");if(o)o.remove();
+  const e=document.createElement("div");e.id="nmc";e.className="ov nmc";e.setAttribute("role","alertdialog");e.setAttribute("aria-modal","true");
+  e.onclick=ev=>{if(ev.target===e)nmcX()};
+  e.innerHTML=`<div><h2>Gabung sebagai?</h2><div class="nmc-id"><span class="nmc-av">${S.av?avH(S.av):"🙂"}</span><div><b>${esc(S.nm)}</b><span>NIM ${esc(S.nim)}</span></div></div><p>Setelah bergabung, nama, NIM, dan avatar <b>tidak bisa diubah</b>. Lanjut?</p><div class="nmc-b"><button type="button" class="btn ghost" onclick="nmcX()">Batal</button><button type="button" class="btn" id="nmcok" onclick="nmcGo()">Ya, gabung ▶</button></div></div>`;
+  e.addEventListener("keydown",ev=>{if(ev.key==="Escape")nmcX()});
+  document.body.appendChild(e);const k=$("nmcok");if(k)k.focus()}
+function nmcX(){const e=$("nmc");if(e)e.remove()}
+function nmcGo(){nmcX();joinRoom(0,1)}
+function jnLockSet(){try{localStorage.setItem("jn_"+ROOM.id,"1")}catch(e){}
+  if($("nmo")){clearTimeout(window._nmT);window._nmT=setTimeout(()=>nmClose(1),1100);return}
+  const a=$("avc"),c=a&&a.closest(".ncw");if(c){c.outerHTML=nameCard(true);snMhsInit()}}
+/* ===== Popup nama dan NIM (langkah 1), lalu pilih karakter dan Gabung (langkah 2) ===== */
+function nmPh(){const ok=S.nm&&S.nim;return `<div class="card nmph" id="nmph"><h3>🙂 Nama dan NIM</h3><p class="mut" style="margin:0 0 8px">${ok?esc(S.nm)+" · NIM "+esc(S.nim)+" (belum bergabung)":"Isi nama dan NIM, lalu pilih karakter untuk bergabung."}</p><button class="btn" onclick="nmPop(S.ns||1)">${ok?"Lanjutkan ▶":"Isi sekarang ▶"}</button></div>`}
+function nmBody(st){
+  if(st===2)return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<button type="button" class="nmx" onclick="nmClose()" aria-label="Tutup">✕</button><h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> Pilih karakter</h3><p class="mut" style="margin:0">${esc(S.nm)} · NIM ${esc(S.nim)}</p><div style="text-align:left"><div class="avt">Pilih avatarmu</div>${avCard()}</div><div id="msg" style="color:var(--bad);margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="nmPop(1)">◀ Ubah nama</button><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div></div></div>`;
+  return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<button type="button" class="nmx" onclick="nmClose()" aria-label="Tutup">✕</button><h3>👋 Siapa namamu?</h3><input class="ncin" id="nmi" placeholder="Nama lengkap" autocomplete="name" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()" onkeydown="if(event.key==='Enter')$('nimi').focus()"><input class="ncin" id="nimi" placeholder="NIM" inputmode="numeric" autocomplete="off" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()" onkeydown="if(event.key==='Enter')nmSave()"><div id="msg" style="color:var(--bad);margin-top:8px"></div><div style="margin-top:8px"><button class="btn" onclick="nmSave()">Simpan ▶</button></div></div></div>`}
+function nmPop(st){if(S.locked||JL())return;S.ns=st||1;S.nmx=0;let m=$("nmo");
+  if(!m){m=document.createElement("div");m.id="nmo";m.className="ncm";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");document.body.appendChild(m)}
+  m.innerHTML=nmBody(S.ns);m.scrollTop=0;snMhsInit();
+  if(S.ns===2)snOk();else setTimeout(()=>{const f=$((S.nm&&!S.nim)?"nimi":"nmi");if(f)f.focus()},80)}
+function nmSave(){const a=$("nmi"),b=$("nimi");if(!a||!b)return;S.nm=a.value.trim();S.nim=b.value.trim();sv();
+  if(S.nm.length<2||S.nim.length<3){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu.";snErr("Isi nama dan NIM dulu.");return}
+  nmPop(2)}
+function nmClose(done){clearTimeout(window._nmT);const m=$("nmo");if(m)m.remove();
+  if(done){S.ns=0;const p=$("nmph");if(p){p.outerHTML=nameCard(true);snMhsInit()}}else S.nmx=1}
+function nmAuto(){if(S.locked||JL()||S.nmx||$("nmo"))return;nmPop(S.ns||1)}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
 function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
@@ -984,14 +1025,18 @@ let dAuthOk=false,dBusy=false,dLast=0,dLive="off",dRetry=0,dRetryT=null;
 const dFlag=()=>{try{return sessionStorage.getItem("dosen_ok")}catch(e){return null}};
 function dFlagSet(v){try{v?sessionStorage.setItem("dosen_ok",v):sessionStorage.removeItem("dosen_ok")}catch(e){}}
 function dLogin(){dBusy=false;
-  $("app").innerHTML=`${snHdH(dMsg?"err":"idle",dMsg)}<div class="card dl pop"><div class="sn-w" id="sn" data-s="${dMsg?'err':'idle'}" role="img" aria-label="Maskot siput"><svg class="sn" viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="snB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9B0"/><stop offset="1" stop-color="#F6B67E"/></linearGradient><linearGradient id="snS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA86B"/><stop offset="1" stop-color="#EE6A33"/></linearGradient></defs><ellipse cx="112" cy="116" rx="84" ry="6" fill="#000" opacity=".18"/><path class="ft" d="M34 86H188a13 13 0 0 1 0 26H34Z" fill="url(#snB)"/><g class="hd"><g class="st a"><path d="M50 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="26" r="8" fill="#fff"/><circle class="pu" cx="50" cy="26" r="3.6" fill="#1F1F2E"/></g><g class="st b"><path d="M72 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="72" cy="26" r="8" fill="#fff"/><circle class="pu" cx="72" cy="26" r="3.6" fill="#1F1F2E"/></g><path d="M34 112V76a26 26 0 0 1 52 0V112Z" fill="url(#snB)"/><path class="ce a" d="M44 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="ce" d="M66 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><circle class="bl" cx="43" cy="86" r="4" fill="#FF9AA8"/><circle class="bl" cx="77" cy="86" r="4" fill="#FF9AA8"/><path class="mi" d="M54 88q6 5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="me" d="M54 92q6-5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="mo" d="M51 86q9 11 18 0Z" fill="#7a2e2e" stroke="#5a3a2a" stroke-width="2" stroke-linejoin="round"/></g><g class="sh"><circle cx="132" cy="64" r="36" fill="url(#snS)"/><path d="M132 64a3 3 0 0 1 3 3a6 6 0 0 1-6 6a9 9 0 0 1-9-9a12 12 0 0 1 12-12a15 15 0 0 1 15 15a18 18 0 0 1-18 18" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/></g><g class="zz" aria-hidden="true"><text class="z1" x="62" y="44" font-size="13">z</text><text class="z2" x="74" y="34" font-size="17">Z</text><text class="z3" x="88" y="22" font-size="21">Z</text></g></svg></div><h2>Portal Dosen</h2><p class="mut">Masuk dengan PIN dosen untuk membuka rekap, papan peringkat, dan bank soal.</p><div class="dpw"><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan PIN"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button></div><button class="btn go" id="pinbtn" onclick="dPin()">Masuk ke dasbor</button><p id="pinmsg" hidden></p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
+  $("app").innerHTML=`${snHdH(dMsg?"err":"idle",dMsg)}<div class="card dl pop"><div class="sn-w" id="sn" data-s="${dMsg?'err':'idle'}" role="img" aria-label="Maskot siput">${SN_SVG}</div><h2>Portal Dosen</h2><p class="mut">Masuk dengan PIN dosen untuk membuka rekap, papan peringkat, dan bank soal.</p><div class="dpw"><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan PIN"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button></div><button class="btn go" id="pinbtn" onclick="dPin()">Masuk ke dasbor</button><p id="pinmsg" hidden></p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
   snInit();setTimeout(()=>{const p=$("pin");if(p)p.focus()},50)}
 const OPEN_I=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`,SLASH_I=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>`;
 function dShowPin(b){const p=$("pin");p.type=p.type==="password"?"text":"password";const sh=p.type!=="password";b.innerHTML=sh?OPEN_I:SLASH_I;b.setAttribute("aria-label",sh?"Sembunyikan PIN":"Tampilkan PIN");p.focus();snAw=0;snSet(p.type==="password"?"hide":"peek")}
 /* Maskot: mata mengikuti kursor, menutup mata saat isi PIN, mengintip saat PIN ditampilkan */
 const SNT={idle:["Watching","Siput mengikuti kursormu.","#6c8cff"],hide:["Zzz…","Siput tidur, mata ditutup.","#ff7aa8"],peek:["Peeking","PIN terlihat, siput mengintip.","#ffb938"],err:["Oops","PIN salah. Siput geleng kepala.","#ff4a63"],ok:["Welcome","PIN benar. Mata dibuka.","#3fdc84"]};
-function snHdH(v,sub){const t=SNT[v];return `<div class="sn-hd" id="snh" aria-live="polite"><span><i style="background:${t[2]};box-shadow:0 0 8px ${t[2]}"></i>Portal Dosen</span><b>${t[0]}</b><p>${esc(sub||t[1])}</p></div>`}
-function snHd(v,sub){const h=$("snh"),t=SNT[v];if(!h||!t)return;const put=()=>{const i=h.querySelector("i");h.querySelector("b").textContent=t[0];h.querySelector("p").textContent=sub||t[1];i.style.background=t[2];i.style.boxShadow="0 0 8px "+t[2];h.classList.remove("out")};
+const SN_SVG=`<svg class="sn" viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="snB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9B0"/><stop offset="1" stop-color="#F6B67E"/></linearGradient><linearGradient id="snS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA86B"/><stop offset="1" stop-color="#EE6A33"/></linearGradient></defs><ellipse cx="112" cy="116" rx="84" ry="6" fill="#000" opacity=".18"/><path class="ft" d="M34 86H188a13 13 0 0 1 0 26H34Z" fill="url(#snB)"/><g class="hd"><g class="st a"><path d="M50 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="26" r="8" fill="#fff"/><circle class="pu" cx="50" cy="26" r="3.6" fill="#1F1F2E"/></g><g class="st b"><path d="M72 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="72" cy="26" r="8" fill="#fff"/><circle class="pu" cx="72" cy="26" r="3.6" fill="#1F1F2E"/></g><path d="M34 112V76a26 26 0 0 1 52 0V112Z" fill="url(#snB)"/><path class="ce a" d="M44 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="ce" d="M66 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><circle class="bl" cx="43" cy="86" r="4" fill="#FF9AA8"/><circle class="bl" cx="77" cy="86" r="4" fill="#FF9AA8"/><path class="mi" d="M54 88q6 5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="me" d="M54 92q6-5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="mo" d="M51 86q9 11 18 0Z" fill="#7a2e2e" stroke="#5a3a2a" stroke-width="2" stroke-linejoin="round"/></g><g class="sh"><circle cx="132" cy="64" r="36" fill="url(#snS)"/><path d="M132 64a3 3 0 0 1 3 3a6 6 0 0 1-6 6a9 9 0 0 1-9-9a12 12 0 0 1 12-12a15 15 0 0 1 15 15a18 18 0 0 1-18 18" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/></g><g class="zz" aria-hidden="true"><text class="z1" x="62" y="44" font-size="13">z</text><text class="z2" x="74" y="34" font-size="17">Z</text><text class="z3" x="88" y="22" font-size="21">Z</text></g></svg>`;
+function snW(v){return `<div class="sn-w" id="sn" data-s="${v}" role="img" aria-label="Maskot siput">${SN_SVG}</div>`}
+const SNM={idle:["Hai!",()=>{try{if(S.locked||JL())return"Kamu sudah bergabung, tinggal pilih level.";return S.ns===2?"Pilih karakter, lalu tekan Gabung.":"Isi nama dan NIM, lalu tekan Simpan."}catch(e){return"Isi nama dan NIM."}},"#6c8cff"],hide:["Hai!","Siput menunggu.","#ff7aa8"],peek:["Mencatat","Siput memperhatikan ketikanmu.","#ffb938"],err:["Oops","Isi nama dan NIM dulu.","#ff4a63"],ok:["Welcome","Kamu sudah bergabung. Siput senang!","#3fdc84"]};
+const snSb=(t,sub)=>sub||(typeof t[1]==="function"?t[1]():t[1]);
+function snHdH(v,sub,m){const t=(m?SNM:SNT)[v];return `<div class="sn-hd${m?" sm":""}" id="snh" data-m="${m?"m":""}" aria-live="polite"><span><i style="background:${t[2]};box-shadow:0 0 8px ${t[2]}"></i>${m?"Gabung Kuis":"Portal Dosen"}</span><b>${t[0]}</b><p>${esc(snSb(t,sub))}</p></div>`}
+function snHd(v,sub){const h=$("snh");if(!h)return;const t=(h.dataset.m==="m"?SNM:SNT)[v];if(!t)return;const put=()=>{const i=h.querySelector("i");h.querySelector("b").textContent=t[0];h.querySelector("p").textContent=snSb(t,sub);i.style.background=t[2];i.style.boxShadow="0 0 8px "+t[2];h.classList.remove("out")};
   h.classList.add("out");clearTimeout(h._t);h._t=setTimeout(put,170)}
 const SN_IN=3000,SN_WAKE=7000;let snAw=0;
 function snIn(){const e=$("sn");if(!e||e.dataset.s!=="hide")return;e.classList.add("in");snHd("hide","Siput masuk rumah, tidur nyenyak.")}
@@ -1000,13 +1045,21 @@ function snSet(v){clearTimeout(window._snET);const e=$("sn");if(e&&e.dataset.s!=
 function snBack(ms){clearTimeout(window._snET);window._snET=setTimeout(()=>{const e=$("sn");if(e&&e.dataset.s==="err")snSet("idle")},ms)}
 function snErr(msg){const e=$("sn");if(!e)return;clearTimeout(window._snZT);clearTimeout(window._snWT);e.classList.remove("in");e.dataset.s="";void e.offsetWidth;e.dataset.s="err";snHd("err",msg);snBack(2200)}
 function snLook(x,y){const fl=Math.sign(parseFloat(getComputedStyle($("sn")).scale)||1)||1;document.querySelectorAll("#sn .pu").forEach(u=>{const r=u.previousElementSibling.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=x-cx,dy=y-cy,d=Math.hypot(dx,dy)||1,k=Math.min(3.4,d/18);u.style.transform="translate("+(dx/d*k*fl).toFixed(2)+"px,"+(dy/d*k).toFixed(2)+"px)"})}
-let snPm=0;
+let snPm=0,snTy=0;
+function snPmInit(){if(snPm)return;snPm=1;document.addEventListener("pointermove",e=>{if(snTy&&Date.now()-snTy<1600)return;if($("sn")&&/idle|peek/.test($("sn").dataset.s))snLook(e.clientX,e.clientY)},{passive:true})}
 function snRg(){const w=$("sn");if(!w)return;const c=w.closest(".card");w.style.setProperty("--rg",Math.max(16,Math.round((c.clientWidth-w.offsetWidth*.78)/2-6))+"px")}
 function snInit(){const p=$("pin");if(!p)return;if($("sn").dataset.s==="err")snBack(2600);snRg();if(!window._snRz){window._snRz=1;addEventListener("resize",snRg)}
   const t0=Date.now();p.addEventListener("focus",()=>{if(Date.now()-t0<600)return;snAw=0;if(!/ok|err/.test($("sn").dataset.s))snSet(p.type==="password"?"hide":"peek")});
   p.addEventListener("input",()=>{if(!snAw&&$("sn").dataset.s!=="ok")snSet(p.type==="password"?"hide":"peek")});p.addEventListener("pointerdown",()=>{snAw=0;if(!/ok|err/.test($("sn").dataset.s))snSet(p.type==="password"?"hide":"peek")});
   p.addEventListener("blur",e=>{const t=e.relatedTarget;if(t&&t.closest&&t.closest(".dpw"))return;if($("sn").dataset.s!=="ok")snSet("idle")});
-  if(!snPm){snPm=1;document.addEventListener("pointermove",e=>{if($("sn")&&/idle|peek/.test($("sn").dataset.s))snLook(e.clientX,e.clientY)},{passive:true})}}
+  snPmInit()}
+function snOk(){const e=$("sn");if(!e)return;snSet("ok");clearTimeout(window._snET);window._snET=setTimeout(()=>{const x=$("sn");if(x&&x.dataset.s==="ok")snSet("idle")},2400)}
+function snMhsInit(){if(!$("sn"))return;snRg();if(!window._snRz){window._snRz=1;addEventListener("resize",snRg)}snPmInit();
+  const a=$("nmi"),b=$("nimi");if(!a||!b||a.readOnly)return;
+  [a,b].forEach(x=>{
+    x.addEventListener("focus",()=>{const e=$("sn");if(e&&!/ok|err/.test(e.dataset.s))snSet("peek")});
+    x.addEventListener("input",()=>{const e=$("sn");if(!e)return;snTy=Date.now();const r=x.getBoundingClientRect();snLook(Math.min(r.right-14,r.left+14+x.value.length*8.5),r.top+r.height/2);if(!/ok|err/.test(e.dataset.s))snSet("peek")});
+    x.addEventListener("blur",()=>{const e=$("sn");if(e&&!/ok|err/.test(e.dataset.s))snSet("idle")})})}
 function dLogout(){dStop();clearTimeout(dRetryT);dAuthOk=false;dLive="off";dFlagSet(null);dMsg="";firebase.auth().signOut().then(dLogin,dLogin)}
 function dRefresh(){dListen();loadX(true).then(()=>dDraw())}
 async function dPin(){if(dBusy)return;const v=$("pin").value.trim(),m=$("pinmsg"),b=$("pinbtn");
