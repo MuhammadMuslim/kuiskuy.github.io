@@ -121,6 +121,29 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--pri);outline-
 .qb{background:#fff;color:#1F1F2E;border-radius:14px;padding:12px;text-align:center;font-size:.9rem}
 .qb svg{width:100%;height:auto}
 .mt h2{margin-bottom:10px}.mt p,.mt li{margin:8px 0}.mt ul{padding-left:20px;margin:8px 0}.mt .box{background:var(--soft);border-radius:10px;padding:10px 12px;margin:10px 0}
+/* ===== Materi: efek lembar buku (balik halaman + geser sentuh) ===== */
+.bk{position:relative;display:grid;perspective:1800px;perspective-origin:50% 40%;touch-action:pan-y;margin-bottom:14px}
+.bk .pg{margin:0;position:relative;background-image:linear-gradient(90deg,rgba(0,0,0,.12),rgba(0,0,0,0) 22px)}
+.bk .lf{position:absolute;inset:0;z-index:2;transform-origin:left center;transform-style:preserve-3d;will-change:transform}
+.bk .lf-f,.bk .lf-b{position:absolute;inset:0;border-radius:16px;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.bk .lf-f .pg{height:100%;overflow:hidden}
+.bk .lf-b{transform:rotateY(180deg);background-color:var(--card);background-image:linear-gradient(270deg,rgba(0,0,0,.2),rgba(0,0,0,0) 32%),repeating-linear-gradient(0deg,rgba(0,0,0,.04) 0 1px,transparent 1px 26px);box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.bk .lf-f::after,.bk .lf-b::after{content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none}
+.bk .lf-f::after{background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,.12) 60%,rgba(255,255,255,.14));opacity:var(--sf,0)}
+.bk .lf-b::after{background:linear-gradient(270deg,rgba(0,0,0,.45),rgba(0,0,0,0) 70%);opacity:var(--sb,0)}
+.bk-sh{position:absolute;inset:0;z-index:1;border-radius:16px;pointer-events:none;opacity:0;background:linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.2) 45%,rgba(0,0,0,0))}
+.bk.fl{display:block;overflow:visible}.bk.fl>.pgb{height:100%;overflow:hidden;margin:0}
+.bk .lf-f,.bk .lf-b{will-change:transform}
+
+/* sampul buku: terbuka seperti lembar buku saat materi dibuka */
+.bk .lf.cv{z-index:5;transform-origin:left center}
+.bkcv-f,.bkcv-b{position:absolute;inset:0;border-radius:6px 16px 16px 6px;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.bkcv-f{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center;color:#fff;background:linear-gradient(135deg,#7B3FE4,#46178F 60%,#2D0C66);box-shadow:inset 6px 0 0 rgba(0,0,0,.28),inset 0 0 0 3px rgba(255,255,255,.18),0 10px 30px rgba(0,0,0,.35)}
+.bkcv-f b{font-size:1.25rem;line-height:1.3}.bkcv-f i{font-style:normal;font-size:2.6rem}.bkcv-f small{opacity:.8}
+.bkcv-f::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.5),rgba(0,0,0,0) 40%,rgba(255,255,255,.12));opacity:var(--sf,0)}
+.bkcv-b{transform:rotateY(180deg);background:linear-gradient(270deg,rgba(0,0,0,.3),rgba(0,0,0,0) 40%),#EDE7F6;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.bk-hint{display:none}
+@media (hover:none){.bk-hint{display:block;text-align:center;color:#fff;opacity:.78;font-size:.82rem;margin:-4px 0 12px}}
 @media (max-width:700px){.lb{grid-template-columns:1fr}.rw{font-size:1rem}}
 .fig{margin:12px 0;text-align:center}.fig svg{width:100%;max-width:420px;height:auto}.fig small{display:block;color:var(--mut);font-size:.85rem;margin-top:2px}
 .fig text{fill:var(--ink);font:600 12px system-ui,sans-serif}.fig text.b1,.fig text.b2,.fig text.b3,.fig text.b4{fill:#fff}.fig text.m{font:11px ui-monospace,Menlo,monospace;fill:#fff;font-weight:400}
@@ -870,7 +893,7 @@ html.kdr-lock{overflow:hidden}
 .dl-bk svg{width:16px;height:16px}
 @media (hover:hover){.dl-bk:hover{color:var(--pri);background:var(--soft)}.dl-bk:hover svg{transform:translateX(-4px)}}
 .dl-ch:focus-visible,.dl-bk:focus-visible{outline:3px solid #FFD23F;outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.kg-sh::before,.kg-ar{animation:none}:is(.card,.kj) .btn.kgo,.kg-t,.kg-i{transition:none}}
+@media (prefers-reduced-motion:reduce){.kg-sh::before,.kg-ar{animation:none}}
 
 /* ===== Halaman depan: tampilan rapi, tanpa bar progres ===== */
 .ks-card{display:flex;align-items:center;gap:14px;text-align:left;width:100%;box-sizing:border-box;max-width:380px;margin:0 auto;padding:14px 18px;border-radius:20px;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px rgba(255,255,255,.2) inset,0 10px 30px rgba(0,0,0,.18);animation:ksFade .8s ease 1.5s both}
@@ -887,6 +910,18 @@ html.kdr-lock{overflow:hidden}
 .kj .btn.kgo{width:auto;height:48px;margin:0;padding:0 22px 0 18px;flex:none;font-size:1rem}
 main.wide .kj .btn.kgo{border-radius:999px;padding:0 clamp(18px,3vmin,34px);height:auto;align-self:stretch;font-size:clamp(1rem,calc(.8rem + 1.1vmin),1.6rem)}
 main.wide .kj-or{font-size:clamp(.8rem,calc(.6rem + .9vmin),1.2rem)}
+/* join: field menyatu ke tombol */
+.kj-row{margin-left:auto;margin-right:auto;transition:width .6s cubic-bezier(.65,0,.25,1),gap .6s cubic-bezier(.65,0,.25,1),padding .6s cubic-bezier(.65,0,.25,1),background .5s .1s,box-shadow .5s .1s,-webkit-backdrop-filter .5s,backdrop-filter .5s}
+.kj-row.mg{gap:0;justify-content:center;pointer-events:none;background:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.kj .kj-row input{transition:flex-grow .6s cubic-bezier(.65,0,.25,1),padding .6s cubic-bezier(.65,0,.25,1),opacity .3s,letter-spacing .6s}
+.kj .kj-row.mg input{flex:0 0 0;width:0;padding-left:0;padding-right:0;opacity:0;letter-spacing:0}
+.kj .btn.kgo{transition:width .6s cubic-bezier(.65,0,.25,1),padding .6s cubic-bezier(.65,0,.25,1),background .35s,box-shadow .3s,transform .12s,filter .15s}
+.kj .kj-row.mg .btn.kgo{padding:0;border-radius:999px}
+.kj .kj-row.mg .btn.kgo:disabled{opacity:1;filter:none}
+.kj .kj-row.go .btn.kgo{animation:kjPop .5s cubic-bezier(.3,1.4,.5,1) forwards}
+@keyframes kjPop{0%{transform:scale(1)}45%{transform:scale(1.28)}100%{transform:scale(1.1)}}
+.kj-ov{position:fixed;z-index:9999;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 50% 50%,#46E391,#17A25A 70%);pointer-events:none;transition:width .56s cubic-bezier(.7,0,.3,1),height .56s cubic-bezier(.7,0,.3,1),opacity .2s}
+
 main.wide .ks-card{max-width:min(92vw,640px)}
 .ks-pt{margin:26px 0 0}
 .ks-dsn{display:inline-flex;align-items:center;gap:9px;padding:11px 16px 11px 14px;border-radius:999px;color:#fff;font-weight:700;text-decoration:none;background:rgba(255,255,255,.1);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px rgba(255,255,255,.28) inset;transition:transform .15s,background .2s,box-shadow .2s}
@@ -1133,14 +1168,40 @@ function tbox(){return `<div class="prog"><span id="pl"></span><span>⏱ <b id="
 const kNorm=s=>String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
 const kOf=r=>kNorm(r.kode||r.id);
 function kFind(c){c=kNorm(c);if(!c)return null;return ROOMS.find(r=>!r.ar&&r.kode&&kNorm(r.kode)===c)||ROOMS.find(r=>!r.ar&&kNorm(r.id)===c)||null}
-async function kjGo(ev){if(ev)ev.preventDefault();const inp=$("kjc"),m=$("kjm");if(!inp)return false;
-  const c=kNorm(inp.value);if(!c){m.textContent="Isi kode join dari dosenmu.";kgShake(document.querySelector(".kjb"));return false}
-  m.textContent="Memeriksa kode…";
+let kjBusy=0;
+const kjWait=ms=>new Promise(r=>setTimeout(r,ms));
+/* kode benar: field mengecil menyatu ke tombol, tombol jadi bulat + centang, lalu tombol "masuk" melebar menutup layar baru pindah halaman */
+async function kjMerge(r){
+  const row=document.querySelector(".kj-row"),btn=document.querySelector(".kjb"),url="?kamar="+encodeURIComponent(r.id);
+  if(!row||!btn||bkRM()){location.href=url;return}
+  const h=btn.offsetHeight,pad=parseFloat(getComputedStyle(row).paddingLeft)||0;
+  row.style.width=row.offsetWidth+"px";btn.style.width=btn.offsetWidth+"px";btn.style.flex="none";
+  void row.offsetWidth;
+  row.classList.add("mg");
+  row.style.width=(h+pad*2)+"px";btn.style.width=h+"px";
+  btn.classList.add("ok");btn.removeAttribute("aria-busy");
+  setTimeout(()=>{if(btn.isConnected&&typeof trCrumbs==="function"){const q=btn.getBoundingClientRect();trCrumbs(q.left+q.width/2,q.top+q.height/2,["#3FDC84","#FFD23F","#fff"])}},620);
+  await kjWait(1150);                      /* field menyatu + centang tergambar */
+  const rc=btn.getBoundingClientRect(),cx=rc.left+rc.width/2,cy=rc.top+rc.height/2;
+  const ov=document.createElement("div");ov.className="kj-ov";
+  ov.style.cssText=`left:${cx}px;top:${cy}px;width:${rc.width}px;height:${rc.height}px`;
+  document.body.appendChild(ov);
+  row.classList.add("go");
+  void ov.offsetWidth;
+  const R=Math.hypot(Math.max(cx,innerWidth-cx),Math.max(cy,innerHeight-cy))*2+40;
+  ov.style.width=ov.style.height=R+"px";ov.classList.add("on");
+  await kjWait(560);
+  location.href=url}
+async function kjGo(ev){if(ev)ev.preventDefault();const inp=$("kjc"),m=$("kjm");if(!inp||kjBusy)return false;
+  const btn=document.querySelector(".kjb");
+  const c=kNorm(inp.value);if(!c){m.textContent="Isi kode join dari dosenmu.";kgShake(btn);return false}
+  kjBusy=1;if(btn)btn.disabled=true;m.textContent="Memeriksa kode…";
   let r=kFind(c);
   if(!r&&DB){try{await loadX()}catch(e){}r=kFind(c)}
   if(!r&&!ROOMS.length&&useCache()){mergeX([]);r=kFind(c)}
-  if(r){location.href="?kamar="+encodeURIComponent(r.id)}
-  else{m.textContent=(!DB||(!ROOMS.length&&!kOk))?"Belum bisa memeriksa kode. Periksa koneksi lalu coba lagi.":"Kode tidak ditemukan. Periksa lagi ejaannya.";kgShake(document.querySelector(".kjb"))}
+  if(r){m.textContent="";inp.blur();await kjMerge(r);return false}
+  kjBusy=0;if(btn)btn.disabled=false;
+  m.textContent=(!DB||(!ROOMS.length&&!kOk))?"Belum bisa memeriksa kode. Periksa koneksi lalu coba lagi.":"Kode tidak ditemukan. Periksa lagi ejaannya.";kgShake(btn);
   return false}
 function ksHop(e){const n=document.querySelector(".ks-note");if(n&&!n.classList.contains("off")){n.classList.add("off");setTimeout(()=>n.remove(),350)}e.classList.remove("hop");void e.offsetWidth;e.classList.add("hop");setTimeout(()=>e.classList.remove("hop"),650)}
 function pick(){stop();S.playing=false;
@@ -1150,11 +1211,100 @@ const tl=[..."KuisKuy"].map((c,i)=>`<b style="--i:${i}" onclick="ksHop(this)">${
 const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],cf=Array.from({length:36},(_,i)=>`<i style="--x:${(i*29)%100}%;--w:${6+(i*3)%7}px;--c:${cc[i%5]};--t:${2.6+(i%5)*.45}s;--d:${(i%9)*.12+.3}s;--dx:${(i%2?1:-1)*(20+(i*11)%60)}px;--r:${240+(i*47)%420}deg"></i>`).join("");
 const st=Array.from({length:9},(_,i)=>`<em style="--x:${(i*37+8)%92}%;--y:${(i*23+6)%80}%;--s:${12+(i*5)%14}px;--d:${(i%5)*.45}s">✦</em>`).join("");
 {const mn=document.querySelector("main");if(mn)mn.classList.add("wide")}
-$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><div class="ks-note" role="note"><i aria-hidden="true">👇</i>Ketuk hurufnya, coba!</div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><i class="ks-qr" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 14v3M14 20h3M21 20h-.01"/></svg></i><div class="ks-ct"><b>Pindai QR atau buka tautan</b><small>Dari dosenmu, untuk masuk ke kamar kuis.</small></div></div><form class="kj" onsubmit="return kjGo(event)"><div class="kj-or"><span>atau masukkan kode join</span></div><div class="kj-row"><input id="kjc" placeholder="KODE" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kode join kuis"><button class="btn kgo kjb" type="submit"><span class="kg-sh"></span><span class="kg-i"><svg class="kg-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-3"/><g class="kg-ar"><path d="M10 17l5-5-5-5M15 12H3"/></g></svg></span><span class="kg-t">Masuk</span></button></div><div class="kjm" id="kjm" role="status"></div></form></div></div><p class="center ks-pt"><a class="ks-dsn" href="#dosen" onclick="dFlagSet(null)"><svg class="sh" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><span>Masuk portal dosen</span><svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
+$("app").innerHTML=`<div class="ks"><div class="ks-st" aria-hidden="true">${st}</div><div class="ks-bg" aria-hidden="true">${bg}</div><div class="ks-cf" aria-hidden="true">${cf}</div><div class="ks-c"><div class="ks-sh" aria-hidden="true"><i>▲</i><i>◆</i><i>●</i></div><div class="ks-note" role="note"><i aria-hidden="true">👇</i>Ketuk hurufnya, coba!</div><h1 class="ks-t" aria-label="KuisKuy">${tl}</h1><p class="ks-s">Jawab cepat, makin cepat makin banyak poin!</p><div class="ks-card"><i class="ks-qr" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3M21 14v3M14 20h3M21 20h-.01"/></svg></i><div class="ks-ct"><b>Pindai QR atau buka tautan</b><small>Dari dosenmu, untuk masuk ke kamar kuis.</small></div></div><form class="kj" onsubmit="return kjGo(event)"><div class="kj-or"><span>atau masukkan kode join</span></div><div class="kj-row"><input id="kjc" placeholder="KODE" maxlength="30" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Kode join kuis"><button class="btn kgo kjb" type="submit"><span class="kg-sh"></span><span class="kg-i"><svg class="kg-lg" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-3"/><g class="kg-ar"><path d="M10 17l5-5-5-5M15 12H3"/></g></svg><svg class="kg-ck" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="kg-t">Masuk</span></button></div><div class="kjm" id="kjm" role="status"></div></form></div></div><p class="center ks-pt"><a class="ks-dsn" href="#dosen" onclick="dFlagSet(null)"><svg class="sh" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><span>Masuk portal dosen</span><svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></a></p><p class="ks-dev">Develop by <a href="https://ulim-dev.github.io/Profile.github.io/" target="_blank" rel="noopener noreferrer">ulim.dev</a></p>`}
 const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
-function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
-$("app").innerHTML=`<div class="prog"><span>📖 Materi · ${p+1}/${m.length}</span></div><div class="card mt pop"><h2>${x.j}</h2>${x.h}</div><div class="bar">${p?`<button class="btn ghost w" onclick="mat(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">Selesai, ke kuis ▶</button>`:`<button class="btn" onclick="mat(${p+1})">Lanjut ▶</button>`}</div>`;scrollTo(0,0)}
+/* ===== Materi: balik halaman ala buku + geser sentuh ===== */
+const BK={p:0,busy:0,D:null,noclick:0};
+/* animasi buku & join sengaja selalu aktif (tidak mengikuti prefers-reduced-motion) */
+const bkRM=()=>false;
+const matPg=(i,c)=>{const x=ROOM.mat[i];return `<div class="card mt pg${c?" "+c:""}"><h2>${x.j}</h2>${x.h}</div>`};
+function matDraw(p,pp,keep){
+const m=ROOM.mat,last=p===m.length-1;BK.p=p;BK.busy=0;BK.D=null;
+$("app").innerHTML=`<div class="prog"><span>📖 Materi · ${p+1}/${m.length}</span></div><div class="bk" id="bk">${matPg(p,pp?"pop":"")}</div>${m.length>1?`<p class="bk-hint">👆 Geser ke kiri atau kanan untuk membalik halaman</p>`:""}<div class="bar">${p?`<button class="btn ghost w" onclick="matGo(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">Selesai, ke kuis ▶</button>`:`<button class="btn" onclick="matGo(${p+1})">Lanjut ▶</button>`}</div>`;
+bkFit();
+if(!keep)scrollTo(0,0)}
+/* semua halaman materi dibuat setinggi halaman terpanjang agar ukuran konsisten */
+function bkFit(){const st=$("bk");if(!st||!ROOM||!ROOM.mat)return;
+const key=ROOM.id+"|"+st.offsetWidth+"|"+ROOM.mat.length;
+if(BK.hk!==key){const m=document.createElement("div");m.style.cssText="position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none";
+m.innerHTML=ROOM.mat.map((_,i)=>matPg(i)).join("");st.appendChild(m);
+let H=0;[...m.children].forEach(c=>{H=Math.max(H,c.offsetHeight)});m.remove();BK.hk=key;BK.H=H}
+st.style.minHeight=BK.H+"px"}
+window.addEventListener("resize",()=>{BK.hk=null;if($("bk")&&!BK.busy)bkFit()});
+function mat(p){
+p=p||0;matDraw(p,0);
+const st=$("bk");if(!st||!ROOM||BK.busy)return;
+const h=st.offsetHeight;st.classList.add("fl");st.style.height=h+"px";
+const pg=st.querySelector(".pg");if(pg){pg.classList.add("pgb");pg.style.opacity="0";pg.style.transform="translateY(10px)"}
+const lf=document.createElement("div");lf.className="lf cv";
+lf.innerHTML='<div class="lf-f"><div class="bkcv-f"><i>'+(ROOM.ikon||"📖")+'</i><b>'+esc(ROOM.nama||"Materi")+'</b><small>Materi · ketuk atau geser untuk membuka</small></div></div><div class="lf-b"><div class="bkcv-b"></div></div>';
+st.appendChild(lf);
+BK.busy=1;const sf=lf.querySelector(".bkcv-f");
+const done=()=>{lf.remove();st.classList.remove("fl");st.style.height="";if(pg){pg.classList.remove("pgb");pg.style.opacity="";pg.style.transform="";pg.style.transition=""}BK.busy=0};
+if(pg)pg.style.transition="opacity .7s ease .15s,transform .7s ease .15s";
+setTimeout(()=>{if(pg){pg.style.opacity="1";pg.style.transform="none"}},30);
+setTimeout(()=>flTween(0,1,1000,t=>{lf.style.transform="rotateY("+(-180*t)+"deg)";sf.style.setProperty("--sf",t<.5?(t*1.5).toFixed(3):0)},done),350)}
+function flBuild(fw,p){
+const st=$("bk"),cur=st&&st.querySelector(".pg");if(!cur)return null;
+const h0=cur.offsetHeight,o=matPg(BK.p),n=matPg(p,"pgb"),oo=matPg(BK.p,"pgb");
+/* ukur tinggi halaman tujuan supaya tinggi buku berubah mulus (tanpa lompatan layout di akhir) */
+const m=document.createElement("div");m.style.cssText="position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none";m.innerHTML=matPg(p);st.appendChild(m);
+const h1=m.firstChild.offsetHeight;m.remove();
+st.classList.add("fl");st.style.height=h0+"px";
+st.innerHTML=(fw?n:oo)+`<div class="bk-sh"></div><div class="lf"><div class="lf-f">${fw?o:matPg(p)}</div><div class="lf-b"></div></div>`;
+return{lf:st.querySelector(".lf"),sh:st.querySelector(".bk-sh"),st:st,h0:h0,h1:h1,fw:fw}}
+/* t=0: lembar menutup halaman; t=1: lembar terbalik penuh (engsel di kiri) */
+function flSet(b,t){
+b.lf.style.transform=`rotateY(${-180*t}deg)`;
+{const q=b.fw?t:1-t,e=q*q*(3-2*q);b.st.style.height=(b.h0+(b.h1-b.h0)*e).toFixed(1)+"px"}
+b.lf.style.setProperty("--sf",t<.5?(t*1.5).toFixed(3):0);
+b.lf.style.setProperty("--sb",t>.5?((1-t)*1.5).toFixed(3):0);
+b.sh.style.opacity=(Math.sin(t*Math.PI)*.9).toFixed(3)}
+function flTween(a,z,ms,fn,done){
+const ez=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;let t0;
+(function f(n){if(t0===undefined)t0=n;const k=Math.min(1,(n-t0)/ms);fn(a+(z-a)*ez(k));if(k<1)requestAnimationFrame(f);else if(done)done()})(performance.now());
+}
+function matGo(p){
+const m=ROOM.mat;if(BK.busy||p<0||p>=m.length||p===BK.p)return;
+if(bkRM()){matDraw(p,0);return}
+const fw=p>BK.p;if(window.scrollY>0)scrollTo(0,0);
+const b=flBuild(fw,p);if(!b){matDraw(p,0);return}
+BK.busy=1;const a=fw?0:1,z=fw?1:0;flSet(b,a);
+requestAnimationFrame(()=>flTween(a,z,780,t=>flSet(b,t),()=>matDraw(p,0)))}
+document.addEventListener("pointerdown",e=>{
+const st=e.target.closest&&e.target.closest("#bk");
+if(!st||BK.busy||e.pointerType==="mouse"||!e.isPrimary)return;
+BK.D={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId,on:0,pr:0,W:st.offsetWidth||innerWidth}});
+document.addEventListener("pointermove",e=>{
+const D=BK.D;if(!D||e.pointerId!==D.id)return;
+const dx=e.clientX-D.x,dy=e.clientY-D.y;
+if(!D.on){
+if(Math.abs(dy)>14&&Math.abs(dy)>Math.abs(dx)){BK.D=null;return}
+if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2)return;
+const fw=dx<0,p=BK.p+(fw?1:-1);D.fw=fw;D.p=p;
+if(p<0||p>=ROOM.mat.length)D.on=2;
+else if(bkRM())D.on=3;
+else{D.b=flBuild(fw,p);if(!D.b){BK.D=null;return}D.on=1}
+try{$("bk").setPointerCapture(e.pointerId)}catch(_){}}
+D.pr=Math.max(0,Math.min(1,(D.fw?-dx:dx)/(D.W*.85)));
+if(D.on===1)flSet(D.b,D.fw?D.pr:1-D.pr);
+else if(D.on===2){const c=$("bk").querySelector(".pg");c.style.transition="none";c.style.transform=`translateX(${Math.max(-40,Math.min(40,dx*.3))}px)`}});
+function flEnd(e){
+const D=BK.D;if(!D||e.pointerId!==D.id)return;BK.D=null;if(!D.on)return;
+BK.noclick=1;setTimeout(()=>{BK.noclick=0},80);
+const v=Math.abs(e.clientX-D.x)/Math.max(1,performance.now()-D.t);
+const go=e.type!=="pointercancel"&&(D.pr>.3||(v>.45&&D.pr>.06));
+if(D.on===2){const c=$("bk").querySelector(".pg");c.style.transition="transform .3s";c.style.transform="";return}
+if(D.on===3){if(go)matDraw(D.p,0);return}
+BK.busy=1;const cur=D.fw?D.pr:1-D.pr,end=go?(D.fw?1:0):(D.fw?0:1);
+flTween(cur,end,Math.max(140,Math.abs(end-cur)*720),t=>flSet(D.b,t),()=>{go?matDraw(D.p,0):matDraw(BK.p,0,1)})}
+document.addEventListener("pointerup",flEnd);
+document.addEventListener("pointercancel",flEnd);
+document.addEventListener("click",e=>{if(BK.noclick){e.stopPropagation();e.preventDefault()}},true);
+document.addEventListener("keydown",e=>{
+if(!$("bk")||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+if(e.key==="ArrowRight")matGo(BK.p+1);else if(e.key==="ArrowLeft")matGo(BK.p-1)});
 function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;pgCloud(1);home();introNext()}
 function mkDup(){const n=x=>String(x||"").trim().toLowerCase().replace(/\s+/g," "),m=n(ROOM.mk),k=n(ROOM.nama);return !m||m===k||k.includes(m)}
 function home(){
@@ -1166,7 +1316,7 @@ if(ROOM.mat&&ROOM.mat.length){const ok=matOk();h+=`<div class="card"><button cla
 LV.forEach((l,i)=>{if(l.h)return;const d=S.done[i],ok=LV.slice(0,i).every((x,k)=>x.h||S.done[k])&&matOk()&&!d;
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(LV.every((x,k)=>x.h||S.done[k]))h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
-h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" onclick="dFlagSet(null)" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
+h+=codeCard()+`<p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">Dasbor online</a>${ROOMS.length>1?` <a class="btn ghost w" href="./">Kamar lain</a>`:""}</p>`;
 $("app").innerHTML=h;snMhsInit();nmAuto()}
 function start(i){if(S.done[i])return;if(DB&&!S.acc){nmPop(1);return}if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";snErr("Isi nama dan NIM dulu.");nmPop(1);return}
 if(!(matOk()&&tutOk())){introNext();return}
@@ -1415,15 +1565,6 @@ function nmClose(done){clearTimeout(window._nmT);const m=$("nmo");if(m)m.remove(
 function nmAuto(){if(isLk()||S.nmx||$("nmo"))return;nmPop(S.ns||1)}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
-function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
-try{const q=qrcode(0,"M");q.addData(u);q.make();o.innerHTML=`<div style="background:#fff;padding:8px;border-radius:12px;width:min(260px,100%);margin:12px auto 0">${q.createSvgTag({cellSize:6,margin:0,scalable:true})}</div><p class="center" style="margin:8px 0 0;font-size:.9rem">Pindai dengan kamera HP</p>`}
-catch(e){o.textContent="QR gagal dibuat. Pastikan link benar dan tidak terlalu panjang."}}
-function rekap(){const u=/^https?:/.test(location.href)?location.href.split("#")[0]:"";
-$("app").innerHTML=`<div class="card"><h3>QR untuk mahasiswa</h3><p>Tampilkan di layar kelas. Mahasiswa memindai dan langsung membuka kuis ini.</p><input id="qu" placeholder="Tempel link kuis yang sudah di-hosting" value="${esc(u)}" oninput="qr()"><div id="qr"></div></div><div class="card"><h2>Rekap dosen</h2><p>Kamar: <b>${esc(ROOM.nama)}</b>. Tempel kode hasil mahasiswa, satu kode per baris. Jika satu NIM mengirim beberapa kode, yang skornya tertinggi dipakai.</p><textarea id="in" rows="7" placeholder="PDK.…"></textarea><button class="btn" onclick="tbl()">Tampilkan rekap</button> <button class="btn ghost" onclick="home()">Kembali</button><div id="out"></div></div>`;qr()}
-function tbl(){const m={};let bad=0;$("in").value.split(/\s+/).filter(Boolean).forEach(c=>{const d=dec(c);if(!d||!d.i){bad++;return}const k=String(d.i).trim();if(!m[k]||d.s>m[k].s)m[k]=d});
-const r=Object.values(m).sort((a,b)=>b.s-a.s),cell=d=>LV.map((_,i)=>(d.l||[])[i]);
-const tsv=["Nama\tNIM\t"+LV.map((_,i)=>"L"+(i+1)).join("\t")+"\tSkor (maks "+MAXP+")"].concat(r.map(d=>[d.n,d.i,...cell(d).map(x=>x==null?"":x),d.s].join("\t"))).join("\n");
-$("out").innerHTML=(r.length?`<div class="tw"><table><tr><th>#</th><th>Nama</th><th>NIM</th>${LV.map((_,i)=>`<th>L${i+1}</th>`).join("")}<th>Skor</th></tr>${r.map((d,n)=>`<tr><td>${n<3?["🥇","🥈","🥉"][n]:n+1}</td><td>${esc(d.n)}</td><td>${esc(d.i)}</td>${cell(d).map(x=>`<td>${x==null?"–":x+"%"}</td>`).join("")}<td><b>${d.s}</b></td></tr>`).join("")}</table></div><p>${r.length} mahasiswa. Persen = akurasi tiap level; skor maksimal ${MAXP}.</p><textarea id="tv" readonly rows="4" onclick="this.select()">${esc(tsv)}</textarea><button class="btn" onclick="cp('tv',this)">Salin untuk Excel</button>`:`<p>Belum ada kode yang valid.</p>`)+(bad?`<p style="color:var(--bad)">${bad} kode tidak valid dan dilewati.</p>`:"")}
 /* ===== Mode dosen: buka halaman ini dengan #dosen di ujung link ===== */
 let dUnsub=null,dDocs=[],dView="rekap",dAnon=false,dMsg="";
 let dRoom=ROOM_ID||"";
