@@ -701,9 +701,9 @@ window.FIREBASE_CONFIG={apiKey:"AIzaSyD3JcM9d1AF9OEhS9y5XG8qDPVxwpGD2zA",authDom
    Semuanya dibaca dari Firestore koleksi "kamar" (satu dokumen per mata kuliah).
    Isi pertama kali: Dasbor dosen > Bank soal > Impor data kamar > pilih data-bawaan.json. */
 const ROOMS=[];
-let kOk=false,kErr="",rmLock=false;
+let kOk=false,kErr="",rmLock=false,KALL=[];
 function kRooms(docs){const out=[];docs.forEach(d=>{const x=d.data?d.data():d;
-  try{const r={id:d.id,nama:x.nama,ikon:x.ikon||"📘",ket:x.ket||"",sub:x.sub||"",mk:x.mk||"",ar:x.arsip===true,kode:x.kode||"",ranks:x.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],mat:JSON.parse(x.mat||"[]"),lv:JSON.parse(x.lv||"[]"),u:x.urut||0};
+  try{const r={id:d.id,nama:x.nama,ikon:x.ikon||"📘",ket:x.ket||"",sub:x.sub||"",mk:x.mk||"",ar:x.arsip===true,kode:x.kode||"",o:x.owner||"",ranks:x.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],mat:JSON.parse(x.mat||"[]"),lv:JSON.parse(x.lv||"[]"),u:x.urut||0};
     if(r.nama&&Array.isArray(r.lv)&&r.lv.length)out.push(r)}catch(e){}});
   return out.sort((a,b)=>a.u-b.u)}
 function useCache(){try{const c=JSON.parse(localStorage.getItem("kamar_cache"));if(Array.isArray(c)&&c.length){ROOMS.length=0;ROOMS.push(...c);return true}}catch(e){}return false}
@@ -772,7 +772,34 @@ function dAkun(){if(dAk===null){dAk="load";dAkLoad()}
 async function dAkDel(id){if(!confirm("Hapus profil NIM "+id+"? Mahasiswa harus mendaftar ulang setelah akunnya juga dihapus di Firebase Authentication."))return;
   try{await DB.collection("mahasiswa").doc(id).delete();dAk=null;dDraw()}catch(e){alert("Gagal menghapus profil: "+((e&&e.code)||"koneksi"))}}
 const _dRekapA=dRekap;dRekap=function(r,now){return dView==="akun"?dAkun():_dRekapA(r,now)};
-const _dDrawA=dDraw;dDraw=function(){_dDrawA();const b=document.querySelector("#app .bar");if(b&&b.children[3])b.children[3].insertAdjacentHTML("afterend",`<button class="btn ${dView==="akun"?"on":""}" onclick="dView='akun';dDraw()">Akun mahasiswa</button>`)};
+const _dDrawA=dDraw;dDraw=function(){_dDrawA();const b=document.querySelector("#app .bar");if(b&&b.children[3]&&DU&&DU.admin)b.children[3].insertAdjacentHTML("afterend",`<button class="btn ${dView==="akun"?"on":""}" onclick="dView='akun';dDraw()">Akun mahasiswa</button>`)};
+/* ===== Admin: daftar dosen yang diizinkan + klaim kuis lama ===== */
+let dZ=null,dZErr="",dZMsg="",dZv="";
+function dZLoad(){DB.collection("dosen_izin").get().then(q=>{dZ=q.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>a.id.localeCompare(b.id));dZErr="";dDraw()}).catch(e=>{dZ=[];dZErr=(e&&e.code)||"koneksi";dDraw()})}
+function dDosenView(){if(!DU||!DU.admin)return `<div class="card mt"><p>Hanya admin yang bisa mengatur daftar dosen.</p></div>`;
+  if(dZ===null){dZ="load";dZLoad()}
+  if(dZ==="load")return `<div class="card mt"><p>Memuat daftar dosen…</p></div>`;
+  const rows=dZ.map(a=>`<div class="akr"><div><b>${esc(a.id)}</b>${a.admin?' <span class="mut">(admin)</span>':""}</div>${a.id===DU.email||a.admin?"":`<button class="btn ghost" onclick="dZDel('${esc(a.id)}')">Hapus</button>`}</div>`).join("");
+  return `<div class="card mt"><h2>Dosen yang diizinkan (${dZ.length})</h2><p class="mut">Hanya email di daftar ini yang bisa membuka dasbor dosen. Dosen baru mendaftar sendiri di halaman portal dosen (Daftar), lalu mengklik link verifikasi di emailnya. Tiap dosen hanya melihat dan mengubah kuis miliknya.</p>${dZErr?`<p class="err">Gagal memuat: ${esc(dZErr)}</p>`:""}${dZMsg?`<p style="font-weight:700">${esc(dZMsg)}</p>`:""}<input id="dzem" type="email" placeholder="Email dosen yang diizinkan" value="${esc(dZv)}" oninput="dZv=this.value" onkeydown="if(event.key==='Enter')dZAdd()"><button class="btn" onclick="dZAdd()">Izinkan</button> <button class="btn ghost" onclick="dZ=null;dZMsg='';dDraw()">⟳ Muat ulang</button>${rows}</div>`}
+async function dZAdd(){const em=(dZv||"").trim().toLowerCase();
+  if(!/^[^\s@\/]+@[^\s@\/]+\.[^\s@\/]+$/.test(em)||/@kuis\.app$/.test(em)){dZMsg="Isi email dosen dengan benar.";return dDraw()}
+  if(Array.isArray(dZ)&&dZ.some(a=>a.id===em)){dZMsg="Email itu sudah ada di daftar.";return dDraw()}
+  try{await DB.collection("dosen_izin").doc(em).set({admin:false,dibuat:firebase.firestore.FieldValue.serverTimestamp()});dZv="";dZMsg="Email diizinkan. Minta dosennya mendaftar di halaman portal dosen.";dZ=null}
+  catch(e){dZMsg="Gagal: "+((e&&e.code)||"koneksi")}
+  dDraw()}
+async function dZDel(id){if(!confirm("Cabut izin "+id+"? Dosen itu tidak bisa membuka dasbor lagi. Kuis miliknya tetap tersimpan."))return;
+  try{await DB.collection("dosen_izin").doc(id).delete();dZ=null;dZMsg="Izin dicabut."}catch(e){dZMsg="Gagal: "+((e&&e.code)||"koneksi")}
+  dDraw()}
+async function dKlaim(){const rs=ROOMS.filter(r=>!r.o&&!r.x);if(!rs.length||!DU||!DU.admin)return;
+  if(!confirm("Klaim "+rs.length+" kuis lama ke akunmu ("+DU.email+")? Setelah ini hanya kamu yang bisa mengubahnya."))return;
+  try{for(let i=0;i<rs.length;i+=200){const b=DB.batch();rs.slice(i,i+200).forEach(r=>b.update(DB.collection("kamar").doc(r.id),{owner:DU.uid}));await b.commit()}
+    await loadX(true);dDraw()}
+  catch(e){alert("Gagal mengklaim: "+((e&&e.code)||"koneksi")+". Pastikan firestore.rules versi terbaru sudah di-Publish.")}}
+const _dRekapZ=dRekap;dRekap=function(r,now){return dView==="dizin"?dDosenView():_dRekapZ(r,now)};
+const _dDrawZ=dDraw;dDraw=function(){_dDrawZ();if(!DU)return;const b=document.querySelector("#app .bar");if(!b)return;
+  if(DU.admin){const e=Array.from(b.children).find(x=>x.textContent==="Akun mahasiswa");if(e)e.insertAdjacentHTML("afterend",`<button class="btn ${dView==="dizin"?"on":""}" onclick="dView='dizin';dDraw()">Dosen</button>`)}
+  const n=ROOMS.filter(r=>!r.o&&!r.x).length;
+  if(DU.admin&&n)b.insertAdjacentHTML("afterend",`<div class="card"><h3>📦 ${n} kuis lama belum punya pemilik</h3><p class="mut">Klaim dulu agar kuis itu menjadi milik akunmu. Sebelum diklaim, rekap dan pengaturannya belum bisa dipakai.</p><button class="btn" onclick="dKlaim()">Klaim semua ke akunku</button></div>`)};
 const ROOM_ID=new URLSearchParams(location.search).get("kamar");
 let ROOM=ROOMS.find(r=>r.id===ROOM_ID)||(ROOMS.length===1?ROOMS[0]:null);
 let LV=ROOM?ROOM.lv:[];
@@ -806,7 +833,7 @@ function cloudInit(){
     if(DOSEN)return;
     const A=firebase.auth();
     AUTHP=new Promise((res,rej)=>{const un=A.onAuthStateChanged(u=>{un();
-      if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
+      if(u&&!u.isAnonymous&&!isAcc(u))A.signOut().then(()=>A.signInAnonymously()).then(res,rej);else if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
     AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
 }
 const CLG={ok:'<path class="cg" d="M9 12.5l2.2 2.2L15.5 10.5"/>',"...":'<path class="cg" d="M12 16v-5M9.5 12.8L12 10.2l2.5 2.6"/>',err:'<path class="cg" d="M12 9.5v3.5M12 15.8v.1"/>',conn:""},CLT={ok:"Tersimpan",err:"Gagal kirim, periksa koneksi",conn:"Terhubung","...":"Mengirim…"};
@@ -1113,12 +1140,13 @@ function dosen(){
   const A=firebase.auth();
   $("app").innerHTML='<div class="card center dl">Memeriksa sesi…</div>';
   A.onAuthStateChanged(u=>{
-    if(!u){dStop();dAuthOk=false;dLogin();return}
-    if(dAuthOk)return;
-    if(dFlag()===u.uid){dAuthOk=true;dListen()}else if(!dBusy&&!$("pin"))dLogin()});
+    const ok=u&&!u.isAnonymous&&!isAcc(u)&&u.emailVerified;
+    if(!ok){if(dAuthOk){dStop();dAuthOk=false}if(!dBusy&&!$("pin"))dLogin();return}
+    if(dAuthOk||dBusy)return;
+    dEnter(u)});
 }
-let dGoM={},dGoU=null;
-function dStop(){if(dUnsub){dUnsub();dUnsub=null}if(dGoU){dGoU();dGoU=null}dDocs=[]}
+let dGoM={},dGoU=null,dHU={},dHD={},DU=null;
+function dStop(){if(dUnsub){dUnsub();dUnsub=null}if(dGoU){dGoU();dGoU=null}Object.values(dHU).forEach(f=>{try{f()}catch(e){}});dHU={};dHD={};dDocs=[]}
 function dGoSet(v){const id=dRoom;DB.collection("kamar").doc(id).set(v?{go:true,gt:firebase.firestore.FieldValue.serverTimestamp(),sesi:Date.now()}:{go:false},{merge:true}).catch(e=>alert("Gagal mengubah status kuis: "+((e&&e.code)||"koneksi")))}
 function dMulai(){const rdy=dMerge().filter(d=>/^Siap/.test(d.prog)).length;if(!confirm("Mulai kuis sekarang untuk "+rdy+" mahasiswa yang sudah siap? Mahasiswa lain yang menekan siap sesudahnya langsung masuk hitung mundur."))return;dGoSet(1)}
 function dTutup(){if(confirm("Tutup kuis dan reset ke status menunggu? Mahasiswa yang belum mulai kembali harus menunggu tombol Mulai."))dGoSet(0)}
@@ -1139,7 +1167,7 @@ function dPodium(){const top=dMerge().slice(0,3),P=podIntro();dPodX();
   document.body.appendChild(el);addEventListener("keydown",dPodKey);el.querySelector(".btn:last-child").focus()}
 const dKode=()=>{const r=RM();return r?kOf(r):""};
 async function dKodeBaru(){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";
-  do{c=Array.from({length:6},()=>A[Math.random()*A.length|0]).join("")}while(ROOMS.some(r=>kOf(r)===c));
+  do{c=Array.from({length:6},()=>A[Math.random()*A.length|0]).join("")}while(KALL.some(r=>kOf(r)===c));
   if(!confirm("Buat kode join baru? Kode lama tidak berlaku lagi untuk mahasiswa yang belum bergabung."))return;
   try{await DB.collection("kamar").doc(dRoom).set({kode:c},{merge:true});await loadX(true);dDraw()}
   catch(e){alert("Gagal menyimpan kode: "+((e&&e.code)||"koneksi"))}}
@@ -1148,9 +1176,11 @@ function dCtl(r){const go=!!dGoM[dRoom],rdy=r.filter(d=>/^Siap/.test(d.prog)).le
 let dAuthOk=false,dBusy=false,dLast=0,dLive="off",dRetry=0,dRetryT=null;
 const dFlag=()=>{try{return sessionStorage.getItem("dosen_ok")}catch(e){return null}};
 function dFlagSet(v){try{v?sessionStorage.setItem("dosen_ok",v):sessionStorage.removeItem("dosen_ok")}catch(e){}}
-function dLogin(){dBusy=false;
-  $("app").innerHTML=`${snHdH(dMsg?"err":"idle",dMsg)}<div class="card dl pop"><div class="sn-w" id="sn" data-s="${dMsg?'err':'idle'}" role="img" aria-label="Maskot siput">${SN_SVG}</div><h2>Portal Dosen</h2><p class="mut">Masuk dengan PIN dosen untuk membuka rekap, papan peringkat, dan bank soal.</p><div class="dpw"><input id="pin" type="password" placeholder="PIN dosen" autocomplete="off" onkeydown="if(event.key==='Enter')dPin()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan PIN"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button></div><button class="btn go" id="pinbtn" onclick="dPin()">Masuk ke dasbor</button><p id="pinmsg" hidden></p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
-  snInit();setTimeout(()=>{const p=$("pin");if(p)p.focus()},50)}
+let dLm="masuk",dLn="",dNote="";
+function dLogin(){dBusy=false;const m=dMsg,n=dNote,daf=dLm==="daftar";dMsg="";dNote="";
+  $("app").innerHTML=`${snHdH(m?"err":"idle",m)}<div class="card dl pop"><div class="sn-w" id="sn" data-s="${m?'err':'idle'}" role="img" aria-label="Maskot siput">${SN_SVG}</div><h2>${daf?"Daftar Dosen":"Portal Dosen"}</h2><p class="mut">${daf?"Buat akun dengan email dosenmu, lalu klik link verifikasi yang dikirim ke email. Admin juga harus mengizinkan emailmu.":"Masuk dengan email dan kata sandi dosen. Semua kuismu tersimpan di akunmu."}</p><input id="dem" type="email" placeholder="Email dosen" autocomplete="username" value="${esc(dLn)}" onkeydown="if(event.key==='Enter')$('pin').focus()"><div class="dpw"><input id="pin" type="password" placeholder="Kata sandi" autocomplete="${daf?"new-password":"current-password"}" onkeydown="if(event.key==='Enter')dMasuk()"><button type="button" class="btn ghost" onclick="dShowPin(this)" aria-label="Tampilkan kata sandi"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button></div><button class="btn go" id="pinbtn" onclick="dMasuk()">${daf?"Buat akun":"Masuk ke dasbor"}</button><p id="pinmsg" role="status" style="color:${n?"var(--ok,#26890C)":"var(--bad)"};font-weight:700">${esc(n)}</p><p class="mut">${daf?`Sudah punya akun? <a href="#" onclick="dMode('masuk');return false" style="color:var(--pri)">Masuk</a>`:`Belum punya akun? <a href="#" onclick="dMode('daftar');return false" style="color:var(--pri)">Daftar</a> · <a href="#" onclick="dLupa();return false" style="color:var(--pri)">Lupa kata sandi</a>`}</p><p><a href="#" style="color:var(--pri)">← Kembali ke kuis</a></p></div>`;
+  snInit();setTimeout(()=>{const p=$("dem");if(p)p.focus()},50)}
+function dMode(m){const e=$("dem");if(e)dLn=e.value.trim();dLm=m;dNote="";dLogin()}
 const OPEN_I=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>`,SLASH_I=`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>`;
 function dShowPin(b){const p=$("pin");p.type=p.type==="password"?"text":"password";const sh=p.type!=="password";b.innerHTML=sh?OPEN_I:SLASH_I;b.setAttribute("aria-label",sh?"Sembunyikan PIN":"Tampilkan PIN");p.focus();snAw=0;snSet(p.type==="password"?"hide":"peek")}
 /* Maskot: mata mengikuti kursor, menutup mata saat isi PIN, mengintip saat PIN ditampilkan */
@@ -1188,22 +1218,63 @@ function snMhsInit(){if(!$("sn"))return;snRg();if(!window._snRz){window._snRz=1;
     x.addEventListener("focus",go);x.addEventListener("pointerdown",go);
     x.addEventListener("input",()=>{const e=$("sn");if(e&&!snAw&&e.dataset.s!=="ok")snSet(x.type==="password"?"hide":"peek")});
     x.addEventListener("blur",ev=>{const t=ev.relatedTarget;if(t&&t.closest&&t.closest(".dpw"))return;const e=$("sn");if(e&&e.dataset.s!=="ok")snSet("idle")})})}
-function dLogout(){dStop();clearTimeout(dRetryT);dAuthOk=false;dLive="off";dFlagSet(null);dMsg="";firebase.auth().signOut().then(dLogin,dLogin)}
+function dLogout(){dStop();clearTimeout(dRetryT);dAuthOk=false;dLive="off";dFlagSet(null);dMsg="";DU=null;ROOMS.length=0;xDocs=[];kOk=false;kErr="";firebase.auth().signOut().then(dLogin,dLogin)}
 function dRefresh(){dListen();loadX(true).then(()=>dDraw())}
-async function dPin(){if(dBusy)return;const v=$("pin").value.trim(),m=$("pinmsg"),b=$("pinbtn");
-  if(!v){snErr("Isi PIN dulu.");return}
-  dBusy=true;b.disabled=true;b.textContent="Memeriksa…";m.textContent="";
-  try{const A=firebase.auth();let u=A.currentUser;if(u&&!u.isAnonymous){await A.signOut();u=null}if(!u)u=(await A.signInAnonymously()).user;
-    await DB.collection("dosen").doc(u.uid).set({pin:v});
-    await DB.collection("hasil").limit(1).get();
-    dFlagSet(u.uid);dAuthOk=true;dMsg="";snSet("ok");b.textContent="Berhasil ✓";setTimeout(()=>{dBusy=false;dListen()},1000)}
-  catch(e){snErr(e&&e.code==="permission-denied"?"":"Gagal masuk: "+((e&&e.code)||"koneksi"));dBusy=false;b.disabled=false;b.textContent="Masuk ke dasbor"}}
+function dAuthErr(e){const c=(e&&e.code)||"";
+  if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return"Email atau kata sandi salah.";
+  if(c==="auth/email-already-in-use")return"Email sudah terdaftar. Silakan masuk.";
+  if(c==="auth/weak-password")return"Kata sandi minimal 6 karakter.";
+  if(c==="auth/invalid-email")return"Format email tidak benar.";
+  if(c==="auth/too-many-requests")return"Terlalu banyak percobaan. Tunggu beberapa menit.";
+  if(c==="auth/network-request-failed")return"Koneksi bermasalah. Coba lagi.";
+  if(c==="auth/operation-not-allowed")return"Login Email/Password belum diaktifkan di Firebase.";
+  return"Gagal: "+(c||"koneksi")}
+async function dEnter(u){dBusy=true;
+  try{await u.getIdToken(true);const em=String(u.email||"").toLowerCase();
+    const d=await DB.collection("dosen_izin").doc(em).get();
+    if(!d.exists){dMsg="Email "+em+" belum diizinkan sebagai dosen. Hubungi admin.";await firebase.auth().signOut();dBusy=false;dLogin();return}
+    DU={uid:u.uid,email:em,admin:d.data().admin===true};
+    dAuthOk=true;dFlagSet(u.uid);kOk=false;kErr="";dBusy=false;dListen()}
+  catch(e){dBusy=false;dAuthOk=false;try{await firebase.auth().signOut()}catch(x){}dMsg=e&&e.code==="permission-denied"?"Aturan Firestore menolak. Pasang firestore.rules versi terbaru lalu Publish.":dAuthErr(e);dLogin()}}
+async function dMasuk(){if(dBusy)return;
+  const em=($("dem").value||"").trim().toLowerCase(),pw=$("pin").value,m=$("pinmsg"),b=$("pinbtn"),daf=dLm==="daftar",
+    bad=t=>{m.style.color="var(--bad)";m.textContent=t;snErr(t)},reset=()=>{dBusy=false;b.disabled=false;b.textContent=daf?"Buat akun":"Masuk ke dasbor"};
+  if(!/^[^\s@\/]+@[^\s@\/]+\.[^\s@\/]+$/.test(em))return bad("Isi email dengan benar.");
+  if(/@kuis\.app$/.test(em))return bad("Email ini khusus akun mahasiswa.");
+  if(!pw)return bad("Isi kata sandi dulu.");
+  if(daf&&pw.length<6)return bad("Kata sandi minimal 6 karakter.");
+  dLn=em;dBusy=true;b.disabled=true;b.textContent="Memeriksa…";m.textContent="";
+  const A=firebase.auth();
+  try{
+    if(daf){
+      const u=(await A.createUserWithEmailAndPassword(em,pw)).user;
+      await u.sendEmailVerification();await A.signOut();
+      dLm="masuk";dNote="Akun dibuat. Link verifikasi dikirim ke "+em+". Klik link itu, lalu masuk di sini.";dBusy=false;dLogin();return}
+    const u=(await A.signInWithEmailAndPassword(em,pw)).user;
+    if(!u.emailVerified){await u.sendEmailVerification().catch(()=>{});await A.signOut();dNote="Email belum diverifikasi. Link verifikasi baru dikirim ke "+em+". Klik link itu, lalu masuk lagi.";dBusy=false;dLogin();return}
+    await dEnter(u)
+  }catch(e){reset();bad(dAuthErr(e))}}
+async function dLupa(){const em=(($("dem")||{}).value||"").trim().toLowerCase(),m=$("pinmsg");
+  if(!/^[^\s@\/]+@[^\s@\/]+\.[^\s@\/]+$/.test(em)||/@kuis\.app$/.test(em)){if(m){m.style.color="var(--bad)";m.textContent="Isi email dosenmu dulu di kolom email."}snErr("Isi email dulu.");return}
+  dLn=em;
+  try{await firebase.auth().sendPasswordResetEmail(em);if(m){m.style.color="var(--ok,#26890C)";m.textContent="Jika email terdaftar, link reset kata sandi sudah dikirim."}}
+  catch(e){if(m){m.style.color="var(--bad)";m.textContent=dAuthErr(e)}}}
+/* hasil dibaca per kamar milik sendiri (rules memeriksa pemilik kamar) */
+function dHasil(){if(!DB||!dAuthOk||!DU)return;
+  const want=new Set(ROOMS.filter(r=>r.o===DU.uid).map(r=>r.id));
+  Object.keys(dHU).forEach(id=>{if(!want.has(id)){try{dHU[id]()}catch(e){}delete dHU[id];delete dHD[id]}});
+  dDocs=[].concat(...Object.values(dHD));
+  if(!want.size){dLive="on";dLast=Date.now()}
+  want.forEach(id=>{if(dHU[id])return;
+    dHU[id]=DB.collection("hasil").where("room","==",id).onSnapshot(s=>{dHD[id]=s.docs.map(d=>({id:d.id,...d.data()}));dDocs=[].concat(...Object.values(dHD));dMsg="";dLive="on";dRetry=0;dLast=Date.now();dDraw()},e=>{
+      try{dHU[id]()}catch(x){}delete dHU[id];
+      if(e&&e.code==="permission-denied"){dMsg="Aturan Firestore menolak membaca hasil kamar ini. Pastikan firestore.rules versi terbaru sudah di-Publish, dan kuis lama sudah diklaim.";dDraw();return}
+      dLive="off";dMsg="Koneksi terputus ("+((e&&e.code)||"")+"). Menyambung ulang…";dDraw();
+      clearTimeout(dRetryT);dRetryT=setTimeout(()=>{if(dAuthOk)dHasil()},Math.min(15000,2000*(++dRetry)))})})}
+function ownFilter(){const me=DU&&DU.uid,ad=!!(DU&&DU.admin);for(let i=ROOMS.length-1;i>=0;i--){const r=ROOMS[i];if(r.o&&r.o===me)continue;if(!r.o&&ad&&!r.x)continue;ROOMS.splice(i,1)}}
 function dListen(){dStop();clearTimeout(dRetryT);dMsg="";dLive="conn";
   dGoU=DB.collection("kamar").onSnapshot(s=>{dGoM={};dKd={};s.docs.forEach(d=>{const x=d.data();dGoM[d.id]=x.go===true;dKd[d.id]={c:x.kdc,o:x.kdo}});if(dView==="kado"&&!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#kdroot")))kdFresh=1;dDraw()},()=>{});
-  dUnsub=DB.collection("hasil").onSnapshot(s=>{dDocs=s.docs.map(d=>({id:d.id,...d.data()}));dMsg="";dLive="on";dRetry=0;dLast=Date.now();dDraw()},e=>{dStop();
-    if(e.code==="permission-denied"){dAuthOk=false;dFlagSet(null);dMsg="Sesi ditolak. Masuk lagi dengan PIN dosen.";dLogin();return}
-    dLive="off";dMsg="Koneksi terputus ("+e.code+"). Menyambung ulang…";dDraw();
-    dRetryT=setTimeout(()=>{if(dAuthOk)dListen()},Math.min(15000,2000*(++dRetry)))});
+  dHasil();
   dDraw()}
 function dMs(t){return t&&t.toMillis?t.toMillis():Date.now()}
 const dRid=d=>d.room||(ROOMS.some(r=>r.id==="pdk")?"pdk":(ROOMS[0]||{}).id||"");
@@ -1240,7 +1311,7 @@ async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
 
 /* ===== Pemuatan data kamar + level tambahan (Firestore koleksi "kamar" dan "soal") ===== */
-const RULES='match /kamar/{id} {\n  allow read: if request.auth != null;\n  allow write: if isDosen();\n}\n\nmatch /soal/{id} {\n  allow read: if request.auth != null;\n  allow write: if isDosen();\n}\n\nmatch /pengaturan/{id} {\n  allow read, write: if isDosen();\n}';
+const RULES='Pasang aturan dari file firestore.rules (versi terbaru), lalu tekan Publish di Firebase Console, Firestore, Rules.';
 let xDocs=[],dXok=0;
 function setR(){ROOM=ROOMS.find(r=>r.id===ROOM_ID)||(ROOMS.length===1?ROOMS[0]:null);LV=ROOM?ROOM.lv:[];MAXP=LV.reduce((t,l)=>t+LMAX(l),0);if(!ROOMS.some(r=>r.id===dRoom))dRoom=(ROOM||ROOMS[0]||{}).id||""}
 function mergeX(docs){
@@ -1257,10 +1328,10 @@ function loadX(force){if(!DB)return Promise.resolve(0);
     kOk=true;kErr="";const base=kRooms(k.docs);
     if(base.length)try{localStorage.setItem("kamar_cache",JSON.stringify(base))}catch(e){}
     if(rmLock&&!force)return 1;
-    ROOMS.length=0;ROOMS.push(...base);
-    xDocs=s?s.docs.map(d=>({id:d.id,...d.data()})):[];mergeX(xDocs);return 1}).catch(e=>{kErr=(e&&e.code)||"koneksi";return 0});
+    KALL=base.map(r=>({id:r.id,kode:r.kode}));ROOMS.length=0;ROOMS.push(...base);
+    xDocs=s?s.docs.map(d=>({id:d.id,...d.data()})):[];mergeX(xDocs);if(DOSEN){ownFilter();setR();if(DU&&dAuthOk)dHasil()}return 1}).catch(e=>{kErr=(e&&e.code)||"koneksi";return 0});
   return Promise.race([g,new Promise(r=>setTimeout(r,10000))])}
-const _dL=dListen;dListen=function(){_dL();if(!dXok)loadX().then(o=>{if(o===1){dXok=1;dDraw()}})};
+const _dL=dListen;dListen=function(){_dL();loadX(true).then(o=>{if(o===1){dXok=1;dDraw()}})};
 const unesc=t=>{const e=document.createElement("textarea");e.innerHTML=t;return e.value};
 
 /* ===== Impor data kamar ke Firestore (dosen) ===== */
@@ -1275,17 +1346,17 @@ function impCheck(a){if(!Array.isArray(a)||!a.length)throw new Error("isi file h
     r.lv.forEach((l,j)=>{if(!l||!l.n||!((Array.isArray(l.qs)&&l.qs.length)||(l.log&&Array.isArray(l.rows)&&l.rows.length)))throw new Error(p+"level "+(j+1)+" tidak punya soal")})})}
 function impCount(a){return a.reduce((s,r)=>s+r.lv.reduce((t,l)=>t+(l.qs?l.qs.length:0),0),0)}
 function impFile(inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();
-  rd.onload=()=>{try{let a=JSON.parse(rd.result);if(a&&!Array.isArray(a)&&Array.isArray(a.rooms))a=a.rooms;else if(a&&!Array.isArray(a)&&typeof a==="object")a=[a];impCheck(a);
+  rd.onload=()=>{try{let a=JSON.parse(rd.result);if(a&&!Array.isArray(a)&&Array.isArray(a.rooms))a=a.rooms;else if(a&&!Array.isArray(a)&&typeof a==="object")a=[a];impCheck(a);const ot=a.filter(r=>KALL.some(k=>k.id===r.id)&&!ROOMS.some(x=>x.id===r.id));if(ot.length)throw new Error("id kamar sudah dipakai dosen lain ("+ot.map(r=>r.id).join(", ")+"). Ganti id di file JSON");
       const nw=a.filter(r=>!ROOMS.some(x=>x.id===r.id)).length,ow=a.length-nw;
       dImp={rooms:a,name:f.name,msg:a.length+" kamar siap diunggah ("+a.reduce((s,r)=>s+r.lv.length,0)+" level, "+impCount(a)+" soal pilihan ganda): "+nw+" kamar baru"+(ow?", "+ow+" menimpa kamar dengan id yang sama (materi, level, dan soalnya diganti)":"")+".",bad:0,busy:false,rules:false}}
     catch(e){dImp={rooms:null,name:f.name,msg:"File tidak valid: "+e.message,bad:1,busy:false,rules:false}}
     bkFresh=1;dDraw()};rd.readAsText(f)}
 async function impGo(){if(!dImp.rooms||dImp.busy)return;const rooms=dImp.rooms;dImp.busy=true;dImp.msg="Mengunggah…";dImp.bad=0;bkFresh=1;dDraw();
   try{const b=DB.batch();
-    const ex=new Set(ROOMS.map(x=>x.id)),codes=new Set(ROOMS.map(kOf));let nx=ROOMS.reduce((m,x)=>Math.max(m,x.u||0),0);
+    const ex=new Set(KALL.map(x=>x.id)),codes=new Set(KALL.map(kOf));let nx=ROOMS.reduce((m,x)=>Math.max(m,x.u||0),0);
     rooms.forEach(r=>{const d={nama:String(r.nama).slice(0,60),ikon:r.ikon||"📘",ket:r.ket||"",sub:r.sub||"",ranks:r.ranks&&r.ranks.length?r.ranks:["Juara Kuis","Peserta Andal","Terus Berlatih"],mat:JSON.stringify(r.mat||[]),lv:JSON.stringify(r.lv),t:firebase.firestore.FieldValue.serverTimestamp()};
       if(r.mk!=null)d.mk=String(r.mk).trim().slice(0,60);
-      if(!ex.has(r.id)){d.urut=++nx;d.arsip=false;if(r.mk==null)d.mk="";let c;do{c=rmCode()}while(codes.has(c));codes.add(c);d.kode=c}
+      if(!ex.has(r.id)){d.urut=++nx;d.arsip=false;d.owner=DU.uid;if(r.mk==null)d.mk="";let c;do{c=rmCode()}while(codes.has(c));codes.add(c);d.kode=c}
       b.set(DB.collection("kamar").doc(r.id),d,{merge:true})});
     await b.commit();
     dImp={rooms:null,name:"",msg:rooms.length+" kamar tersimpan di Firebase. Mahasiswa memuat versi terbaru saat membuka halaman kuis.",bad:0,busy:false,rules:false};
@@ -1302,7 +1373,7 @@ function impCard(){
 const _dDraw9=dDraw;dDraw=function(){
   if(ROOMS.length)return _dDraw9();
   const bar=`<div class="bar"><h1>🛡️ Dasbor Dosen</h1><button class="btn ghost w" onclick="dLogout()">Keluar</button></div>`;
-  $("app").innerHTML=bar+(kOk?`<div class="card ed"><h2>Belum ada kamar di Firebase</h2><p class="mut">Soal, materi, dan level disimpan di Firestore koleksi <b>kamar</b>, bukan di file HTML. Unggah satu kali untuk mengisinya.</p>${impCard()}</div>`
+  $("app").innerHTML=bar+(kOk?`${rmUi.mode==="new"?rmCard({}):`<div class="card ed"><h2>Belum ada kuis di akunmu</h2><p class="mut">Buat kuis pertamamu, atau unggah file kuis (JSON) sekaligus.</p><button class="btn" onclick="rmOpen('new')">＋ Kuis baru</button></div><div class="card ed"><b>Impor dari file</b>${impCard()}</div>`}`
     :kErr==="permission-denied"?`<div class="card"><p>Firestore belum mengizinkan membaca koleksi kamar. Tempel aturan ini di Firebase Console, Firestore, Rules (di dalam <b>match /documents</b>, bersama fungsi isDosen), lalu Publish, kemudian muat ulang halaman.</p><textarea readonly rows="8" onclick="this.select()">${esc(RULES)}</textarea></div>`
     :`<div class="card"><p>Memuat data kamar…</p></div>`)};
 function bootFail(){$("app").innerHTML=`<div class="card" style="max-width:480px;margin:40px auto"><h2>Soal belum bisa dimuat</h2><p>${!DB?"Firebase belum terhubung, sedangkan soal disimpan di Firebase.":kOk?"Belum ada kamar kuis. Hubungi dosen.":kErr==="permission-denied"?"Aturan Firestore belum mengizinkan membaca kamar. Hubungi dosen.":"Periksa koneksi internet, lalu coba lagi."}</p><button class="btn" onclick="location.reload()">Coba lagi</button></div><p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">🛡️ Masuk portal dosen</a></p>`}
@@ -1620,21 +1691,21 @@ const _muPod=dPodium;dPodium=function(){_muPod();music("podium")};
 /* ===== Kelola kamar: kuis baru, duplikat, ubah info, arsip, hapus, kelompok mata kuliah ===== */
 let rmUi={mode:"",f:{},msg:"",bad:0,busy:false,ar:false,rules:false};
 const rmSlug=s=>String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,24).replace(/-+$/,"")||"kuis";
-function rmId(nama){const b=rmSlug(nama);let id=b,n=2;while(ROOMS.some(r=>r.id===id)||xDocs.some(d=>d.id===id)){const s="-"+n++;id=b.slice(0,30-s.length)+s}return id}
-function rmCode(){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";do{c=Array.from({length:6},()=>A[Math.random()*A.length|0]).join("")}while(ROOMS.some(r=>kOf(r)===c));return c}
+function rmId(nama){const b=rmSlug(nama);let id=b,n=2;while(ROOMS.some(r=>r.id===id)||xDocs.some(d=>d.id===id)||KALL.some(r=>r.id===id)){const s="-"+n++;id=b.slice(0,30-s.length)+s}return id}
+function rmCode(){const A="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";let c="";do{c=Array.from({length:6},()=>A[Math.random()*A.length|0]).join("")}while(KALL.some(r=>kOf(r)===c));return c}
 function rmGo(){bkFresh=1;dDraw()}
 function rmMsg(m,bad){rmUi.msg=m;rmUi.bad=bad;rmGo()}
 function rmErr(e){const p=!!(e&&e.code==="permission-denied");rmUi.rules=p;rmMsg(p?"Firestore menolak penyimpanan. Pasang aturan koleksi kamar dan soal (lihat di bawah), lalu coba lagi.":"Gagal menyimpan: "+((e&&e.code)||"koneksi"),1)}
 function rmSnap(){const f=rmUi.f||{};["n","i","m","s","k","l","q","o0","o1","o2","e"].forEach(k=>{const x=$("rm_"+k);if(x)f[k]=x.value});
   const r=document.querySelector("input[name=rma]:checked");if(r)f.a=r.value;rmUi.f=f}
-function rmOpen(m){rmSnap();const rm=RM();if(!rm)return;rmUi.mode=m;rmUi.msg="";rmUi.rules=false;
+function rmOpen(m){rmSnap();const rm=RM()||{};rmUi.mode=m;rmUi.msg="";rmUi.rules=false;
   rmUi.f=m==="edit"?{n:rm.nama,i:rm.ikon,m:rm.mk||"",s:rm.sub||"",k:rm.ket||""}:{n:"",i:"📘",m:rm.mk||"",s:"",l:"Level 1",q:"",o0:"",o1:"",o2:"",e:"",a:""};
   rmGo();setTimeout(()=>{const e=$("rmform");if(e)e.scrollIntoView({behavior:"smooth",block:"center"})},60)}
 function rmCancel(){rmUi.mode="";rmUi.f={};rmUi.msg="";rmGo()}
 function rmNewTop(){dView="bank";rmOpen("new")}
 async function rmPut(id,r,ok){if(rmUi.busy)return;rmUi.busy=true;
   try{const urut=ROOMS.reduce((m,x)=>Math.max(m,x.u||0),0)+1;
-    await DB.collection("kamar").doc(id).set({nama:r.nama,ikon:r.ikon||"📘",ket:r.ket||"",sub:r.sub||"",mk:r.mk||"",arsip:false,kode:rmCode(),ranks:r.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],urut,mat:JSON.stringify(r.mat||[]),lv:JSON.stringify(r.lv),t:firebase.firestore.FieldValue.serverTimestamp()});
+    await DB.collection("kamar").doc(id).set({nama:r.nama,ikon:r.ikon||"📘",ket:r.ket||"",sub:r.sub||"",mk:r.mk||"",arsip:false,owner:DU.uid,kode:rmCode(),ranks:r.ranks||["Juara Kuis","Peserta Andal","Terus Berlatih"],urut,mat:JSON.stringify(r.mat||[]),lv:JSON.stringify(r.lv),t:firebase.firestore.FieldValue.serverTimestamp()});
     await loadX(true);rmUi.busy=false;rmUi.mode="";rmUi.f={};rmUi.rules=false;dRoom=id;rmMsg(ok,0)}
   catch(e){rmUi.busy=false;rmErr(e)}}
 function rmSaveNew(){rmSnap();const f=rmUi.f,o=[f.o0,f.o1,f.o2].map(s=>(s||"").trim());
