@@ -317,6 +317,8 @@ a.btn{display:inline-block;text-decoration:none}
 .ncm .ncw{width:100%;max-width:420px;margin:auto}
 .nmx{position:absolute;right:10px;top:10px;width:34px;height:34px;padding:0;border-radius:50%;border:0;background:rgba(0,0,0,.08);color:var(--ink);font-size:1rem;line-height:1;cursor:pointer}
 .nmph{text-align:center}.nmph h3{margin:0 0 4px}
+.nc .go{width:100%}.nc .dpw{text-align:left}
+.akr{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}.akr .btn{margin-top:0;padding:8px 14px}
 .nmc{z-index:80}
 .nmc-id{display:flex;align-items:center;gap:12px;background:rgba(0,0,0,.06);border-radius:14px;padding:10px 12px;margin:4px 0 10px}
 .nmc-av{font-size:2rem;line-height:1;display:grid;place-items:center;width:46px;height:46px}.nmc-av .avi{width:46px;height:46px}
@@ -760,6 +762,17 @@ if(dRvSort)it.sort((a,b)=>a.pct-b.pct);
 return h+it.map(x=>x.h).join("")+(l.log?`<p>${l.e}</p>${rvMat(l.t+" "+l.e,rm)}`:"")+`</div>`}
 const _dRekap=dRekap;dRekap=function(r,now){return dView==="review"?dReview():_dRekap(r,now)};
 const _dDraw=dDraw;dDraw=function(){_dDraw();const b=document.querySelector("#app .bar");if(b&&b.children[2])b.children[2].insertAdjacentHTML("afterend",`<button class="btn ${dView==="review"?"on":""}" onclick="dView='review';dDraw()">Review soal</button>`)};
+/* ===== Dasbor dosen: daftar akun mahasiswa ===== */
+let dAk=null,dAkErr="";
+function dAkLoad(){DB.collection("mahasiswa").get().then(q=>{dAk=q.docs.map(d=>({id:d.id,...d.data()})).sort((x,y)=>String(x.nama).localeCompare(String(y.nama)));dAkErr="";dDraw()}).catch(e=>{dAk=[];dAkErr=(e&&e.code)||"koneksi";dDraw()})}
+function dAkun(){if(dAk===null){dAk="load";dAkLoad()}
+  if(dAk==="load")return `<div class="card mt"><p>Memuat akun mahasiswa…</p></div>`;
+  const rows=dAk.map(a=>`<div class="akr"><div><b>${esc(a.nama)}</b><span class="mut"> · NIM ${esc(a.nim)}${a.dibuat&&a.dibuat.toDate?" · "+a.dibuat.toDate().toLocaleDateString("id-ID"):""}</span></div><button class="btn ghost" onclick="dAkDel('${esc(a.id)}')">Hapus profil</button></div>`).join("");
+  return `<div class="card mt"><h2>Akun mahasiswa (${dAk.length})</h2><p class="mut">Mahasiswa yang lupa kata sandi: hapus profilnya di sini, lalu hapus juga pengguna <b>NIM@kuis.app</b> di Firebase Console → Authentication → Users. Setelah itu mahasiswa bisa mendaftar ulang. Hasil kuis lama tetap tersimpan.</p>${dAkErr?`<p class="err">Gagal memuat: ${esc(dAkErr)}</p>`:""}<button class="btn ghost" onclick="dAk=null;dDraw()">⟳ Muat ulang daftar</button>${rows||'<p class="mut">Belum ada akun.</p>'}</div>`}
+async function dAkDel(id){if(!confirm("Hapus profil NIM "+id+"? Mahasiswa harus mendaftar ulang setelah akunnya juga dihapus di Firebase Authentication."))return;
+  try{await DB.collection("mahasiswa").doc(id).delete();dAk=null;dDraw()}catch(e){alert("Gagal menghapus profil: "+((e&&e.code)||"koneksi"))}}
+const _dRekapA=dRekap;dRekap=function(r,now){return dView==="akun"?dAkun():_dRekapA(r,now)};
+const _dDrawA=dDraw;dDraw=function(){_dDrawA();const b=document.querySelector("#app .bar");if(b&&b.children[3])b.children[3].insertAdjacentHTML("afterend",`<button class="btn ${dView==="akun"?"on":""}" onclick="dView='akun';dDraw()">Akun mahasiswa</button>`)};
 const ROOM_ID=new URLSearchParams(location.search).get("kamar");
 let ROOM=ROOMS.find(r=>r.id===ROOM_ID)||(ROOMS.length===1?ROOMS[0]:null);
 let LV=ROOM?ROOM.lv:[];
@@ -773,7 +786,7 @@ function sv(){try{localStorage.setItem("nm",S.nm||"");localStorage.setItem("nim"
 /* ===== Progres kuis: dikunci per perangkat dan bisa dilanjutkan ===== */
 const pgKey=()=>"pg_"+ROOM.id;
 const cur=(p,adv,lg)=>({lv:S.lv,qi:S.qi+(adv?1:0),right:S.right,lp:S.lp,streak:S.streak,base:S.base,pend:p?1:0,lgAcc:S.lgAcc||0,lgdone:lg?1:0,rv:Array.from(S.rv||[],v=>v===undefined?-1:v)});
-function pgSave(c){try{localStorage.setItem(pgKey(),JSON.stringify({nm:S.nm,nim:S.nim,done:Array.from(S.done,v=>v||null),cur:c||null}))}catch(e){}}
+function pgSave(c){try{localStorage.setItem(pgKey(),JSON.stringify({nm:S.nm,nim:S.nim,done:Array.from(S.done,v=>v||null),cur:c||null,ts:Date.now()}))}catch(e){}}
 function pgLoad(){try{const o=JSON.parse(localStorage.getItem(pgKey()));if(!o||!o.nim)return false;S.nm=o.nm;S.nim=o.nim;S.done=(o.done||[]).map(v=>v||undefined);S.cur=o.cur||null;S.locked=true;return true}catch(e){return false}}
 function pgCheck(){if(!DB||!AUTHP||DOSEN||!ROOM)return;let sent=0;try{sent=localStorage.getItem("sent_"+ROOM.id)}catch(e){}if(!sent)return;
 AUTHP.then(u=>DB.collection("hasil").doc(u.user.uid+"_"+ROOM.id).get()).then(d=>{if(d&&d.exists===false){try{localStorage.removeItem(pgKey());localStorage.removeItem(rvKey());localStorage.removeItem("sent_"+ROOM.id);localStorage.removeItem("mat_"+ROOM.id);localStorage.removeItem("tut_"+ROOM.id);localStorage.removeItem("jn_"+ROOM.id)}catch(e){}location.reload()}}).catch(()=>{})}
@@ -793,8 +806,7 @@ function cloudInit(){
     if(DOSEN)return;
     const A=firebase.auth();
     AUTHP=new Promise((res,rej)=>{const un=A.onAuthStateChanged(u=>{un();
-      if(u&&!u.isAnonymous)A.signOut().then(()=>A.signInAnonymously()).then(res,rej);
-      else if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
+      if(u)res({user:u});else A.signInAnonymously().then(res,rej)})});
     AUTHP.then(()=>cl("conn")).catch(()=>cl("err"))}catch(e){DB=null}
 }
 const CLG={ok:'<path class="cg" d="M9 12.5l2.2 2.2L15.5 10.5"/>',"...":'<path class="cg" d="M12 16v-5M9.5 12.8L12 10.2l2.5 2.6"/>',err:'<path class="cg" d="M12 9.5v3.5M12 15.8v.1"/>',conn:""},CLT={ok:"Tersimpan",err:"Gagal kirim, periksa koneksi",conn:"Terhubung","...":"Mengirim…"};
@@ -837,20 +849,20 @@ const MK=()=>"mat_"+ROOM.id;
 function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)return true;try{return localStorage.getItem(MK())==="1"}catch(e){return false}}
 function mat(p){p=p||0;const m=ROOM.mat,x=m[p],last=p===m.length-1;
 $("app").innerHTML=`<div class="prog"><span>📖 Materi · ${p+1}/${m.length}</span></div><div class="card mt pop"><h2>${x.j}</h2>${x.h}</div><div class="bar">${p?`<button class="btn ghost w" onclick="mat(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">Selesai, ke kuis ▶</button>`:`<button class="btn" onclick="mat(${p+1})">Lanjut ▶</button>`}</div>`;scrollTo(0,0)}
-function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;home();introNext()}
+function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;pgCloud(1);home();introNext()}
 function mkDup(){const n=x=>String(x||"").trim().toLowerCase().replace(/\s+/g," "),m=n(ROOM.mk),k=n(ROOM.nama);return !m||m===k||k.includes(m)}
 function home(){
 if(!ROOM){pick();return}
 goListen();stop();S.playing=false;S.score=myScore();S.streak=0;hud();
 let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1>${mkDup()?"":`<p style="margin:0;font-weight:700;opacity:.9">📚 ${esc(ROOM.mk)}</p>`}<p>${esc(ROOM.sub||"")}</p></div>`;
-h+=nameCard();if(!S.i1&&S.nm&&S.nim&&JL()){S.i1=1;setTimeout(introNext,300)}
+h+=nameCard();if(!S.i1&&S.nm&&S.nim&&isLk()){S.i1=1;setTimeout(introNext,300)}
 if(ROOM.mat&&ROOM.mat.length){const ok=matOk();h+=`<div class="card"><button class="lv" onclick="mat(0)"><b>📖</b><div>Materi<span>${ok?"Sudah dibaca. Buka lagi kapan saja.":"Baca materi dulu untuk membuka level kuis."}</span></div><span class="stars">${ok?"✅":"Baca ▶"}</span></button></div>`}
 LV.forEach((l,i)=>{if(l.h)return;const d=S.done[i],ok=LV.slice(0,i).every((x,k)=>x.h||S.done[k])&&matOk()&&!d;
 h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
 if(LV.every((x,k)=>x.h||S.done[k]))h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
 h+=codeCard()+`<p class="center"><button class="btn ghost w" onclick="rekap()">Rekap dosen</button> <a href="#dosen" onclick="dFlagSet(null)" style="color:#fff;opacity:.85;margin-left:10px">Dasbor online</a>${ROOMS.length>1?` <a href="./" style="color:#fff;opacity:.85;margin-left:10px">Kamar lain</a>`:""}</p>`;
 $("app").innerHTML=h;snMhsInit();nmAuto()}
-function start(i){if(S.done[i])return;if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";snErr("Isi nama dan NIM dulu.");nmPop(1);return}
+function start(i){if(S.done[i])return;if(DB&&!S.acc){nmPop(1);return}if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";snErr("Isi nama dan NIM dulu.");nmPop(1);return}
 if(!(matOk()&&tutOk())){introNext();return}
 if(gateOn()&&!S.cdOk){siap(i);return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
@@ -911,7 +923,7 @@ function introNext(){if(!ROOM||S.locked||S.playing||S.done.some(Boolean)||!S.nm|
   if(ROOM.mat&&ROOM.mat.length&&!matOk()){ov('<h2>📖 Langkah 1: Baca materi</h2><p>Sebelum kuis, kamu wajib membaca materi sampai selesai. Level kuis baru terbuka setelah materi selesai dibaca.</p><button class="btn" onclick="ovX();mat(0)">Baca materi ▶</button>');return}
   if(!tutOk())tutorial()}
 function tutorial(){ov('<h2>🎮 Langkah 2: Cara bermain</h2><ol><li>Tiap soal punya <b>timer</b>. Jawab setepat dan <b>secepat</b> mungkin, makin cepat makin besar poinnya.</li><li>Jawaban benar beruntun menambah <b>streak</b>.</li><li>Level dimainkan <b>berurutan</b> dan tiap level hanya <b>sekali</b>, tidak bisa diulang.</li><li>Jangan keluar atau menutup halaman saat soal tampil, soal itu dihitung tidak terjawab.</li><li>Nama dan NIM terkunci setelah kuis dimulai.</li><li>Kuis dimulai <b>serentak</b>: ketuk <b>Main ▶</b> pada Level 1, lalu tunggu dosen menekan Mulai. Hitung mundur 3-2-1 akan tampil.</li></ol><button class="btn" onclick="tutFin()">Mengerti, saya siap ▶</button>')}
-function tutFin(){S.tutDone=1;try{localStorage.setItem("tut_"+ROOM.id,"1")}catch(e){}ovX()}
+function tutFin(){S.tutDone=1;try{localStorage.setItem("tut_"+ROOM.id,"1")}catch(e){}pgCloud(1);ovX()}
 function gateOn(){return !!DB&&!GOERR&&!S.locked&&!S.done.some(Boolean)}
 function siap(i){S.rdy=i;sync("Siap, menunggu dosen");if(GO){cd(i);return}
   ov('<h2>⏳ Menunggu dosen…</h2><p>Kamu sudah siap. Kuis dimulai serentak setelah dosen menekan tombol <b>Mulai</b>. Jangan tutup halaman ini.</p><div class="ks-bar"><i></i></div><button class="btn ghost" onclick="siapX()">Batal</button>')}
@@ -932,39 +944,151 @@ function joinRoom(q,lk){clearTimeout(jnT);if(S.locked||S.playing||S.done.some(Bo
 const AVS=[["🦸 Pahlawan",["🦸‍♂️","🦸‍♀️","🦹","🥷","🧙‍♂️","🧚","🤺","🧛"]],["🐾 Hewan",["🐱","🐶","🦊","🐼","🦁","🐯","🐵","🐸","🐧","🦄","🐲","🐘","🐨","🐙"]],["🇮🇩 Nusantara",["🇮🇩","🦅","🦎","🦧","🐅","🦜","🎭","🥁","🌋","🎖️"]],["🎭 Karakter seru",["🤖","👽","👻","🎃","🦖","🧸","🤡","😎","🤠","🥳"]]];
 const DBS=[["pixel-art","Pixel"],["thumbs","Jempol"],["bottts","Robot"],["adventurer","Petualang"],["fun-emoji","Emoji seru"]],DBN=["Koko","Mika","Ravi","Sari","Bima","Nala"];
 function avH(a){a=String(a||"");const m=/^db:([a-z-]+):([A-Za-z]{1,20})$/.exec(a);return m?`<img class="avi" alt="" loading="lazy" src="https://api.dicebear.com/9.x/${m[1]}/svg?seed=${m[2]}">`:esc(a)}
-function avPick(b,a){if(S.locked||JL())return;S.av=a;sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
-function avCard(){return DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${S.locked?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
+function avPick(b,a){if(isLk())return;S.av=a;sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
+function avCard(){return DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${isLk()?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${isLk()?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
 function JL(){try{return localStorage.getItem("jn_"+ROOM.id)==="1"}catch(e){return false}}
-function nameCard(L){if(L===undefined)L=S.locked||JL();if(!L)return nmPh();return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> ${L?"Kamu sudah bergabung":"Siapa namamu?"}</h3><input ${L?"readonly ":""}id="nmi" placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${L?"readonly ":""}id="nimi" placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()">${L?"":`<div class="avt">Pilih avatarmu</div>${avCard()}`}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${L?`<p class="mut">Nama, NIM, dan avatar sudah terkunci di perangkat ini.</p>${avWarn()}`:`<div style="margin-top:8px"><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div></div>`}
+function nameCard(L){if(L===undefined)L=isLk();if(!L)return nmPh();return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> ${L?"Kamu sudah bergabung":"Siapa namamu?"}</h3><input ${L?"readonly ":""}id="nmi" placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${L?"readonly ":""}id="nimi" placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()">${L?"":`<div class="avt">Pilih avatarmu</div>${avCard()}`}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${L?`${DB?`<p class="mut">Akunmu tersimpan di cloud. Masuk dengan NIM dan kata sandi di perangkat lain untuk melanjutkan.</p>${avWarn()}<div style="margin-top:8px"><button class="btn ghost" onclick="acctKeluar()">Keluar akun</button></div>`:`<p class="mut">Nama, NIM, dan avatar sudah terkunci di perangkat ini.</p>${avWarn()}`}`:`<div style="margin-top:8px"><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div></div>`}
 function avWarn(){return AVOFF&&S.av?'<div style="color:var(--bad);font-size:.85rem;margin-top:6px">\u26a0 Avatar belum terkirim ke dosen (aturan Firestore menolak field av). Beri tahu dosen.</div>':""}
 const _jnTxt0=jnTxt;jnTxt=function(){return _jnTxt0()+avWarn()};
 function jnConfirm(){if((S.nm||"").length<2||(S.nim||"").length<3){joinRoom(0,0);return}
+  if(DB&&S.nmode!=="lengkapi"&&!S.pw){nmPop(1);return}
   const o=$("nmc");if(o)o.remove();
   const e=document.createElement("div");e.id="nmc";e.className="ov nmc";e.setAttribute("role","alertdialog");e.setAttribute("aria-modal","true");
   e.onclick=ev=>{if(ev.target===e)nmcX()};
-  e.innerHTML=`<div><h2>Gabung sebagai?</h2><div class="nmc-id"><span class="nmc-av">${S.av?avH(S.av):"🙂"}</span><div><b>${esc(S.nm)}</b><span>NIM ${esc(S.nim)}</span></div></div><p>Setelah bergabung, nama, NIM, dan avatar <b>tidak bisa diubah</b>. Lanjut?</p><div class="nmc-b"><button type="button" class="btn ghost" onclick="nmcX()">Batal</button><button type="button" class="btn" id="nmcok" onclick="nmcGo()">Ya, gabung ▶</button></div></div>`;
+  e.innerHTML=`<div><h2>Gabung sebagai?</h2><div class="nmc-id"><span class="nmc-av">${S.av?avH(S.av):"🙂"}</span><div><b>${esc(S.nm)}</b><span>NIM ${esc(S.nim)}</span></div></div><p>${DB?"Akun dibuat dengan NIM ini. ":""}Setelah bergabung, nama, NIM, dan avatar <b>tidak bisa diubah</b>${DB?" (perubahan hanya lewat dosen)":""}. Lanjut?</p><div class="nmc-b"><button type="button" class="btn ghost" onclick="nmcX()">Batal</button><button type="button" class="btn" id="nmcok" onclick="nmcGo()">Ya, gabung ▶</button></div></div>`;
   e.addEventListener("keydown",ev=>{if(ev.key==="Escape")nmcX()});
   document.body.appendChild(e);const k=$("nmcok");if(k)k.focus()}
 function nmcX(){const e=$("nmc");if(e)e.remove()}
-function nmcGo(){nmcX();joinRoom(0,1)}
+function nmcGo(){nmcX();if(DB)acctDaftar();else joinRoom(0,1)}
 function jnLockSet(){try{localStorage.setItem("jn_"+ROOM.id,"1")}catch(e){}
   if($("nmo")){clearTimeout(window._nmT);window._nmT=setTimeout(()=>nmClose(1),1100);return}
   const a=$("avc"),c=a&&a.closest(".ncw");if(c){c.outerHTML=nameCard(true);snMhsInit()}}
-/* ===== Popup nama dan NIM (langkah 1), lalu pilih karakter dan Gabung (langkah 2) ===== */
-function nmPh(){const ok=S.nm&&S.nim;return `<div class="card nmph" id="nmph"><h3>🙂 Nama dan NIM</h3><p class="mut" style="margin:0 0 8px">${ok?esc(S.nm)+" · NIM "+esc(S.nim)+" (belum bergabung)":"Isi nama dan NIM, lalu pilih karakter untuk bergabung."}</p><button class="btn" onclick="nmPop(S.ns||1)">${ok?"Lanjutkan ▶":"Isi sekarang ▶"}</button></div>`}
+/* ===== Akun mahasiswa: Firebase Auth Email/Password, email semu NIM@kuis.app ===== */
+const isLk=()=>DB?!!S.acc:(S.locked||JL());
+const NIMOK=x=>/^[0-9A-Za-z]{3,30}$/.test(x);
+const nimKey=n=>String(n||"").trim().toLowerCase();
+const nimEmail=n=>nimKey(n)+"@kuis.app";
+const isAcc=u=>!!(u&&!u.isAnonymous&&/@kuis\.app$/.test(u.email||""));
+function authSet(u){AUTHP=Promise.resolve({user:u})}
+async function ensureAnon(){const r=await firebase.auth().signInAnonymously();authSet(r.user);return r.user}
+function acctErr(e){const c=(e&&e.code)||"";
+  if(c==="auth/email-already-in-use"||c==="auth/credential-already-in-use")return"NIM ini sudah terdaftar. Silakan masuk.";
+  if(c==="auth/weak-password")return"Kata sandi minimal 6 karakter.";
+  if(/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c))return"NIM atau kata sandi salah.";
+  if(c==="auth/too-many-requests")return"Terlalu banyak percobaan. Tunggu beberapa menit.";
+  if(c==="auth/network-request-failed")return"Koneksi bermasalah. Coba lagi.";
+  if(c==="auth/operation-not-allowed")return"Login Email/Password belum diaktifkan di Firebase.";
+  if(c==="permission-denied")return"Profil NIM ini sudah ada atau ditolak. Minta dosen mereset akun NIM-mu.";
+  return"Gagal: "+(c||"koneksi")}
+function clearRoomLocal(id){try{["pg_","rv_","sent_","mat_","tut_","jn_"].forEach(k=>localStorage.removeItem(k+id))}catch(e){}}
+/* progres disimpan juga di Firestore (koleksi progres) agar bisa dilanjutkan dari perangkat lain */
+let pgT=null;
+const pgFlag=k=>{try{return localStorage.getItem(k+ROOM.id)==="1"}catch(e){return false}};
+function pgCloud(now){if(!DB||!S.acc||!ROOM||DOSEN||!S.nim)return;clearTimeout(pgT);
+  const go=()=>AUTHP.then(u=>DB.collection("progres").doc(u.user.uid+"_"+ROOM.id).set({nim:String(S.nim).slice(0,30),done:Array.from(S.done,v=>v?{acc:+v.acc||0,pts:+v.pts||0}:null),cur:S._pgc||null,mat:pgFlag("mat_"),tut:pgFlag("tut_"),t:firebase.firestore.FieldValue.serverTimestamp()})).catch(()=>{});
+  if(now)return go();pgT=setTimeout(go,1200)}
+const _pgSaveL=pgSave;pgSave=function(c){_pgSaveL(c);S._pgc=c||null;pgCloud(!c)};
+async function acctLoad(u){const k=String(u.email||"").split("@")[0];if(!k)return false;
+  const p=await DB.collection("mahasiswa").doc(k).get();if(!p.exists)return false;
+  const d=p.data();if(d.uid!==u.uid)return false;
+  S.nm=d.nama;S.nim=d.nim;S.av=d.av||"";S.acc=true;sv();
+  try{localStorage.setItem("acct_nim",k)}catch(e){}
+  return true}
+async function acctRoom(u){if(!ROOM)return;
+  const id=u.uid+"_"+ROOM.id,k=nimKey(S.nim),get=c=>DB.collection(c).doc(id).get().catch(()=>null);
+  const [pg,hs]=await Promise.all([get("progres"),get("hasil")]);
+  if(hs&&hs.exists){const r=hs.data().rv;if(r&&typeof r==="object"&&!Object.keys(rvGet()).length){try{localStorage.setItem(rvKey(),JSON.stringify(r))}catch(e){}}}
+  let loc=null;try{loc=JSON.parse(localStorage.getItem(pgKey()))}catch(e){}
+  if(loc&&nimKey(loc.nim)!==k)loc=null;
+  let sent=0;try{sent=localStorage.getItem("sent_"+ROOM.id)}catch(e){}
+  const c=pg&&pg.exists?pg.data():null,cms=c&&c.t&&c.t.toMillis?c.t.toMillis():0;
+  const setLocal=(done,cur)=>{S.done=(done||[]).map(v=>v||undefined);S.cur=cur||null;S.locked=!!(S.done.some(Boolean)||S.cur);
+    try{localStorage.setItem(pgKey(),JSON.stringify({nm:S.nm,nim:S.nim,done:Array.from(S.done,v=>v||null),cur:S.cur,ts:Date.now()}))}catch(e){}};
+  if(c&&(!loc||(loc.ts||0)<=cms+5000)){
+    setLocal(c.done,c.cur);S._pgc=S.cur;
+    try{if(c.mat)localStorage.setItem("mat_"+ROOM.id,"1");if(c.tut)localStorage.setItem("tut_"+ROOM.id,"1")}catch(e){}
+  }else if(loc&&((hs&&hs.exists)||!sent)){
+    setLocal(loc.done,loc.cur);S._pgc=S.cur;pgCloud(1)
+  }else{
+    if(loc)clearRoomLocal(ROOM.id);
+    S.done=[];S.cur=null;S.locked=false}
+  try{localStorage.setItem("jn_"+ROOM.id,"1")}catch(e){}
+  S._hs=!!(hs&&hs.exists)}
+async function acctBoot(){
+  let u=null;try{u=(await AUTHP).user}catch(e){}
+  if(isAcc(u)){
+    try{
+      if(await acctLoad(u)){await acctRoom(u);if(!S._hs)await sync("Bergabung, belum mulai");return}
+      S.nim=S.nim||String(u.email).split("@")[0];S.nmode="lengkapi"
+    }catch(e){}}
+  S.acc=false;pgLoad()}
+function acctDone(){snOk();clearTimeout(window._nmT);window._nmT=setTimeout(()=>{nmClose(1);S.cur?resume():home()},1100)}
+async function acctKeluar(){try{await pgCloud(1)}catch(e){}
+  try{await firebase.auth().signOut()}catch(e){}
+  try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(/^(pg_|jn_|mat_|tut_|rv_|sent_)/.test(k)||k==="nm"||k==="nim"||k==="av")ks.push(k)}ks.forEach(k=>localStorage.removeItem(k))}catch(e){}
+  location.reload()}
+async function nmMasuk(){if(S.nbusy)return;const b=$("nimi"),p=$("nmpw"),e=$("msg"),go=$("nmgo");if(!b||!p)return;
+  const nim=b.value.trim(),pw=p.value,bad=t=>{if(e)e.textContent=t;snErr(t)};
+  if(!NIMOK(nim)||!pw)return bad("Isi NIM dan kata sandi dulu.");
+  S.nbusy=1;if(go){go.disabled=true;go.textContent="Memeriksa…"}if(e)e.textContent="";
+  try{
+    if(!DB)throw{code:"auth/network-request-failed"};
+    const u=(await firebase.auth().signInWithEmailAndPassword(nimEmail(nim),pw)).user;authSet(u);
+    let ok=false;try{ok=await acctLoad(u)}catch(x){}
+    if(!ok){S.nbusy=0;S.nim=nim;S.nmode="lengkapi";S.nmMsg="Akun ditemukan, tetapi profilnya belum lengkap. Isi namamu.";nmPop(1);return}
+    await acctRoom(u);if(!S._hs)await sync("Bergabung, belum mulai");
+    S.nbusy=0;acctDone()
+  }catch(x){S.nbusy=0;if(go){go.disabled=false;go.textContent="Masuk ▶"}bad(acctErr(x))}}
+async function acctDaftar(){if(S.nbusy)return;S.nbusy=1;jnUi('<span class="mut">Membuat akun…</span>');
+  const A=firebase.auth(),email=nimEmail(S.nim);let u=A.currentUser,made=0,linked=0;
+  try{
+    if(!DB)throw{code:"auth/network-request-failed"};
+    if(!(u&&!u.isAnonymous&&u.email===email)){
+      const cred=firebase.auth.EmailAuthProvider.credential(email,S.pw);
+      if(u&&u.isAnonymous){u=(await u.linkWithCredential(cred)).user;linked=1}
+      else u=(await A.createUserWithEmailAndPassword(email,S.pw)).user;
+      made=1}
+    await u.getIdToken(true);authSet(u);
+    const prof={nama:S.nm.slice(0,60),nim:S.nim.slice(0,30),uid:u.uid,dibuat:firebase.firestore.FieldValue.serverTimestamp()};
+    if(S.av)prof.av=S.av;
+    try{await DB.collection("mahasiswa").doc(nimKey(S.nim)).set(prof)}
+    catch(e){if(made){try{if(linked)await u.unlink("password");else await u.delete()}catch(x){}try{await ensureAnon()}catch(x){}}throw e}
+    S.acc=true;sv();try{localStorage.setItem("jn_"+ROOM.id,"1");localStorage.setItem("acct_nim",nimKey(S.nim))}catch(x){}
+    S._pgc=S.cur||null;if(S.done.some(Boolean)||S.cur)pgCloud(1);
+    await sync(S.done.some(Boolean)?"Lanjut setelah daftar":"Bergabung, belum mulai");
+    S.nbusy=0;S.pw="";acctDone()
+  }catch(e){S.nbusy=0;const t=acctErr(e);
+    if(e&&e.code==="auth/email-already-in-use"){nmMode("masuk",t);return}
+    jnUi('<span style="color:var(--bad)">'+esc(t)+'</span>');snErr(t)}}
+/* ===== Popup: Masuk atau Daftar (langkah 1), lalu pilih karakter dan Gabung (langkah 2) ===== */
+function nmPh(){const leg=S.nm&&S.nim;return `<div class="card nmph" id="nmph"><h3>🙂 Akun mahasiswa</h3><p class="mut" style="margin:0 0 8px">${leg?"Buat akun untuk "+esc(S.nm)+" (NIM "+esc(S.nim)+") agar progresmu tersimpan.":"Masuk atau daftar dengan NIM-mu untuk bermain."}</p><button class="btn" onclick="nmPop(1)">${leg?"Buat akun ▶":"Masuk / Daftar ▶"}</button></div>`}
+const nmEye=()=>`<button type="button" class="btn ghost" onclick="nmShowPw(this)" aria-label="Tampilkan kata sandi">${SLASH_I}</button>`;
+function nmShowPw(b){const p=$("nmpw"),q=$("nmpw2");if(!p)return;const sh=p.type==="password";p.type=sh?"text":"password";if(q)q.type=p.type;b.innerHTML=sh?OPEN_I:SLASH_I;b.setAttribute("aria-label",sh?"Sembunyikan kata sandi":"Tampilkan kata sandi");p.focus();snAw=0;snSet(p.type==="password"?"hide":"peek")}
 function nmBody(st){
-  if(st===2)return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<button type="button" class="nmx" onclick="nmClose()" aria-label="Tutup">✕</button><h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> Pilih karakter</h3><p class="mut" style="margin:0">${esc(S.nm)} · NIM ${esc(S.nim)}</p><div style="text-align:left"><div class="avt">Pilih avatarmu</div>${avCard()}</div><div id="msg" style="color:var(--bad);margin-top:8px"></div><div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="nmPop(1)">◀ Ubah nama</button><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div></div></div>`;
-  return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<button type="button" class="nmx" onclick="nmClose()" aria-label="Tutup">✕</button><h3>👋 Siapa namamu?</h3><input class="ncin" id="nmi" placeholder="Nama lengkap" autocomplete="name" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()" onkeydown="if(event.key==='Enter')$('nimi').focus()"><input class="ncin" id="nimi" placeholder="NIM" inputmode="numeric" autocomplete="off" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()" onkeydown="if(event.key==='Enter')nmSave()"><div id="msg" style="color:var(--bad);margin-top:8px"></div><div style="margin-top:8px"><button class="btn" onclick="nmSave()">Simpan ▶</button></div></div></div>`}
-function nmPop(st){if(S.locked||JL())return;S.ns=st||1;S.nmx=0;let m=$("nmo");
+  const hd=snHdH("idle","",1),top=`${snW("idle")}<button type="button" class="nmx" onclick="nmClose()" aria-label="Tutup">✕</button>`,msg=`<div id="msg" style="color:var(--bad);margin-top:8px">${esc(S.nmMsg||"")}</div>`,m=S.nmode;
+  if(st===2)return `<div class="ncw">${hd}<div class="card nc">${top}<h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> Pilih karakter</h3><p class="mut" style="margin:0">${esc(S.nm)} · NIM ${esc(S.nim)}</p><div style="text-align:left"><div class="avt">Pilih avatarmu</div>${avCard()}</div>${msg}<div style="margin-top:8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" onclick="nmPop(1)">◀ Ubah data</button><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div></div></div>`;
+  if(m==="masuk"){let a="";try{a=localStorage.getItem("acct_nim")||""}catch(e){}
+    return `<div class="ncw">${hd}<div class="card nc">${top}<h3>🔑 Masuk</h3><input class="ncin" id="nimi" placeholder="NIM" inputmode="numeric" autocomplete="username" value="${esc(S.nim||a)}" onkeydown="if(event.key==='Enter')$('nmpw').focus()"><div class="dpw"><input class="ncpw" id="nmpw" type="password" placeholder="Kata sandi" autocomplete="current-password" onkeydown="if(event.key==='Enter')nmMasuk()">${nmEye()}</div>${msg}<button class="btn go" id="nmgo" style="margin-top:8px" onclick="nmMasuk()">Masuk ▶</button><p class="mut" style="margin:10px 0 0">Belum punya akun? <a href="#" onclick="nmMode('daftar');return false" style="color:var(--pri)">Daftar</a></p></div></div>`}
+  if(m==="lengkapi")return `<div class="ncw">${hd}<div class="card nc">${top}<h3>🧩 Lengkapi profil</h3><p class="mut" style="margin:0">Akun NIM ${esc(S.nim)} sudah ada. Tinggal isi namamu.</p><input class="ncin" id="nmi" placeholder="Nama lengkap" autocomplete="name" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim()" onkeydown="if(event.key==='Enter')nmSave()">${msg}<button class="btn go" style="margin-top:8px" onclick="nmSave()">Simpan ▶</button></div></div>`;
+  return `<div class="ncw">${hd}<div class="card nc">${top}<h3>👋 ${DB?"Buat akun":"Siapa namamu?"}</h3><input class="ncin" id="nmi" placeholder="Nama lengkap" autocomplete="name" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv()" onkeydown="if(event.key==='Enter')$('nimi').focus()"><input class="ncin" id="nimi" placeholder="NIM" inputmode="numeric" autocomplete="username" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv()" onkeydown="if(event.key==='Enter')${DB?"$('nmpw').focus()":"nmSave()"}">${DB?`<div class="dpw"><input class="ncpw" id="nmpw" type="password" placeholder="Kata sandi (min. 6 karakter)" autocomplete="new-password" value="${esc(S.pw||"")}" onkeydown="if(event.key==='Enter')$('nmpw2').focus()">${nmEye()}</div><input class="ncpw" id="nmpw2" type="password" placeholder="Ulangi kata sandi" autocomplete="new-password" value="${esc(S.pw||"")}" onkeydown="if(event.key==='Enter')nmSave()">`:""}${msg}<button class="btn go" style="margin-top:8px" onclick="nmSave()">Simpan ▶</button>${DB?`<p class="mut" style="margin:10px 0 0">Sudah punya akun? <a href="#" onclick="nmMode('masuk');return false" style="color:var(--pri)">Masuk</a></p>`:""}</div></div>`}
+function nmMode(m,msg){S.nmode=m;S.nmMsg=msg||"";S.pw="";nmPop(1)}
+function nmPop(st){if(isLk())return;S.ns=st||1;S.nmx=0;
+  if(!S.nmode){let a="";try{a=localStorage.getItem("acct_nim")||""}catch(e){}S.nmode=!DB?"daftar":(S.nm&&S.nim)?"daftar":a?"masuk":"daftar"}
+  if(S.ns===2&&DB&&S.nmode!=="lengkapi"&&!S.pw)S.ns=1;
+  let m=$("nmo");
   if(!m){m=document.createElement("div");m.id="nmo";m.className="ncm";m.setAttribute("role","dialog");m.setAttribute("aria-modal","true");document.body.appendChild(m)}
-  m.innerHTML=nmBody(S.ns);m.scrollTop=0;snMhsInit();
-  if(S.ns===2)snOk();else setTimeout(()=>{const f=$((S.nm&&!S.nim)?"nimi":"nmi");if(f)f.focus()},80)}
-function nmSave(){const a=$("nmi"),b=$("nimi");if(!a||!b)return;S.nm=a.value.trim();S.nim=b.value.trim();sv();
-  if(S.nm.length<2||S.nim.length<3){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu.";snErr("Isi nama dan NIM dulu.");return}
+  m.innerHTML=nmBody(S.ns);S.nmMsg="";m.scrollTop=0;snMhsInit();
+  if(S.ns===2)snOk();else setTimeout(()=>{const f=["nmi","nimi","nmpw"].map($).find(x=>x&&!x.value);if(f)f.focus()},80)}
+function nmSave(){const a=$("nmi"),b=$("nimi"),p=$("nmpw"),q=$("nmpw2"),m=S.nmode,bad=t=>{const e=$("msg");if(e)e.textContent=t;snErr(t)};
+  if(a)S.nm=a.value.trim();if(m!=="lengkapi"&&b)S.nim=b.value.trim();sv();
+  if((S.nm||"").length<2)return bad("Isi nama lengkap dulu.");
+  if(m!=="lengkapi"){
+    if(DB?!NIMOK(S.nim):(S.nim||"").length<3)return bad(DB?"NIM hanya huruf dan angka, 3 sampai 30 karakter.":"Isi NIM dulu.");
+    if(DB){const pw=p?p.value:"";if(pw.length<6)return bad("Kata sandi minimal 6 karakter.");if(!q||q.value!==pw)return bad("Kata sandi tidak sama.");S.pw=pw}}
   nmPop(2)}
 function nmClose(done){clearTimeout(window._nmT);const m=$("nmo");if(m)m.remove();
   if(done){S.ns=0;const p=$("nmph");if(p){p.outerHTML=nameCard(true);snMhsInit()}}else S.nmx=1}
-function nmAuto(){if(S.locked||JL()||S.nmx||$("nmo"))return;nmPop(S.ns||1)}
+function nmAuto(){if(isLk()||S.nmx||$("nmo"))return;nmPop(S.ns||1)}
 function codeCard(){if(!S.done.some(Boolean))return "";return `<div class="card"><h3>Kode hasil untuk dosen</h3><p>Salin kode ini dan kirim ke dosen lewat WhatsApp atau email. Kode ikut diperbarui setiap kamu menyelesaikan level.</p><textarea id="mc" readonly rows="4" onclick="this.select()">${myCode()}</textarea><button class="btn" onclick="cp('mc',this)">Salin kode</button></div>`}
 function cp(id,b){const t=$(id);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}if(!ok&&navigator.clipboard)navigator.clipboard.writeText(t.value).catch(()=>{});b.textContent="Tersalin"}
 function qr(){const u=$("qu").value.trim(),o=$("qr");if(!u){o.innerHTML="";return}
@@ -1033,7 +1157,7 @@ function dShowPin(b){const p=$("pin");p.type=p.type==="password"?"text":"passwor
 const SNT={idle:["Watching","Siput mengikuti kursormu.","#6c8cff"],hide:["Zzz…","Siput tidur, mata ditutup.","#ff7aa8"],peek:["Peeking","PIN terlihat, siput mengintip.","#ffb938"],err:["Oops","PIN salah. Siput geleng kepala.","#ff4a63"],ok:["Welcome","PIN benar. Mata dibuka.","#3fdc84"]};
 const SN_SVG=`<svg class="sn" viewBox="0 0 220 130" aria-hidden="true"><defs><linearGradient id="snB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFD9B0"/><stop offset="1" stop-color="#F6B67E"/></linearGradient><linearGradient id="snS" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFA86B"/><stop offset="1" stop-color="#EE6A33"/></linearGradient></defs><ellipse cx="112" cy="116" rx="84" ry="6" fill="#000" opacity=".18"/><path class="ft" d="M34 86H188a13 13 0 0 1 0 26H34Z" fill="url(#snB)"/><g class="hd"><g class="st a"><path d="M50 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="26" r="8" fill="#fff"/><circle class="pu" cx="50" cy="26" r="3.6" fill="#1F1F2E"/></g><g class="st b"><path d="M72 60V28" stroke="#F6B67E" stroke-width="6" stroke-linecap="round"/><circle cx="72" cy="26" r="8" fill="#fff"/><circle class="pu" cx="72" cy="26" r="3.6" fill="#1F1F2E"/></g><path d="M34 112V76a26 26 0 0 1 52 0V112Z" fill="url(#snB)"/><path class="ce a" d="M44 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="ce" d="M66 74q5 5 10 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><circle class="bl" cx="43" cy="86" r="4" fill="#FF9AA8"/><circle class="bl" cx="77" cy="86" r="4" fill="#FF9AA8"/><path class="mi" d="M54 88q6 5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="me" d="M54 92q6-5 12 0" fill="none" stroke="#5a3a2a" stroke-width="2.4" stroke-linecap="round"/><path class="mo" d="M51 86q9 11 18 0Z" fill="#7a2e2e" stroke="#5a3a2a" stroke-width="2" stroke-linejoin="round"/></g><g class="sh"><circle cx="132" cy="64" r="36" fill="url(#snS)"/><path d="M132 64a3 3 0 0 1 3 3a6 6 0 0 1-6 6a9 9 0 0 1-9-9a12 12 0 0 1 12-12a15 15 0 0 1 15 15a18 18 0 0 1-18 18" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/></g><g class="zz" aria-hidden="true"><text class="z1" x="62" y="44" font-size="13">z</text><text class="z2" x="74" y="34" font-size="17">Z</text><text class="z3" x="88" y="22" font-size="21">Z</text></g></svg>`;
 function snW(v){return `<div class="sn-w" id="sn" data-s="${v}" role="img" aria-label="Maskot siput">${SN_SVG}</div>`}
-const SNM={idle:["Hai!",()=>{try{if(S.locked||JL())return"Kamu sudah bergabung, tinggal pilih level.";return S.ns===2?"Pilih karakter, lalu tekan Gabung.":"Isi nama dan NIM, lalu tekan Simpan."}catch(e){return"Isi nama dan NIM."}},"#6c8cff"],hide:["Hai!","Siput menunggu.","#ff7aa8"],peek:["Mencatat","Siput memperhatikan ketikanmu.","#ffb938"],err:["Oops","Isi nama dan NIM dulu.","#ff4a63"],ok:["Welcome","Kamu sudah bergabung. Siput senang!","#3fdc84"]};
+const SNM={idle:["Hai!",()=>{try{if(isLk())return"Kamu sudah bergabung, tinggal pilih level.";if(S.ns===2)return"Pilih karakter, lalu tekan Gabung.";return S.nmode==="masuk"?"Masuk dengan NIM dan kata sandimu.":S.nmode==="lengkapi"?"Lengkapi profilmu dulu.":"Buat akun: isi data, lalu tekan Simpan."}catch(e){return"Isi data dulu."}},"#6c8cff"],hide:["Zzz…","Siput tidur, tidak mengintip kata sandimu.","#ff7aa8"],peek:["Mencatat","Siput memperhatikan ketikanmu.","#ffb938"],err:["Oops","Isi nama dan NIM dulu.","#ff4a63"],ok:["Welcome","Kamu sudah bergabung. Siput senang!","#3fdc84"]};
 const snSb=(t,sub)=>sub||(typeof t[1]==="function"?t[1]():t[1]);
 function snHdH(v,sub,m){const t=(m?SNM:SNT)[v];return `<div class="sn-hd${m?" sm":""}" id="snh" data-m="${m?"m":""}" aria-live="polite"><span><i style="background:${t[2]};box-shadow:0 0 8px ${t[2]}"></i>${m?"Gabung Kuis":"Portal Dosen"}</span><b>${t[0]}</b><p>${esc(snSb(t,sub))}</p></div>`}
 function snHd(v,sub){const h=$("snh");if(!h)return;const t=(h.dataset.m==="m"?SNM:SNT)[v];if(!t)return;const put=()=>{const i=h.querySelector("i");h.querySelector("b").textContent=t[0];h.querySelector("p").textContent=snSb(t,sub);i.style.background=t[2];i.style.boxShadow="0 0 8px "+t[2];h.classList.remove("out")};
@@ -1055,17 +1179,21 @@ function snInit(){const p=$("pin");if(!p)return;if($("sn").dataset.s==="err")snB
   snPmInit()}
 function snOk(){const e=$("sn");if(!e)return;snSet("ok");clearTimeout(window._snET);window._snET=setTimeout(()=>{const x=$("sn");if(x&&x.dataset.s==="ok")snSet("idle")},2400)}
 function snMhsInit(){if(!$("sn"))return;snRg();if(!window._snRz){window._snRz=1;addEventListener("resize",snRg)}snPmInit();
-  const a=$("nmi"),b=$("nimi");if(!a||!b||a.readOnly)return;
-  [a,b].forEach(x=>{
+  document.querySelectorAll(".nc .ncin").forEach(x=>{if(x.readOnly)return;
     x.addEventListener("focus",()=>{const e=$("sn");if(e&&!/ok|err/.test(e.dataset.s))snSet("peek")});
     x.addEventListener("input",()=>{const e=$("sn");if(!e)return;snTy=Date.now();const r=x.getBoundingClientRect();snLook(Math.min(r.right-14,r.left+14+x.value.length*8.5),r.top+r.height/2);if(!/ok|err/.test(e.dataset.s))snSet("peek")});
-    x.addEventListener("blur",()=>{const e=$("sn");if(e&&!/ok|err/.test(e.dataset.s))snSet("idle")})})}
+    x.addEventListener("blur",()=>{const e=$("sn");if(e&&!/ok|err/.test(e.dataset.s))snSet("idle")})});
+  document.querySelectorAll(".nc .ncpw").forEach(x=>{
+    const go=()=>{snAw=0;const e=$("sn");if(e&&!/ok|err/.test(e.dataset.s))snSet(x.type==="password"?"hide":"peek")};
+    x.addEventListener("focus",go);x.addEventListener("pointerdown",go);
+    x.addEventListener("input",()=>{const e=$("sn");if(e&&!snAw&&e.dataset.s!=="ok")snSet(x.type==="password"?"hide":"peek")});
+    x.addEventListener("blur",ev=>{const t=ev.relatedTarget;if(t&&t.closest&&t.closest(".dpw"))return;const e=$("sn");if(e&&e.dataset.s!=="ok")snSet("idle")})})}
 function dLogout(){dStop();clearTimeout(dRetryT);dAuthOk=false;dLive="off";dFlagSet(null);dMsg="";firebase.auth().signOut().then(dLogin,dLogin)}
 function dRefresh(){dListen();loadX(true).then(()=>dDraw())}
 async function dPin(){if(dBusy)return;const v=$("pin").value.trim(),m=$("pinmsg"),b=$("pinbtn");
   if(!v){snErr("Isi PIN dulu.");return}
   dBusy=true;b.disabled=true;b.textContent="Memeriksa…";m.textContent="";
-  try{const A=firebase.auth();let u=A.currentUser;if(!u)u=(await A.signInAnonymously()).user;
+  try{const A=firebase.auth();let u=A.currentUser;if(u&&!u.isAnonymous){await A.signOut();u=null}if(!u)u=(await A.signInAnonymously()).user;
     await DB.collection("dosen").doc(u.uid).set({pin:v});
     await DB.collection("hasil").limit(1).get();
     dFlagSet(u.uid);dAuthOk=true;dMsg="";snSet("ok");b.textContent="Berhasil ✓";setTimeout(()=>{dBusy=false;dListen()},1000)}
@@ -1108,7 +1236,7 @@ function dBoard(r){const top=r.slice(0,10),mx=Math.max(top[0]?top[0].skor:1,1),n
   return `<div class="lb"><div><h2>${esc(RM().nama)}</h2>${top.length?top.map((d,i)=>{const fr=d.str>=3?"fire":d.str===2?"combo":"";
   return `<div class="rw" data-pid="${esc(d.nim)}"><div class="rk">${i<3?["🥇","🥈","🥉"][i]:i+1}</div><div>${d.av?avH(d.av)+" ":""}${esc(dAnon?dIni(d.nama):d.nama)}${fr?`<span class="rwflm ${fr}"><i class="flm">🔥</i>${d.str}</span>`:""}<small>${d.l.filter(x=>x!=null).length}/${n} level</small><div class="tr ${fr}"><i data-sk="${d.skor/mx*100}" style="width:${d.skor/mx*100}%"></i></div></div><b data-sk="${d.skor}">${d.skor}</b></div>`}).join(""):'<p style="opacity:.8">Menunggu mahasiswa bergabung…</p>'}</div><div class="qb"><b>Gabung kuis</b>${dQr()}<div>atau masukkan kode</div><div class="kcode">${esc(dKode())}</div><div style="word-break:break-all">${esc(JOIN())}</div><div class="mut">${r.length} peserta</div></div></div>`}
 async function dReset(){if(!confirm("Hapus SEMUA hasil mahasiswa di kamar \""+RM().nama+"\"? Kamar lain tidak terpengaruh. Tindakan ini tidak bisa dibatalkan."))return;
-  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=400){const b=DB.batch();ids.slice(i,i+400).forEach(id=>b.delete(DB.collection("hasil").doc(id)));await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("jn_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
+  const ids=dDocs.filter(d=>dRid(d)===dRoom).map(d=>d.id);for(let i=0;i<ids.length;i+=200){const b=DB.batch();ids.slice(i,i+200).forEach(id=>{b.delete(DB.collection("hasil").doc(id));b.delete(DB.collection("progres").doc(id))});await b.commit()};try{localStorage.removeItem("mat_"+dRoom);localStorage.removeItem("tut_"+dRoom);localStorage.removeItem("jn_"+dRoom);localStorage.removeItem("pg_"+dRoom);localStorage.removeItem("sent_"+dRoom)}catch(e){}dGoSet(0)}
 setInterval(()=>{if(DOSEN&&dView==="rekap"&&dDocs.length)dDraw()},30000);
 
 /* ===== Pemuatan data kamar + level tambahan (Firestore koleksi "kamar" dan "soal") ===== */
@@ -1978,14 +2106,14 @@ const _tpkL=dListen;dListen=function(){_tpkL();kTemaListen()};
 const _tpkD=dDraw;dDraw=function(){_tpkD();if(!DOSEN)return;const b=document.querySelector("#app .bar");if(!b)return;
   b.insertAdjacentHTML("afterend",`<div class="bar tpk" role="group" aria-label="Tampilan untuk semua layar"><span>Tampilan semua layar:</span>${kTemaOpts.map(o=>`<button type="button" class="btn ${KTEMA===o[0]?"on":"ghost w"}" aria-pressed="${KTEMA===o[0]}" onclick="kTemaSet('${o[0]}')">${o[1]}</button>`).join("")}<small>Mahasiswa ikut otomatis</small></div>`)};
 
-cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")||"default"}catch(e){}kTemaApply(c);if(!DOSEN)kTemaListen()})();loadX().then(()=>{
+cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")||"default"}catch(e){}kTemaApply(c);if(!DOSEN)kTemaListen()})();loadX().then(async()=>{
   if(!DOSEN&&!ROOM_ID){if(!ROOMS.length&&useCache())mergeX([]);
     const c=document.querySelector(".ks-c");
     const AR=ROOMS.filter(r=>!r.ar);if(c&&AR.length===1)c.insertAdjacentHTML("beforeend",`<a class="btn ks-go" href="?kamar=${encodeURIComponent(AR[0].id)}">Mulai kuis ▶</a>`);
     return}
   if(!DOSEN&&!ROOMS.length&&!kOk&&useCache()){mergeX([])}
   if(!DOSEN&&!ROOMS.length){bootFail();return}
-  rmLock=!DOSEN;setR();document.title=DOSEN?"Dasbor Dosen":ROOM?ROOM.nama+" Quiz":"KuisKuy";if(!DOSEN&&ROOM)pgLoad();DOSEN?dosen():(S.cur?resume():home());pgCheck()});
+  rmLock=!DOSEN;setR();document.title=DOSEN?"Dasbor Dosen":ROOM?ROOM.nama+" Quiz":"KuisKuy";if(!DOSEN&&ROOM){if(DB){try{await acctBoot()}catch(e){pgLoad()}}else pgLoad()}DOSEN?dosen():((S.cur&&(!DB||S.acc))?resume():home());pgCheck()});
 </script>
 </body>
 </html>
