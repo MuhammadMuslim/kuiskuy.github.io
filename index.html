@@ -713,7 +713,7 @@ html[data-tema="badai"] .pod::before,html[data-tema="badai"] .kd::before{backgro
 .ki2{display:inline-flex;width:1.15em;height:1.15em;flex:none}
 .ki2 svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;overflow:visible}
 .ki2 svg *{transform-box:fill-box}
-.ki2 svg,.ki2 .kd2,.ki2 .ka-lid,.ki2 .kar2{transition:transform .25s cubic-bezier(.3,1.5,.5,1)}
+.ki2 svg,.ki2 .kd2,.ki2 .ka-lid,.ki2 .kar2,.ki2 .kpl{transition:transform .25s cubic-bezier(.3,1.5,.5,1)}
 .kc{stroke-dasharray:1;stroke-dashoffset:1;animation:kDraw .4s .05s ease-out forwards}
 .btn.kok{background:var(--okB)!important;color:var(--ok)!important;box-shadow:inset 0 0 0 2px var(--ok)!important}
 .kar{display:inline-block;margin-left:.45em;transition:transform .2s cubic-bezier(.3,1.5,.5,1)}
@@ -737,6 +737,18 @@ html[data-tema="badai"] .pod::before,html[data-tema="badai"] .kd::before{backgro
 @keyframes kLid{0%,100%{transform:translateY(0)}35%{transform:translateY(-4px)}60%{transform:translateY(1px)}}
 @keyframes kDown{0%,100%{transform:translateY(0)}40%{transform:translateY(5px)}}
 @keyframes kUp{0%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
+@media (hover:hover){.btn:hover .ki2[data-k=reset] svg{transform:rotate(-60deg)}.btn:hover .ki2[data-k=play] .kpl{transform:translateX(2px)}.btn:hover .ki2[data-k=out] .kar2{transform:translateX(2px)}.btn:hover .ki2[data-k=close] svg{transform:rotate(90deg)}.btn:hover .ki2[data-k=back] .kar2{transform:translateX(-2px)}.btn:hover .ki2[data-k=tick] svg{transform:scale(1.18)}}
+.ki2.go[data-k=reset] svg{animation:kSpinR .7s cubic-bezier(.4,0,.2,1)}
+.ki2.go[data-k=play] .kpl{animation:kPlay .5s ease-in-out}
+.ki2.go[data-k=out] .kar2{animation:kOut .5s ease-in-out}
+.ki2.go[data-k=close] svg{animation:kTurn .45s ease-out}
+.ki2.go[data-k=back] .kar2{animation:kBack .5s ease-in-out}
+.ki2.go[data-k=tick] svg{animation:kPop .45s ease-out}
+@keyframes kSpinR{to{transform:rotate(-360deg)}}
+@keyframes kPlay{0%,100%{transform:translateX(0) scale(1)}40%{transform:translateX(4px) scale(1.25)}}
+@keyframes kOut{0%,100%{transform:translateX(0)}40%{transform:translateX(5px)}}
+@keyframes kTurn{0%{transform:rotate(0) scale(1)}50%{transform:rotate(90deg) scale(1.3)}100%{transform:rotate(180deg) scale(1)}}
+@keyframes kBack{0%,100%{transform:translateX(0)}40%{transform:translateX(-5px)}}
 @media (prefers-reduced-motion:reduce){.ki2 *,.ki2,.kar{animation:none!important;transition:none!important}}
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
@@ -2277,17 +2289,24 @@ const KI={copy:'<rect x="9" y="9" width="11" height="11" rx="2"/><path class="kd
  dup:'<rect x="8" y="8" width="12" height="12" rx="2"/><path class="kd2" d="M4 16V6a2 2 0 0 1 2-2h10"/>',
  arch:'<rect class="ka-lid" x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v11h14V8"/><path d="M10 12h4"/>',
  down:'<path class="kar2" d="M12 4v11M7 11l5 5 5-5"/><path d="M5 20h14"/>',
- up:'<path class="kar2" d="M12 16V5M7 9l5-5 5 5"/><path d="M5 20h14"/>'};
+ up:'<path class="kar2" d="M12 16V5M7 9l5-5 5 5"/><path d="M5 20h14"/>',
+ reset:'<path d="M4 11a8 8 0 1 1 2.3 5.7"/><path d="M4 4v7h7"/>',
+ play:'<path class="kpl" d="M8 5l11 7-11 7z"/>',
+ out:'<path d="M10 4H5v16h5"/><path class="kar2" d="M10 12h10M16 8l4 4-4 4"/>',
+ close:'<path d="M6 6l12 12M18 6L6 18"/>',
+ back:'<path class="kar2" d="M20 12H5M10 7l-5 5 5 5"/>',
+ tick:'<path d="M5 12.5l4.5 4.5L19 7.5"/>'};
 const kIco=k=>'<span class="ki2" data-k="'+k+'"><svg viewBox="0 0 24 24" aria-hidden="true">'+KI[k]+'</svg></span>';
-const KMAP=[[/^salin/i,"copy"],[/^simpan(?!.*▶)/i,"save"],[/^(edit|ubah info)/i,"edit"],[/^duplikat/i,"dup"],[/^(arsipkan|aktifkan)/i,"arch"],[/^unggah/i,"up"],[/^unduh/i,"down"],[/^(muat ulang|buat kode baru)/i,"reload"]];
+const KMAP=[[/^salin/i,"copy"],[/^simpan(?!.*▶)/i,"save"],[/^(edit|ubah info)/i,"edit"],[/^duplikat/i,"dup"],[/^(arsipkan|aktifkan)/i,"arch"],[/^unggah/i,"up"],[/^unduh/i,"down"],[/^(muat ulang|buat kode baru)/i,"reload"],[/^(ulangi|putar ulang|coba lagi|reset)/i,"reset"],[/^mulai/i,"play"],[/^keluar/i,"out"],[/^(tutup|batal|nanti saja)/i,"close"],[/^kembali/i,"back"],[/^(periksa|selesaikan level|lihat hasil)/i,"tick"]];
 function kDeco(){document.querySelectorAll(".btn:not([data-kd])").forEach(b=>{b.dataset.kd="1";
   if(b.classList.contains("kdel")||b.childElementCount||!b.firstChild||b.firstChild.nodeType!==3)return;
   let t=b.firstChild.nodeValue,k=null,m;
-  if(m=t.match(/^\s*(⟳|🔄|＋|\+|⬇)\s*/)){k={"⟳":"reload","🔄":"reload","＋":"plus","+":"plus","⬇":"down"}[m[1]];t=t.slice(m[0].length)}
-  else{const q=t.trim();for(const[r,x]of KMAP)if(r.test(q)){k=x;break}}
-  const lead=/^\s*▶\s*/.test(t),trail=/\s*▶\s*$/.test(t);
+  if(m=t.match(/^\s*(⟳|🔄|＋|\+|⬇|⏹|↻|◀)\uFE0F?\s*/)){k={"⟳":"reload","🔄":"reload","＋":"plus","+":"plus","⬇":"down","⏹":"reset","↻":"reset","◀":"back"}[m[1]];t=t.slice(m[0].length)}
+  else{const q=t.trim();for(const[r,x]of KMAP)if(r.test(q)){k=x;break}if(!k&&/^\s*▶\s*mulai/i.test(t))k="play"}
+  let lead=/^\s*▶\s*/.test(t),trail=/\s*▶\s*$/.test(t);
   if(!k&&!lead&&!trail)return;
   t=t.replace(/^\s*▶\s*/,"").replace(/\s*▶\s*$/,"");b.firstChild.nodeValue=t;
+  if(k==="play"){lead=trail=false}
   if(k){b.dataset.ki=k;b.dataset.k0=t.trim();b.insertAdjacentHTML("afterbegin",kIco(k))}
   if(lead)b.insertAdjacentHTML("afterbegin",'<span class="kar">▶</span>');
   if(trail)b.insertAdjacentHTML("beforeend",'<span class="kar">▶</span>')})}
