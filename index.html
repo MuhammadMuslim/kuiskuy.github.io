@@ -993,6 +993,26 @@ main.wide .ks-card{max-width:min(92vw,640px)}
 .dl-ch{border-radius:999px;box-shadow:0 3px 0 color-mix(in srgb,var(--pri) 30%,transparent)}
 .dl-ch:active{box-shadow:0 0 0 transparent}
 @media (prefers-reduced-motion:reduce){.btn.kz-eat,.btn.kz-eat .kd-t{transition:none}}
+
+/* ===== Kaca blur: semua layout yang mengambang di atas latar memakai gaya kolom kode join ===== */
+:root{--gl:rgba(255,255,255,.1);--gls:rgba(40,18,92,.6);--glr:rgba(255,255,255,.24)}
+html[data-tema="siang"]{--gl:rgba(8,38,100,.5);--gls:rgba(8,38,100,.66)}
+html[data-tema="malam"]{--gl:rgba(12,14,60,.5);--gls:rgba(10,12,50,.74);--glr:rgba(160,170,255,.26)}
+html[data-tema="badai"]{--gl:rgba(10,14,34,.55);--gls:rgba(8,12,30,.76);--glr:rgba(150,170,230,.26)}
+:is(.card,.q,.lg,.qb){--glb:var(--gl)}
+:is(.ov>div,.dtoast,.kdr-p){--glb:var(--gls)}
+:is(.card:not(.hero):not(.pg),.q,.lg,.qb,.ov>div,.dtoast,.kdr-p){--card:rgba(255,255,255,.1);--ink:#F1EAFF;--mut:rgba(255,255,255,.72);--pri:#B58CFF;--priT:#1B0C3A;--soft:rgba(255,255,255,.13);--line:rgba(255,255,255,.28);--okB:rgba(63,191,85,.22);--badB:rgba(226,27,60,.25);color:var(--ink);color-scheme:dark;background:var(--glb);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px var(--glr) inset,0 10px 30px rgba(0,0,0,.18)}
+:is(.card,.q,.lg,.qb,.ov>div,.dtoast,.kdr-p) :is(input,textarea)::placeholder{color:rgba(255,255,255,.5)}
+:is(.card,.ov>div,.dtoast,.kdr-p) [style*="var(--bad)"]{color:#FF8FA0!important}
+:is(.card,.ov>div,.dtoast,.kdr-p) [style*="var(--ok"]{color:#7BE58F!important}
+.card .live,.ov .live{color:#7BE58F}
+.qb svg{background:#fff;padding:10px;border-radius:12px;box-sizing:border-box}
+.qb .kcode{color:#fff}
+.nmx{background:rgba(255,255,255,.14)}
+.nmc-id{background:rgba(255,255,255,.1)}
+.res{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px rgba(255,255,255,.24) inset,0 10px 30px rgba(0,0,0,.18)}
+.res.good{background:rgba(38,137,12,.6)}.res.no{background:rgba(226,27,60,.6)}
+.mubtn,.muhint{background:var(--gls);color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px var(--glr) inset,0 6px 18px rgba(0,0,0,.25)}
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
 </head>
