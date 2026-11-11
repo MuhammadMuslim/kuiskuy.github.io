@@ -2176,12 +2176,13 @@ function mtImpParse(txt,nLv){
     if(!Array.isArray(x.mt)||!x.mt.length||x.mt.length>12)throw new Error(p+"level "+n+" harus punya 1 sampai 12 halaman (mt)");
     if(n>nLv){skip.push(n);return}
     if(out.some(o=>o.level===n))throw new Error(p+"level "+n+" muncul dua kali");
-    const pages=x.mt.map((g,j)=>{const q=p+"halaman "+(j+1)+": ",ju=String(g.j||"").trim(),t=String(g.t||"").trim(),v=String(g.v||"").trim();
+    const pages=x.mt.map((g,j)=>{const q=p+"halaman "+(j+1)+": ",ju=String(g.j||"").trim(),t=String(g.t||"").trim(),v=String(g.v||"").trim(),hr=String(g.h||"").trim();
       if(!ju)throw new Error(q+"judul (j) kosong");
       if(v&&!vidEmb(v))throw new Error(q+"link video tidak dikenali");
       if(t.length>8000)throw new Error(q+"teks lebih dari 8000 karakter");
-      const h=t?mtMarkup(t):"";if(!h&&!v)throw new Error(q+"isi teks (t) atau video (v) harus ada");
-      const pg={j:bkFx(ju,null)};if(h){pg.h=h;pg.s=t}if(v)pg.v=v;return pg});
+      if(hr.length>20000)throw new Error(q+"HTML (h) lebih dari 20000 karakter");
+      const h=t?mtMarkup(t):hr;if(!h&&!v)throw new Error(q+"isi teks (t), HTML (h), atau video (v) harus ada");
+      const pg={j:bkFx(ju,null)};if(h){pg.h=h;if(t)pg.s=t}if(v)pg.v=v;return pg});
     out.push({level:n,pages})});
   if(!out.length)throw new Error("tidak ada level di file yang cocok dengan kamar ini (kamar ini punya "+nLv+" level)");
   return{items:out,skip}}
@@ -2194,13 +2195,37 @@ async function mtImpGo(){if(!mtI.items||mtI.busy||bk.busy)return;const items=mtI
   for(const it of items){await bkPersist(it.level-1,L=>{L.mt=it.pages},"Materi level "+it.level+" tersimpan.");
     if(bk.bad){mtI.busy=false;mtI.bad=1;mtI.msg=(n?n+" level tersimpan, lalu berhenti di level "+it.level+": ":"Gagal di level "+it.level+": ")+bk.msg;mtGo();return}n++}
   mtI={items:null,name:"",busy:false,bad:0,msg:n+" level tersimpan. Mahasiswa melihat materi setelah memuat ulang halaman."};bk.msg="";mtGo()}
+/* Impor materi SEMUA kamar sekaligus: file berisi daftar {id, levels}; kamar dicocokkan lewat id, level lewat nomor. Hanya materi, soal tidak berubah. */
+let mtA={items:null,name:"",msg:"",bad:0,busy:false};
+function mtAllParse(txt){let a=JSON.parse(txt);if(a&&!Array.isArray(a)&&Array.isArray(a.kamar))a=a.kamar;
+  if(!Array.isArray(a)||!a.length)throw new Error("isi file harus berupa daftar kamar (kamar)");
+  const out=[],skip=[],ids=new Set();
+  a.forEach((r,i)=>{const p="kamar ke-"+(i+1)+": ";if(!r||!r.id)throw new Error(p+"id kamar kosong");
+    if(ids.has(r.id))throw new Error(p+"id ganda ("+r.id+")");ids.add(r.id);
+    const rm=ROOMS.find(x=>x.id===r.id);if(!rm){skip.push(r.id);return}
+    try{const q=mtImpParse(JSON.stringify({levels:r.levels}),rm.lv.length);out.push({id:r.id,nama:rm.nama,items:q.items})}
+    catch(e){throw new Error(p+r.id+": "+e.message)}});
+  if(!out.length)throw new Error("tidak ada kamar di file yang cocok dengan kamar milikmu");
+  return{out,skip}}
+function mtAllFile(inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const r=mtAllParse(rd.result),nl=r.out.reduce((s,o)=>s+o.items.length,0),np=r.out.reduce((s,o)=>s+o.items.reduce((t,i)=>t+i.pages.length,0),0);
+      mtA={items:r.out,name:f.name,busy:false,bad:0,msg:r.out.length+" kamar ("+r.out.map(o=>o.nama).join(", ")+"), "+nl+" level, "+np+" halaman siap disimpan. Materi level yang sudah ada di kamar-kamar itu akan diganti"+(r.skip.length?". Dilewati karena tidak ada di akunmu: "+r.skip.join(", "):"")+"."}}
+    catch(e){mtA={items:null,name:f.name,busy:false,bad:1,msg:"File tidak valid: "+e.message}}
+    mtGo()};rd.readAsText(f)}
+async function mtAllGo(){if(!mtA.items||mtA.busy||bk.busy)return;const items=mtA.items,keep=dRoom;mtA.busy=true;mtA.bad=0;mtA.msg="Menyimpan materi semua kamar… jangan tutup halaman ini.";mtGo();let n=0,k=0;
+  for(const r of items){dRoom=r.id;
+    for(const it of r.items){await bkPersist(it.level-1,L=>{L.mt=it.pages},"");
+      if(bk.bad){const m=bk.msg;dRoom=keep;mtA.busy=false;mtA.bad=1;mtA.msg=n+" level tersimpan, lalu berhenti di "+r.nama+" level "+it.level+": "+m;bk.msg="";bk.bad=0;mtGo();return}n++}k++}
+  dRoom=keep;bk.msg="";bk.bad=0;mtA={items:null,name:"",busy:false,bad:0,msg:k+" kamar dan "+n+" level tersimpan. Mahasiswa melihat materi setelah memuat ulang halaman."};mtGo()}
+function mtAllBox(){
+  return `<details style="margin-top:12px"${mtA.msg||mtA.items?" open":""}><summary><b>Impor materi SEMUA kamar sekaligus</b></summary><p class="mut">Pilih satu file JSON berisi materi untuk banyak kamar (contoh: materi-semua-kamar.json). Kamar dicocokkan lewat id dan level lewat nomor. Kamar yang tidak ada di akunmu dilewati. Hanya materi yang diisi, soal tidak berubah.</p><input type="file" accept=".json,application/json" onchange="mtAllFile(this)" aria-label="Pilih file materi semua kamar">${mtA.msg?`<p class="${mtA.bad?"":"live"}" style="${mtA.bad?"color:var(--bad);font-weight:700":""}">${esc(mtA.msg)}</p>`:""}${mtA.items?`<button class="btn" onclick="mtAllGo()" ${mtA.busy?"disabled":""}>Simpan ke semua kamar</button>`:""}</details>`}
 function mtImpBox(){
   return `<details style="margin-top:16px"${mtI.msg||mtI.items?" open":""}><summary><b>Impor materi semua level dari file</b></summary><p class="mut">Pilih file JSON berisi materi per level (contoh: materi-per-level.json). Hanya materi yang diisi, soal tidak berubah. Level dicocokkan berdasarkan nomor.</p><input type="file" accept=".json,application/json" onchange="mtImpFile(this)" aria-label="Pilih file materi per level">${mtI.msg?`<p class="${mtI.bad?"":"live"}" style="${mtI.bad?"color:var(--bad);font-weight:700":""}">${esc(mtI.msg)}</p>`:""}${mtI.items?`<button class="btn" onclick="mtImpGo()" ${mtI.busy?"disabled":""}>Simpan ke kamar ini</button>`:""}</details>`}
 function mtCard(rm,gi){const l=rm.lv[gi];if(!l)return "";
   const L=Array.isArray(l.mt)?l.mt:[],f=mtE.f,sm="margin:4px 6px 0 0;padding:4px 10px",strip=s=>String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
   const form=`<div class="ex" id="mtform"><b>${mtE.i<0?"Halaman materi baru":"Edit halaman "+(mtE.i+1)}</b><input id="mtj" placeholder="Judul halaman, mis. Apa itu enkripsi?" value="${esc(f.j||"")}"><input id="mtv" placeholder="Link video (opsional): YouTube, Vimeo, Google Drive, atau file .mp4" value="${esc(f.v||"")}"><textarea id="mtt" rows="10" placeholder="${mtE.raw?"Halaman ini berformat HTML dari impor. Kosongkan untuk mempertahankan isi lama, atau tulis teks baru untuk menggantinya.":"Tulis materi di sini…"}">${esc(f.t||"")}</textarea><p class="mut" style="margin:6px 0 0">Format: <b>## Subjudul</b>, <b>- poin</b>, <b>1. langkah</b>, <b>&gt; contoh atau catatan</b>, <b>**tebal**</b>, <b>*miring*</b>. Pisahkan paragraf dengan satu baris kosong.</p><button class="btn" onclick="mtSave()" ${bk.busy?"disabled":""}>Simpan halaman</button> <button class="btn ghost" onclick="mtCancel()">Batal</button></div>`;
   const rows=L.map((p,i)=>mtShow()&&mtE.i===i?form:`<div class="rq" style="border-color:var(--c1)"><b>${i+1}. ${p.j}</b>${p.v?" 🎬":""}<div class="mut" style="font-size:.9rem">${esc(strip(p.h).slice(0,110))}${strip(p.h).length>110?"…":""}</div><button class="btn ghost" style="${sm}" onclick="mtOpen(${i})">Edit</button><button class="btn ghost" style="${sm}" onclick="mtMove(${i},-1)" ${i?"":"disabled"} aria-label="Naikkan halaman">▲</button><button class="btn ghost" style="${sm}" onclick="mtMove(${i},1)" ${i<L.length-1?"":"disabled"} aria-label="Turunkan halaman">▼</button>${kBinBtn("mtDel("+i+",this)","Hapus halaman "+(i+1),"sm")}</div>`).join("");
-  return `<div class="card ed" id="mtroot"><b>📖 Materi Level ${gi+1}${L.length?" ("+L.length+" halaman)":""}</b><p class="mut">Mahasiswa membaca materi level ini dulu (teks dan video), baru kuisnya terbuka. Biarkan kosong jika level tidak perlu materi.</p>${rows||'<p class="mut">Belum ada materi untuk level ini.</p>'}${mtShow()&&mtE.i===-1?form:`<button class="btn" onclick="mtOpen(-1)">+ Tambah halaman materi</button>`}${mtImpBox()}</div>`}
+  return `<div class="card ed" id="mtroot"><b>📖 Materi Level ${gi+1}${L.length?" ("+L.length+" halaman)":""}</b><p class="mut">Mahasiswa membaca materi level ini dulu (teks dan video), baru kuisnya terbuka. Biarkan kosong jika level tidak perlu materi.</p>${rows||'<p class="mut">Belum ada materi untuk level ini.</p>'}${mtShow()&&mtE.i===-1?form:`<button class="btn" onclick="mtOpen(-1)">+ Tambah halaman materi</button>`}${mtImpBox()}${mtAllBox()}</div>`}
 
 /* ===== Tema papan peringkat dosen: default, ular tangga, balapan (kuda, karung, roket) ===== */
 const TM={default:["🏆","Default"],ular:["🐍","Ular tangga"],kuda:["🐎","Balapan kuda"],karung:["🎒","Balapan karung"],roket:["🚀","Balapan roket"]};
