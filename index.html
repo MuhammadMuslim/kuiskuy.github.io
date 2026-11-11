@@ -1013,6 +1013,14 @@ html[data-tema="badai"]{--gl:rgba(10,14,34,.55);--gls:rgba(8,12,30,.76);--glr:rg
 .res{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px rgba(255,255,255,.24) inset,0 10px 30px rgba(0,0,0,.18)}
 .res.good{background:rgba(38,137,12,.6)}.res.no{background:rgba(226,27,60,.6)}
 .mubtn,.muhint{background:var(--gls);color:#fff;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 0 0 1.5px var(--glr) inset,0 6px 18px rgba(0,0,0,.25)}
+/* ===== Materi per level: video + teks ===== */
+.vid{position:relative;aspect-ratio:16/9;margin:12px 0;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 3px 0 rgba(0,0,0,.18)}
+.vid iframe,.vid video{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+.vid.vph{display:grid;place-items:center;color:#fff;font-size:2.4rem;background:linear-gradient(135deg,#2D0C66,#46178F)}
+.lv small{display:block;margin-top:2px;color:var(--pri);font-weight:700}
+.lvm{margin-top:10px;width:100%}
+.mt h3{font-size:1.1rem;margin:14px 0 4px}
+.mt ol{padding-left:22px;margin:8px 0}
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
 </head>
@@ -1046,8 +1054,8 @@ function rvGet(){try{return JSON.parse(localStorage.getItem(rvKey()))||{}}catch(
 function rvSet(lv,a){const o=rvGet();o[lv]=a;try{localStorage.setItem(rvKey(),JSON.stringify(o))}catch(e){}}
 const rvStop=new Set("pasien dengan untuk adalah tidak dalam rumah sakit manakah berikut paling sebuah sebagai bukan lebih kalau karena jawaban yang".split(" "));
 const rvTok=s=>(String(s).replace(/<[^>]+>/g," ").toLowerCase().match(/[a-z0-9]{5,}/g)||[]).filter(w=>!rvStop.has(w));
-function rvMat(txt,rm){rm=rm||ROOM;let b=null,bs=2;const w=new Set(rvTok(txt));(rm.mat||[]).forEach(m=>{const t=new Set(rvTok(m.h)),j=new Set(rvTok(m.j));let s=0;w.forEach(x=>{if(t.has(x))s++;if(j.has(x))s+=3});if(s>bs){bs=s;b=m}});
-return b?`<details><summary>📖 Penjelasan materi: ${b.j}</summary><div class="mt">${b.h}</div></details>`:""}
+function rvMat(txt,rm,pg){rm=rm||ROOM;let b=null,bs=2;const w=new Set(rvTok(txt));(pg||[]).concat(rm.mat||[]).forEach(m=>{const t=new Set(rvTok(m.h||"")),j=new Set(rvTok(m.j));let s=0;w.forEach(x=>{if(t.has(x))s++;if(j.has(x))s+=3});if(s>bs){bs=s;b=m}});
+return b?`<details><summary>📖 Penjelasan materi: ${b.j}</summary><div class="mt">${vidH(b.v)}${b.h||""}</div></details>`:""}
 function review(lv,only){
 stop();S.playing=false;const l=LV[lv],a=rvGet()[lv];if(!a){home();return}
 let items="",head="";
@@ -1055,10 +1063,10 @@ if(l.log){let hit=0,miss=0;
 l.rows.forEach((r,i)=>{const s=a.includes(i),t=!!r[3];if(t&&s)hit++;else if(s)miss++;
 const ok=t===s,ic=t&&s?"✅":t?"❌":s?"⚠️":"▫️",nt=t&&s?"Benar: mencurigakan dan kamu menandainya.":t?"Terlewat: baris ini mencurigakan.":s?"Salah tandai: baris ini normal.":"Tepat: normal dan tidak kamu tandai.";
 if(only&&ok)return;items+=`<div class="rq ${ok?"":"no"}"><b>${ic}</b> ${r[0]} ${r[1]}: ${r[2]}<div class="a">${nt}</div></div>`});
-head=`Ketemu ${hit} dari 4 baris mencurigakan, ${miss} salah tandai.`;items+=`<p>${l.e}</p>`+rvMat(l.t+" "+l.e)}
+head=`Ketemu ${hit} dari 4 baris mencurigakan, ${miss} salah tandai.`;items+=`<p>${l.e}</p>`+rvMat(l.t+" "+l.e,null,l.mt)}
 else{let n=0;
 l.qs.forEach((q,i)=>{const p=a[i]==null?-1:a[i],ok=p===q.a;if(ok)n++;if(only&&ok)return;
-items+=`<div class="rq ${ok?"":"no"}"><b>${i+1}. ${ok?"✅":p===-1?"⏰":"❌"}</b> ${q.q}<div class="a">Jawabanmu: ${p>=0?q.o[p]:"(tidak menjawab)"}</div>${ok?"":`<div class="a">Jawaban benar: <b>${q.o[q.a]}</b></div>`}<p>${q.e}</p>${rvMat(q.q+" "+q.e+" "+q.o[q.a])}</div>`});
+items+=`<div class="rq ${ok?"":"no"}"><b>${i+1}. ${ok?"✅":p===-1?"⏰":"❌"}</b> ${q.q}<div class="a">Jawabanmu: ${p>=0?q.o[p]:"(tidak menjawab)"}</div>${ok?"":`<div class="a">Jawaban benar: <b>${q.o[q.a]}</b></div>`}<p>${q.e}</p>${rvMat(q.q+" "+q.e+" "+q.o[q.a],null,l.mt)}</div>`});
 head=`Benar ${n} dari ${l.qs.length} soal.`;if(only&&n===l.qs.length)items="<p>Semua jawabanmu benar. Mantap! 🎉</p>"}
 $("app").innerHTML=`<div class="prog"><span>🔍 Review · Level ${lv+1}</span></div><div class="card mt pop"><h2>${l.n}</h2><p><b>${head}</b></p><div class="rv-f"><button class="btn ${only?"ghost":""}" onclick="review(${lv},0)">Semua</button><button class="btn ${only?"":"ghost"}" onclick="review(${lv},1)">Hanya yang salah</button></div>${items}</div><div class="bar"><button class="btn ghost w" onclick="home()">Peta level</button><span class="sp"></span><button class="btn" onclick="start(${lv})">Ulangi level</button></div>`;scrollTo(0,0)}
 const _rvStart=start;start=function(i){S.rv=[];return _rvStart(i)};
@@ -1090,9 +1098,9 @@ const it=[];
 if(l.log)l.rows.forEach((r,i)=>{const f=ss.filter(s=>s.a.includes(i)),t=!!r[3],pct=Math.round((t?f.length:n-f.length)/n*100),w=ss.filter(s=>s.a.includes(i)!==t);
 it.push({pct,h:`<div class="rq ${pct>=70?"":"no"}"><b>${pct}% tepat</b> · ${t?"🚩 mencurigakan":"normal"}<div class="a">${r[0]} ${r[1]}: ${r[2]}</div><div class="a">Ditandai ${f.length} dari ${n} mahasiswa<span class="rb ${t?"ok":""}" style="width:${f.length/n*120}px"></span></div>${nms(w)}</div>`})});
 else l.qs.forEach((q,i)=>{const c=q.o.map((_,j)=>ss.filter(s=>s.a[i]===j)),ok=c[q.a].length,pct=Math.round(ok/n*100),w=ss.filter(s=>s.a[i]!==q.a);
-it.push({pct,h:`<div class="rq ${pct>=70?"":"no"}"><b>${i+1}. ${pct}% benar</b> (${ok}/${n})<div>${q.q}</div>${q.o.map((t,j)=>`<div class="a">${j===q.a?"✅":"▫️"} ${t}<span class="rb ${j===q.a?"ok":""}" style="width:${c[j].length/n*120}px"></span>${c[j].length}</div>`).join("")}${nms(w)}<p>${q.e}</p>${rvMat(q.q+" "+q.e+" "+q.o[q.a],rm)}</div>`})});
+it.push({pct,h:`<div class="rq ${pct>=70?"":"no"}"><b>${i+1}. ${pct}% benar</b> (${ok}/${n})<div>${q.q}</div>${q.o.map((t,j)=>`<div class="a">${j===q.a?"✅":"▫️"} ${t}<span class="rb ${j===q.a?"ok":""}" style="width:${c[j].length/n*120}px"></span>${c[j].length}</div>`).join("")}${nms(w)}<p>${q.e}</p>${rvMat(q.q+" "+q.e+" "+q.o[q.a],rm,l.mt)}</div>`})});
 if(dRvSort)it.sort((a,b)=>a.pct-b.pct);
-return h+it.map(x=>x.h).join("")+(l.log?`<p>${l.e}</p>${rvMat(l.t+" "+l.e,rm)}`:"")+`</div>`}
+return h+it.map(x=>x.h).join("")+(l.log?`<p>${l.e}</p>${rvMat(l.t+" "+l.e,rm,l.mt)}`:"")+`</div>`}
 const _dRekap=dRekap;dRekap=function(r,now){return dView==="review"?dReview():_dRekap(r,now)};
 const _dDraw=dDraw;dDraw=function(){_dDraw();const b=document.querySelector("#app .bar");if(b&&b.children[2])b.children[2].insertAdjacentHTML("afterend",`<button class="btn ${dView==="review"?"on":""}" onclick="dView='review';dDraw()">Review soal</button>`)};
 /* ===== Dasbor dosen: daftar akun mahasiswa ===== */
@@ -1238,27 +1246,46 @@ function matOk(){if(!ROOM||!ROOM.mat||!ROOM.mat.length)return true;if(S.matDone)
 const BK={p:0,busy:0,D:null,noclick:0};
 /* animasi buku & join sengaja selalu aktif (tidak mengikuti prefers-reduced-motion) */
 const bkRM=()=>false;
-const matPg=(i,c)=>{const x=ROOM.mat[i];return `<div class="card mt pg${c?" "+c:""}"><h2>${x.j}</h2>${x.h}</div>`};
+/* Materi bisa global (ROOM.mat) atau per level (LV[i].mt). BK.arr menunjuk daftar halaman yang sedang dibuka. */
+const MA=()=>BK.arr||ROOM.mat;
+function vidEmb(u){u=String(u||"").trim();if(!/^https:\/\//i.test(u))return null;let m;
+  if(m=u.match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:[^#]*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i))return{t:"f",s:"https://www.youtube-nocookie.com/embed/"+m[1]+"?rel=0&playsinline=1"};
+  if(m=u.match(/^https:\/\/(?:www\.)?vimeo\.com\/(?:video\/)?(\d+)/i))return{t:"f",s:"https://player.vimeo.com/video/"+m[1]};
+  if(m=u.match(/^https:\/\/drive\.google\.com\/file\/d\/([\w-]+)/i))return{t:"f",s:"https://drive.google.com/file/d/"+m[1]+"/preview"};
+  if(/^https:\/\/[^\s"'<>]+\.(mp4|webm|ogg|m4v)(\?[^\s"'<>]*)?$/i.test(u))return{t:"v",s:u};
+  return null}
+function vidH(u){const e=vidEmb(u);if(!e)return "";
+  return e.t==="v"?`<div class="vid"><video controls playsinline preload="metadata" src="${esc(e.s)}"></video></div>`
+  :`<div class="vid"><iframe src="${esc(e.s)}" title="Video materi" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`}
+/* lite=1: placeholder ringan (dipakai saat mengukur tinggi dan animasi balik halaman, supaya video tidak dimuat berulang) */
+const matPg=(i,c,lite)=>{const x=MA()[i];return `<div class="card mt pg${c?" "+c:""}"><h2>${x.j}</h2>${x.v?(lite?(vidEmb(x.v)?'<div class="vid vph" aria-hidden="true">▶</div>':""):vidH(x.v)):""}${x.h||""}</div>`};
+/* materi per level: dibaca dulu sebelum kuis level itu */
+const lvMt=i=>{const l=LV[i];return !!(l&&Array.isArray(l.mt)&&l.mt.length)};
+const MKL=i=>"matlv_"+ROOM.id+"_"+i;
+function lvMatOk(i){if(!lvMt(i)||S.done[i]||(S.mlv&&S.mlv[i]))return true;try{return localStorage.getItem(MKL(i))==="1"}catch(e){return false}}
+function lvMatSet(i){try{localStorage.setItem(MKL(i),"1")}catch(e){}S.mlv=S.mlv||[];S.mlv[i]=1}
 function matDraw(p,pp,keep){
-const m=ROOM.mat,last=p===m.length-1;BK.p=p;BK.busy=0;BK.D=null;
-$("app").innerHTML=`<div class="prog"><span>📖 Materi · ${p+1}/${m.length}</span></div><div class="bk" id="bk">${matPg(p,pp?"pop":"")}</div>${m.length>1?`<p class="bk-hint">👆 Geser ke kiri atau kanan untuk membalik halaman</p>`:""}<div class="bar">${p?`<button class="btn ghost w" onclick="matGo(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">Selesai, ke kuis ▶</button>`:`<button class="btn" onclick="matGo(${p+1})">Lanjut ▶</button>`}</div>`;
+const m=MA(),last=p===m.length-1;BK.p=p;BK.busy=0;BK.D=null;
+$("app").innerHTML=`<div class="prog"><span>📖 Materi${BK.lv!=null?" · Level "+(BK.lv+1):""} · ${p+1}/${m.length}</span></div><div class="bk" id="bk">${matPg(p,pp?"pop":"")}</div>${m.length>1?`<p class="bk-hint">👆 Geser ke kiri atau kanan untuk membalik halaman</p>`:""}<div class="bar">${p?`<button class="btn ghost w" onclick="matGo(${p-1})">◀ Kembali</button>`:`<button class="btn ghost w" onclick="home()">Tutup</button>`}<span class="sp"></span>${last?`<button class="btn" onclick="matFin()">${BK.lv==null?"Selesai, ke kuis ▶":S.done[BK.lv]?"Selesai ▶":"Mulai kuis ▶"}</button>`:`<button class="btn" onclick="matGo(${p+1})">Lanjut ▶</button>`}</div>`;
 bkFit();
 if(!keep)scrollTo(0,0)}
 /* semua halaman materi dibuat setinggi halaman terpanjang agar ukuran konsisten */
-function bkFit(){const st=$("bk");if(!st||!ROOM||!ROOM.mat)return;
-const key=ROOM.id+"|"+st.offsetWidth+"|"+ROOM.mat.length;
+function bkFit(){const st=$("bk");if(!st||!ROOM||!MA())return;
+const key=ROOM.id+"|"+(BK.lv==null?"g":BK.lv)+"|"+st.offsetWidth+"|"+MA().length;
 if(BK.hk!==key){const m=document.createElement("div");m.style.cssText="position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none";
-m.innerHTML=ROOM.mat.map((_,i)=>matPg(i)).join("");st.appendChild(m);
+m.innerHTML=MA().map((_,i)=>matPg(i,"",1)).join("");st.appendChild(m);
 let H=0;[...m.children].forEach(c=>{H=Math.max(H,c.offsetHeight)});m.remove();BK.hk=key;BK.H=H}
 st.style.minHeight=BK.H+"px"}
 window.addEventListener("resize",()=>{BK.hk=null;if($("bk")&&!BK.busy)bkFit()});
-function mat(p){
+function mat(p){BK.arr=null;BK.lv=null;matOpen(p)}
+function matLv(i){if(!lvMt(i))return;BK.arr=LV[i].mt;BK.lv=i;matOpen(0)}
+function matOpen(p){
 p=p||0;matDraw(p,0);
 const st=$("bk");if(!st||!ROOM||BK.busy)return;
 const h=st.offsetHeight;st.classList.add("fl");st.style.height=h+"px";
 const pg=st.querySelector(".pg");if(pg){pg.classList.add("pgb");pg.style.opacity="0";pg.style.transform="translateY(10px)"}
 const lf=document.createElement("div");lf.className="lf cv";
-lf.innerHTML='<div class="lf-f"><div class="bkcv-f"><i>'+(ROOM.ikon||"📖")+'</i><b>'+esc(ROOM.nama||"Materi")+'</b><small>Materi · ketuk atau geser untuk membuka</small></div></div><div class="lf-b"><div class="bkcv-b"></div></div>';
+lf.innerHTML='<div class="lf-f"><div class="bkcv-f"><i>'+(ROOM.ikon||"📖")+'</i><b>'+(BK.lv==null?esc(ROOM.nama||"Materi"):LV[BK.lv].n)+'</b><small>Materi · ketuk atau geser untuk membuka</small></div></div><div class="lf-b"><div class="bkcv-b"></div></div>';
 st.appendChild(lf);
 BK.busy=1;const sf=lf.querySelector(".bkcv-f");
 const done=()=>{lf.remove();st.classList.remove("fl");st.style.height="";if(pg){pg.classList.remove("pgb");pg.style.opacity="";pg.style.transform="";pg.style.transition=""}BK.busy=0};
@@ -1267,12 +1294,12 @@ setTimeout(()=>{if(pg){pg.style.opacity="1";pg.style.transform="none"}},30);
 setTimeout(()=>flTween(0,1,1000,t=>{lf.style.transform="rotateY("+(-180*t)+"deg)";sf.style.setProperty("--sf",t<.5?(t*1.5).toFixed(3):0)},done),350)}
 function flBuild(fw,p){
 const st=$("bk"),cur=st&&st.querySelector(".pg");if(!cur)return null;
-const h0=cur.offsetHeight,o=matPg(BK.p),n=matPg(p,"pgb"),oo=matPg(BK.p,"pgb");
+const h0=cur.offsetHeight,o=matPg(BK.p,"",1),n=matPg(p,"pgb",1),oo=matPg(BK.p,"pgb",1);
 /* ukur tinggi halaman tujuan supaya tinggi buku berubah mulus (tanpa lompatan layout di akhir) */
-const m=document.createElement("div");m.style.cssText="position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none";m.innerHTML=matPg(p);st.appendChild(m);
+const m=document.createElement("div");m.style.cssText="position:absolute;left:0;right:0;top:0;visibility:hidden;pointer-events:none";m.innerHTML=matPg(p,"",1);st.appendChild(m);
 const h1=m.firstChild.offsetHeight;m.remove();
 st.classList.add("fl");st.style.height=h0+"px";
-st.innerHTML=(fw?n:oo)+`<div class="bk-sh"></div><div class="lf"><div class="lf-f">${fw?o:matPg(p)}</div><div class="lf-b"></div></div>`;
+st.innerHTML=(fw?n:oo)+`<div class="bk-sh"></div><div class="lf"><div class="lf-f">${fw?o:matPg(p,"",1)}</div><div class="lf-b"></div></div>`;
 return{lf:st.querySelector(".lf"),sh:st.querySelector(".bk-sh"),st:st,h0:h0,h1:h1,fw:fw}}
 /* t=0: lembar menutup halaman; t=1: lembar terbalik penuh (engsel di kiri) */
 function flSet(b,t){
@@ -1286,7 +1313,7 @@ const ez=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;let t0;
 (function f(n){if(t0===undefined)t0=n;const k=Math.min(1,(n-t0)/ms);fn(a+(z-a)*ez(k));if(k<1)requestAnimationFrame(f);else if(done)done()})(performance.now());
 }
 function matGo(p){
-const m=ROOM.mat;if(BK.busy||p<0||p>=m.length||p===BK.p)return;
+const m=MA();if(BK.busy||p<0||p>=m.length||p===BK.p)return;
 if(bkRM()){matDraw(p,0);return}
 const fw=p>BK.p;if(window.scrollY>0)scrollTo(0,0);
 const b=flBuild(fw,p);if(!b){matDraw(p,0);return}
@@ -1294,7 +1321,7 @@ BK.busy=1;const a=fw?0:1,z=fw?1:0;flSet(b,a);
 requestAnimationFrame(()=>flTween(a,z,780,t=>flSet(b,t),()=>matDraw(p,0)))}
 document.addEventListener("pointerdown",e=>{
 const st=e.target.closest&&e.target.closest("#bk");
-if(!st||BK.busy||e.pointerType==="mouse"||!e.isPrimary)return;
+if(!st||BK.busy||e.pointerType==="mouse"||!e.isPrimary||(e.target.closest&&e.target.closest(".vid")))return;
 BK.D={x:e.clientX,y:e.clientY,t:performance.now(),id:e.pointerId,on:0,pr:0,W:st.offsetWidth||innerWidth}});
 document.addEventListener("pointermove",e=>{
 const D=BK.D;if(!D||e.pointerId!==D.id)return;
@@ -1303,7 +1330,7 @@ if(!D.on){
 if(Math.abs(dy)>14&&Math.abs(dy)>Math.abs(dx)){BK.D=null;return}
 if(Math.abs(dx)<10||Math.abs(dx)<Math.abs(dy)*1.2)return;
 const fw=dx<0,p=BK.p+(fw?1:-1);D.fw=fw;D.p=p;
-if(p<0||p>=ROOM.mat.length)D.on=2;
+if(p<0||p>=MA().length)D.on=2;
 else if(bkRM())D.on=3;
 else{D.b=flBuild(fw,p);if(!D.b){BK.D=null;return}D.on=1}
 try{$("bk").setPointerCapture(e.pointerId)}catch(_){}}
@@ -1325,7 +1352,9 @@ document.addEventListener("click",e=>{if(BK.noclick){e.stopPropagation();e.preve
 document.addEventListener("keydown",e=>{
 if(!$("bk")||e.altKey||e.ctrlKey||e.metaKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
 if(e.key==="ArrowRight")matGo(BK.p+1);else if(e.key==="ArrowLeft")matGo(BK.p-1)});
-function matFin(){try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;pgCloud(1);home();introNext()}
+function matFin(){
+if(BK.lv!=null){const i=BK.lv;lvMatSet(i);BK.arr=null;BK.lv=null;home();if(!S.done[i])start(i);return}
+try{localStorage.setItem(MK(),"1")}catch(e){}S.matDone=true;pgCloud(1);home();introNext()}
 function mkDup(){const n=x=>String(x||"").trim().toLowerCase().replace(/\s+/g," "),m=n(ROOM.mk),k=n(ROOM.nama);return !m||m===k||k.includes(m)}
 function home(){
 if(!ROOM){pick();return}
@@ -1333,13 +1362,15 @@ goListen();stop();S.playing=false;S.score=myScore();S.streak=0;hud();
 let h=`<div class="hero"><div class="logo">${ROOM.ikon}</div><h1>${esc(ROOM.nama)}</h1>${mkDup()?"":`<p style="margin:0;font-weight:700;opacity:.9">📚 ${esc(ROOM.mk)}</p>`}<p>${esc(ROOM.sub||"")}</p></div>`;
 h+=nameCard();if(!S.i1&&S.nm&&S.nim&&isLk()){S.i1=1;setTimeout(introNext,300)}
 if(ROOM.mat&&ROOM.mat.length){const ok=matOk();h+=`<div class="card"><button class="lv" onclick="mat(0)"><b>📖</b><div>Materi<span>${ok?"Sudah dibaca. Buka lagi kapan saja.":"Baca materi dulu untuk membuka level kuis."}</span></div><span class="stars">${ok?"✅":"Baca ▶"}</span></button></div>`}
-LV.forEach((l,i)=>{if(l.h)return;const d=S.done[i],ok=LV.slice(0,i).every((x,k)=>x.h||S.done[k])&&matOk()&&!d;
-h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${l.d}</span></div><span class="stars">${d?stars(d.acc):ok?"Main ▶":"🔒"}</span></button></div>`});
+LV.forEach((l,i)=>{if(l.h)return;const d=S.done[i],un=LV.slice(0,i).every((x,k)=>x.h||S.done[k])&&matOk(),ok=un&&!d,hm=lvMt(i),mr=lvMatOk(i);
+const sub=(l.d||"")+(hm?`<small>📖 Materi${l.mt.some(p=>p.v&&vidEmb(p.v))?" + 🎬 video":""} → ❓ Kuis</small>`:"");
+h+=`<div class="card"><button class="lv" ${ok?"":"disabled"} onclick="start(${i})"><b>${i+1}</b><div>${l.n}<span>${sub}</span></div><span class="stars">${d?stars(d.acc):ok?(hm&&!mr?"Materi ▶":"Main ▶"):"🔒"}</span></button>${hm&&un?`<button class="btn ghost lvm" onclick="matLv(${i})">📖 ${mr?"Buka materi lagi":"Baca materi dulu"}</button>`:""}</div>`});
 if(LV.every((x,k)=>x.h||S.done[k]))h+=`<button class="btn" onclick="fin()">Lihat hasil akhir</button>`;
 h+=codeCard()+`<p class="center"><a class="btn ghost w" href="#dosen" onclick="dFlagSet(null)">Dasbor online</a>${ROOMS.length>1?` <a class="btn ghost w" href="./">Kamar lain</a>`:""}</p>`;
 $("app").innerHTML=h;snMhsInit();nmAuto()}
 function start(i){if(S.done[i])return;if(DB&&!S.acc){nmPop(1);return}if(!S.nm||!S.nim){const m=$("msg");if(m)m.textContent="Isi nama dan NIM dulu agar skormu bisa dicatat dosen.";snErr("Isi nama dan NIM dulu.");nmPop(1);return}
 if(!(matOk()&&tutOk())){introNext();return}
+if(!lvMatOk(i)){matLv(i);return}
 if(gateOn()&&!S.cdOk){siap(i);return}
 S.lv=i;S.qi=0;S.right=0;S.pick=[];S.lp=0;S.streak=0;
 S.base=LV.reduce((t,_,k)=>t+(k!==i&&S.done[k]?S.done[k].pts:0),0);S.score=S.base;S.playing=true;S.locked=true;S.ansd=false;S.note="";hud();pgSave(cur(0));sync("Level "+(i+1)+": mulai");LV[i].g?pzStart():LV[i].log?logQ():ques()}
@@ -1472,7 +1503,7 @@ function acctErr(e){const c=(e&&e.code)||"";
   if(c==="auth/operation-not-allowed")return"Login Email/Password belum diaktifkan di Firebase.";
   if(c==="permission-denied")return"Profil NIM ini sudah ada atau ditolak. Minta dosen mereset akun NIM-mu.";
   return"Gagal: "+(c||"koneksi")}
-function clearRoomLocal(id){try{["pg_","rv_","sent_","mat_","tut_","jn_"].forEach(k=>localStorage.removeItem(k+id))}catch(e){}}
+function clearRoomLocal(id){try{["pg_","rv_","sent_","mat_","tut_","jn_"].forEach(k=>localStorage.removeItem(k+id));for(let n=0;n<12;n++)localStorage.removeItem("matlv_"+id+"_"+n)}catch(e){}S.mlv=[]}
 /* progres disimpan juga di Firestore (koleksi progres) agar bisa dilanjutkan dari perangkat lain */
 let pgT=null;
 const pgFlag=k=>{try{return localStorage.getItem(k+ROOM.id)==="1"}catch(e){return false}};
@@ -1889,7 +1920,7 @@ function impCheck(a){if(!Array.isArray(a)||!a.length)throw new Error("isi file h
     if(!r.nama)throw new Error(p+"nama kosong");
     if(r.mk!=null&&typeof r.mk!=="string")throw new Error(p+"mk (mata kuliah) harus berupa teks");
     if(!Array.isArray(r.lv)||!r.lv.length||r.lv.length>8)throw new Error(p+"jumlah level harus 1 sampai 8");
-    r.lv.forEach((l,j)=>{if(!l||!l.n||!((Array.isArray(l.qs)&&l.qs.length)||(l.log&&Array.isArray(l.rows)&&l.rows.length)))throw new Error(p+"level "+(j+1)+" tidak punya soal")})})}
+    r.lv.forEach((l,j)=>{if(!l||!l.n||!((Array.isArray(l.qs)&&l.qs.length)||(l.log&&Array.isArray(l.rows)&&l.rows.length)))throw new Error(p+"level "+(j+1)+" tidak punya soal");if(l.mt!=null&&(!Array.isArray(l.mt)||l.mt.length>12||l.mt.some(x=>!x||!x.j||(!x.h&&!x.v))))throw new Error(p+"level "+(j+1)+": materi (mt) harus berupa daftar maksimal 12 halaman, tiap halaman punya judul j dan isi h atau video v")})})}
 function impCount(a){return a.reduce((s,r)=>s+r.lv.reduce((t,l)=>t+(l.qs?l.qs.length:0),0),0)}
 function impFile(inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();
   rd.onload=()=>{try{let a=JSON.parse(rd.result);if(a&&!Array.isArray(a)&&Array.isArray(a.rooms))a=a.rooms;else if(a&&!Array.isArray(a)&&typeof a==="object")a=[a];impCheck(a);const ot=a.filter(r=>KALL.some(k=>k.id===r.id)&&!ROOMS.some(x=>x.id===r.id));if(ot.length)throw new Error("id kamar sudah dipakai dosen lain ("+ot.map(r=>r.id).join(", ")+"). Ganti id di file JSON");
@@ -1909,7 +1940,7 @@ async function impGo(){if(!dImp.rooms||dImp.busy)return;const rooms=dImp.rooms;d
     await loadX(true);if(ROOMS.some(x=>x.id===rooms[0].id))dRoom=rooms[0].id;bkFresh=1;dDraw()}
   catch(e){dImp.busy=false;dImp.bad=1;dImp.rules=!!(e&&e.code==="permission-denied");
     dImp.msg=dImp.rules?"Firestore menolak penyimpanan. Tambahkan aturan untuk koleksi kamar (di bawah), lalu coba lagi.":"Gagal mengunggah: "+((e&&e.code)||"koneksi");bkFresh=1;dDraw()}}
-function impTpl(){const t=[{id:"kuis-contoh",nama:"Kuis Contoh",ikon:"📘",mk:"Nama Mata Kuliah",sub:"Deskripsi singkat kuis",ket:"",mat:[],lv:[{n:"Level 1",d:"Pengantar",qs:[{q:"Tulis pertanyaan di sini?",o:["Opsi A","Opsi B","Opsi C"],a:0,e:"Penjelasan jawaban yang benar"},{q:"Pertanyaan kedua?",o:["Opsi A","Opsi B","Opsi C"],a:2,e:""}]}]}];
+function impTpl(){const t=[{id:"kuis-contoh",nama:"Kuis Contoh",ikon:"📘",mk:"Nama Mata Kuliah",sub:"Deskripsi singkat kuis",ket:"",mat:[],lv:[{n:"Level 1",d:"Pengantar",mt:[{j:"Judul halaman materi",h:"<p>Tulis isi materi level ini di sini (boleh HTML).</p>",v:""}],qs:[{q:"Tulis pertanyaan di sini?",o:["Opsi A","Opsi B","Opsi C"],a:0,e:"Penjelasan jawaban yang benar"},{q:"Pertanyaan kedua?",o:["Opsi A","Opsi B","Opsi C"],a:2,e:""}]}]}];
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(t,null,2)],{type:"application/json"}));a.download="kuis-contoh.json";document.body.appendChild(a);a.click();a.remove()}
 function impCard(){
   return `<p class="mut">Pilih file JSON berisi satu atau beberapa kuis (kamar). Kamar dengan id baru ditambahkan lengkap dengan kode join sendiri dan dikelompokkan lewat isian <b>mk</b> (mata kuliah). Kamar dengan id yang sama ditimpa isinya (materi, level, dan soal). Level tambahan yang dibuat di bank soal tidak terhapus.</p><p><button class="btn ghost" type="button" onclick="impTpl()">⬇ Unduh contoh format</button></p><input type="file" accept=".json,application/json" onchange="impFile(this)" aria-label="Pilih file data kamar">`
@@ -2095,9 +2126,79 @@ async function pzSave(){pzSnap();if(pz.busy)return;const rm=RM(),g=pz.g,bad=m=>{
 function lvCard(l,gi){return `<div class="card ed"><b>Level ${gi+1}: ${l.h?"🙈 Disembunyikan dari mahasiswa":"✅ Dirilis"}</b><p class="mut">${l.h?"Level ini tidak tampil di peta level mahasiswa dan tidak dihitung dalam skor maksimal. Nomor level dan kolom rekap tidak bergeser.":"Sembunyikan jika level belum siap dipakai. Nomor level dan kolom rekap tidak bergeser."}</p><button class="btn ghost" onclick="lvHide()">${l.h?"Rilis ke mahasiswa":"Sembunyikan dari mahasiswa"}</button></div>`}
 function lvHide(){const rm=RM(),gi=bkGi(),l=rm.lv[gi];if(!l.h&&rm.lv.filter(x=>!x.h).length<2)return bkMsg("Minimal satu level harus tetap tampil untuk mahasiswa.",1);
   bkPersist(gi,L=>{if(L.h)delete L.h;else L.h=1},l.h?"Level dirilis. Mahasiswa melihatnya setelah memuat ulang halaman.":"Level disembunyikan. Mahasiswa tidak melihatnya setelah memuat ulang halaman.")}
-const _dBk=dBank;dBank=function(){const rm=RM();if(!rm||!DB)return _dBk();const gi=bkGi(),l=rm.lv[gi],c=(l?lvCard(l,gi):"")+pzCard(rm);
+const _dBk=dBank;dBank=function(){const rm=RM();if(!rm||!DB)return _dBk();const gi=bkGi(),l=rm.lv[gi],c=(l?lvCard(l,gi)+mtCard(rm,gi):"")+pzCard(rm);
   if(l&&l.g)return `<div class="card ed" id="bkroot"><h2>${esc(rm.nama)}: bank soal</h2><div class="rv-f">${rm.lv.map((x,i)=>`<button class="btn ${i===gi?"":"ghost"}" onclick="bkPick(${i})">L${i+1}${x.h?" 🙈":""}</button>`).join("")}</div>${bk.msg?`<p class="${bk.bad?"":"live"}" style="${bk.bad?"color:var(--bad);font-weight:700":""}">${esc(bk.msg)}</p>`:""}<p><b>${l.n}</b> · ${PZ[l.g]?PZ[l.g][1]:"Puzzle"}, ${l.items.length} item</p>${l.items.map((x,i)=>`<div class="rq"><b>${i+1}.</b> ${Array.isArray(x)?esc(x[0])+" → "+esc(x[1]):esc(x)}</div>`).join("")}${kBinBtn("bkDelLv(this)","Hapus level ini","","Hapus level")}</div>`+c;
   return _dBk()+c};
+
+/* ===== Materi per level (dosen): halaman teks + video, dibaca mahasiswa sebelum kuis level ===== */
+let mtE={i:null,lv:-1,room:"",f:{j:"",v:"",t:""},raw:false};
+function mtSnap(){if(mtE.i===null)return;["j","v","t"].forEach(k=>{const e=$("mt"+k);if(e)mtE.f[k]=e.value})}
+const _bkGoM=bkGo;bkGo=function(){mtSnap();_bkGoM()};
+const mtGo=()=>{bkFresh=1;dDraw()};
+const mtShow=()=>mtE.i!==null&&mtE.room===dRoom&&mtE.lv===bkGi();
+function mtMarkup(src){
+  const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/(^|[^*])\*([^*\s][^*]*?)\*(?!\*)/g,"$1<i>$2</i>");
+  return String(src).replace(/\r/g,"").split(/\n{2,}/).map(b=>{b=b.trim();if(!b)return "";const ls=b.split("\n");
+    if(ls.every(x=>/^\s*[-*•]\s+/.test(x)))return "<ul>"+ls.map(x=>"<li>"+inl(x.replace(/^\s*[-*•]\s+/,""))+"</li>").join("")+"</ul>";
+    if(ls.every(x=>/^\s*\d+[.)]\s+/.test(x)))return "<ol>"+ls.map(x=>"<li>"+inl(x.replace(/^\s*\d+[.)]\s+/,""))+"</li>").join("")+"</ol>";
+    if(ls.every(x=>/^>\s?/.test(x)))return '<div class="ex">'+ls.map(x=>inl(x.replace(/^>\s?/,""))).join("<br>")+"</div>";
+    return ls.map(x=>/^#{1,3}\s+/.test(x)?"<h3>"+inl(x.replace(/^#{1,3}\s+/,""))+"</h3>":"<p>"+inl(x)+"</p>").join("")}).join("")}
+function mtOpen(i){mtSnap();const l=RM().lv[bkGi()],p=i>=0&&l.mt?l.mt[i]:null;
+  mtE={i:i,lv:bkGi(),room:dRoom,f:{j:p?unesc(String(p.j||"")):"",v:p&&p.v?p.v:"",t:p&&p.s?p.s:""},raw:!!(p&&!p.s&&p.h)};mtGo();
+  setTimeout(()=>{const e=$("mtform");if(e)e.scrollIntoView({behavior:"smooth",block:"center"})},60)}
+function mtCancel(){mtE.i=null;mtGo()}
+function mtSave(){mtSnap();if(bk.busy||!mtShow())return;
+  const f=mtE.f,gi=bkGi(),l=RM().lv[gi],i=mtE.i,old=i>=0&&l.mt?l.mt[i]:null,j=(f.j||"").trim(),v=(f.v||"").trim(),t=(f.t||"").trim();
+  if(!j)return bkMsg("Judul halaman materi tidak boleh kosong.",1);
+  if(v&&!vidEmb(v))return bkMsg("Link video tidak dikenali. Pakai link YouTube, Vimeo, Google Drive (…/file/d/…/view), atau file langsung .mp4/.webm yang diawali https://",1);
+  if(t.length>8000)return bkMsg("Teks satu halaman maksimal 8000 karakter. Pecah menjadi beberapa halaman.",1);
+  if(i<0&&(l.mt||[]).length>=12)return bkMsg("Satu level maksimal 12 halaman materi.",1);
+  const pg={j:bkFx(j,old&&old.j)};
+  if(t){pg.h=mtMarkup(t);pg.s=t}else if(old&&old.h&&!old.s)pg.h=old.h;
+  if(v)pg.v=v;
+  if(!pg.h&&!pg.v)return bkMsg("Isi teks materi atau tambahkan link video.",1);
+  bkPersist(gi,L=>{L.mt=Array.isArray(L.mt)?L.mt:[];if(i>=0)L.mt[i]=pg;else L.mt.push(pg)},i>=0?"Halaman materi diperbarui. Mahasiswa melihatnya setelah memuat ulang halaman.":"Halaman materi ditambahkan. Mahasiswa melihatnya setelah memuat ulang halaman.")
+    .then(()=>{if(!bk.bad){mtE.i=null;mtGo()}})}
+async function mtDel(i,b){const gi=bkGi(),l=RM().lv[gi];if(!l.mt||!l.mt[i])return;
+  if(!await kAsk("Hapus halaman materi "+(i+1)+" ("+unesc(String(l.mt[i].j))+")?"))return;
+  await bkPersist(gi,L=>{L.mt.splice(i,1);if(!L.mt.length)delete L.mt},"Halaman materi dihapus.")}
+function mtMove(i,d){const gi=bkGi(),l=RM().lv[gi],k=i+d;if(bk.busy||!l.mt||k<0||k>=l.mt.length)return;
+  bkPersist(gi,L=>{const t=L.mt[i];L.mt[i]=L.mt[k];L.mt[k]=t},"Urutan halaman diubah.")}
+let mtI={items:null,name:"",msg:"",bad:0,busy:false};
+function mtImpParse(txt,nLv){
+  let a=JSON.parse(txt);if(a&&!Array.isArray(a)&&Array.isArray(a.levels))a=a.levels;
+  if(!Array.isArray(a)||!a.length)throw new Error("isi file harus berupa daftar level");
+  const out=[],skip=[];
+  a.forEach((x,i)=>{const p="entri ke-"+(i+1)+": ";
+    const n=+x.level;if(!(n>=1))throw new Error(p+"nomor level (level) tidak valid");
+    if(!Array.isArray(x.mt)||!x.mt.length||x.mt.length>12)throw new Error(p+"level "+n+" harus punya 1 sampai 12 halaman (mt)");
+    if(n>nLv){skip.push(n);return}
+    if(out.some(o=>o.level===n))throw new Error(p+"level "+n+" muncul dua kali");
+    const pages=x.mt.map((g,j)=>{const q=p+"halaman "+(j+1)+": ",ju=String(g.j||"").trim(),t=String(g.t||"").trim(),v=String(g.v||"").trim();
+      if(!ju)throw new Error(q+"judul (j) kosong");
+      if(v&&!vidEmb(v))throw new Error(q+"link video tidak dikenali");
+      if(t.length>8000)throw new Error(q+"teks lebih dari 8000 karakter");
+      const h=t?mtMarkup(t):"";if(!h&&!v)throw new Error(q+"isi teks (t) atau video (v) harus ada");
+      const pg={j:bkFx(ju,null)};if(h){pg.h=h;pg.s=t}if(v)pg.v=v;return pg});
+    out.push({level:n,pages})});
+  if(!out.length)throw new Error("tidak ada level di file yang cocok dengan kamar ini (kamar ini punya "+nLv+" level)");
+  return{items:out,skip}}
+function mtImpFile(inp){const f=inp.files&&inp.files[0];if(!f)return;const rd=new FileReader();
+  rd.onload=()=>{try{const rm=RM(),r=mtImpParse(rd.result,rm.lv.length),ow=r.items.filter(o=>Array.isArray(rm.lv[o.level-1].mt)&&rm.lv[o.level-1].mt.length).length,pg=r.items.reduce((s,o)=>s+o.pages.length,0);
+      mtI={items:r.items,name:f.name,busy:false,bad:0,msg:r.items.length+" level dan "+pg+" halaman siap disimpan ke kamar ini"+(ow?" ("+ow+" level yang sudah punya materi akan diganti)":"")+(r.skip.length?". Level "+r.skip.join(", ")+" dilewati karena kamar ini tidak punya level itu":"")+"."}}
+    catch(e){mtI={items:null,name:f.name,busy:false,bad:1,msg:"File tidak valid: "+e.message}}
+    mtGo()};rd.readAsText(f)}
+async function mtImpGo(){if(!mtI.items||mtI.busy||bk.busy)return;const items=mtI.items;mtI.busy=true;mtI.bad=0;mtI.msg="Menyimpan…";mtGo();let n=0;
+  for(const it of items){await bkPersist(it.level-1,L=>{L.mt=it.pages},"Materi level "+it.level+" tersimpan.");
+    if(bk.bad){mtI.busy=false;mtI.bad=1;mtI.msg=(n?n+" level tersimpan, lalu berhenti di level "+it.level+": ":"Gagal di level "+it.level+": ")+bk.msg;mtGo();return}n++}
+  mtI={items:null,name:"",busy:false,bad:0,msg:n+" level tersimpan. Mahasiswa melihat materi setelah memuat ulang halaman."};bk.msg="";mtGo()}
+function mtImpBox(){
+  return `<details style="margin-top:16px"${mtI.msg||mtI.items?" open":""}><summary><b>Impor materi semua level dari file</b></summary><p class="mut">Pilih file JSON berisi materi per level (contoh: materi-per-level.json). Hanya materi yang diisi, soal tidak berubah. Level dicocokkan berdasarkan nomor.</p><input type="file" accept=".json,application/json" onchange="mtImpFile(this)" aria-label="Pilih file materi per level">${mtI.msg?`<p class="${mtI.bad?"":"live"}" style="${mtI.bad?"color:var(--bad);font-weight:700":""}">${esc(mtI.msg)}</p>`:""}${mtI.items?`<button class="btn" onclick="mtImpGo()" ${mtI.busy?"disabled":""}>Simpan ke kamar ini</button>`:""}</details>`}
+function mtCard(rm,gi){const l=rm.lv[gi];if(!l)return "";
+  const L=Array.isArray(l.mt)?l.mt:[],f=mtE.f,sm="margin:4px 6px 0 0;padding:4px 10px",strip=s=>String(s||"").replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
+  const form=`<div class="ex" id="mtform"><b>${mtE.i<0?"Halaman materi baru":"Edit halaman "+(mtE.i+1)}</b><input id="mtj" placeholder="Judul halaman, mis. Apa itu enkripsi?" value="${esc(f.j||"")}"><input id="mtv" placeholder="Link video (opsional): YouTube, Vimeo, Google Drive, atau file .mp4" value="${esc(f.v||"")}"><textarea id="mtt" rows="10" placeholder="${mtE.raw?"Halaman ini berformat HTML dari impor. Kosongkan untuk mempertahankan isi lama, atau tulis teks baru untuk menggantinya.":"Tulis materi di sini…"}">${esc(f.t||"")}</textarea><p class="mut" style="margin:6px 0 0">Format: <b>## Subjudul</b>, <b>- poin</b>, <b>1. langkah</b>, <b>&gt; contoh atau catatan</b>, <b>**tebal**</b>, <b>*miring*</b>. Pisahkan paragraf dengan satu baris kosong.</p><button class="btn" onclick="mtSave()" ${bk.busy?"disabled":""}>Simpan halaman</button> <button class="btn ghost" onclick="mtCancel()">Batal</button></div>`;
+  const rows=L.map((p,i)=>mtShow()&&mtE.i===i?form:`<div class="rq" style="border-color:var(--c1)"><b>${i+1}. ${p.j}</b>${p.v?" 🎬":""}<div class="mut" style="font-size:.9rem">${esc(strip(p.h).slice(0,110))}${strip(p.h).length>110?"…":""}</div><button class="btn ghost" style="${sm}" onclick="mtOpen(${i})">Edit</button><button class="btn ghost" style="${sm}" onclick="mtMove(${i},-1)" ${i?"":"disabled"} aria-label="Naikkan halaman">▲</button><button class="btn ghost" style="${sm}" onclick="mtMove(${i},1)" ${i<L.length-1?"":"disabled"} aria-label="Turunkan halaman">▼</button>${kBinBtn("mtDel("+i+",this)","Hapus halaman "+(i+1),"sm")}</div>`).join("");
+  return `<div class="card ed" id="mtroot"><b>📖 Materi Level ${gi+1}${L.length?" ("+L.length+" halaman)":""}</b><p class="mut">Mahasiswa membaca materi level ini dulu (teks dan video), baru kuisnya terbuka. Biarkan kosong jika level tidak perlu materi.</p>${rows||'<p class="mut">Belum ada materi untuk level ini.</p>'}${mtShow()&&mtE.i===-1?form:`<button class="btn" onclick="mtOpen(-1)">+ Tambah halaman materi</button>`}${mtImpBox()}</div>`}
 
 /* ===== Tema papan peringkat dosen: default, ular tangga, balapan (kuda, karung, roket) ===== */
 const TM={default:["🏆","Default"],ular:["🐍","Ular tangga"],kuda:["🐎","Balapan kuda"],karung:["🎒","Balapan karung"],roket:["🚀","Balapan roket"]};
