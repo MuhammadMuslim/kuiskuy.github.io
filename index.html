@@ -863,8 +863,7 @@ html.kdr-lock{overflow:hidden}
 .kg-ar{transition:transform .2s cubic-bezier(.3,1.5,.5,1);animation:kgNudge 2s ease-in-out infinite}
 @keyframes kgNudge{0%,55%,100%{transform:translateX(0)}70%{transform:translateX(3px)}85%{transform:translateX(-1px)}}
 .kg-sh{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none}
-.kg-sh::before{content:"";position:absolute;top:0;bottom:0;left:0;width:42%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.4),transparent);transform:translateX(-130%) skewX(-12deg);animation:kgShine 4.2s ease-in-out 1.4s infinite}
-@keyframes kgShine{0%{transform:translateX(-130%) skewX(-12deg)}35%,100%{transform:translateX(340%) skewX(-12deg)}}
+.kg-sh{display:none}
 :is(.card,.kj) .btn.kgo::after{content:"";position:absolute;inset:-7px;border-radius:50%;border:3px solid transparent;border-top-color:#fff;border-right-color:#FFD23F;opacity:0;transition:opacity .25s;pointer-events:none}
 @media (hover:hover){.kgo:hover:not(:disabled) .kg-ar{animation:none;transform:translateX(4px)}.kgo:hover:not(:disabled) .kg-lg:not(:has(.kg-ar)){transform:scale(1.15) rotate(-8deg)}}
 :is(.card,.kj) .btn.kgo:disabled{cursor:progress}
@@ -1512,7 +1511,7 @@ function avbPre(g){if(AVB_PC[g])return AVB_PC[g];let t=g*7919+13;const r=()=>{t=
     o.push(v)}
   return AVB_PC[g]=o}
 function avbP(i){const v=avbCur(),p=avbPre(v[0])[i];if(p)avbSet(p.slice())}
-function avbSc(d){const e=$("avp");if(!e)return;const c=e.firstElementChild,st=(c?c.offsetWidth+8:76)*3,x0=e.scrollLeft,x1=Math.max(0,Math.min(e.scrollWidth-e.clientWidth,x0+d*st));if(e._an)cancelAnimationFrame(e._an);
+function avbSc(d){const e=$("avpl");if(!e)return;const c=e.firstElementChild,st=(c?c.offsetWidth+8:76)*3,x0=e.scrollLeft,x1=Math.max(0,Math.min(e.scrollWidth-e.clientWidth,x0+d*st));if(e._an)cancelAnimationFrame(e._an);
   const fin=()=>{e.style.scrollSnapType="";e._an=0};if(x1===x0||!window.requestAnimationFrame){e.scrollLeft=x1;return fin()}
   e.style.scrollSnapType="none";const t0=performance.now(),D=260,f=t=>{const p=Math.min(1,(t-t0)/D),q=1-Math.pow(1-p,3);e.scrollLeft=x0+(x1-x0)*q;if(p<1)e._an=requestAnimationFrame(f);else fin()};e._an=requestAnimationFrame(f)}
 function avbH(){const v=avbParse(S.av),L=isLk()?"disabled ":"";
@@ -1524,7 +1523,7 @@ function avbH(){const v=avbParse(S.av),L=isLk()?"disabled ":"";
   const st=(i,lb,tx)=>`<div class="avb-r"><span>${lb}</span><div class="avb-t"><button type="button" ${L}onclick="avbN(${i},-1)" aria-label="${lb} sebelumnya">\u25C0</button><b>${tx}</b><button type="button" ${L}onclick="avbN(${i},1)" aria-label="${lb} berikutnya">\u25B6</button></div></div>`;
   const kb=(j,t)=>`<button type="button" ${L}class="avb-g${k===j?" on":""}" onclick="avbK(${j})">${t}</button>`;
   const P=avbPre(g);
-  h+=`<div class="avb-pv">${avH(S.av)}</div><div class="avt" style="margin-top:10px">\u{1F465} Pilih karakter dasar (geser), lalu edit di bawah</div><div class="avb-ps"><button type="button" ${L}class="avb-ar" onclick="avbSc(-1)" aria-label="Geser ke kiri">\u25C0</button><div class="avb-pl" id="avp">${P.map((p,i)=>{const c="dy:"+p.join(".");return `<button type="button" ${L}class="avb-p${S.av===c?" on":""}" onclick="avbP(${i})" aria-label="Karakter ${i+1}"><img alt="" loading="lazy" src="${avbUrl(c)}"></button>`}).join("")}</div><button type="button" ${L}class="avb-ar" onclick="avbSc(1)" aria-label="Geser ke kanan">\u25B6</button></div>`;
+  h+=`<div class="avb-pv">${avH(S.av)}</div><div class="avt" style="margin-top:10px">\u{1F465} Pilih karakter dasar (geser), lalu edit di bawah</div><div class="avb-ps"><button type="button" ${L}class="avb-ar" onclick="avbSc(-1)" aria-label="Geser ke kiri">\u25C0</button><div class="avb-pl" id="avpl">${P.map((p,i)=>{const c="dy:"+p.join(".");return `<button type="button" ${L}class="avb-p${S.av===c?" on":""}" onclick="avbP(${i})" aria-label="Karakter ${i+1}"><img alt="" loading="lazy" src="${avbUrl(c)}"></button>`}).join("")}</div><button type="button" ${L}class="avb-ar" onclick="avbSc(1)" aria-label="Geser ke kanan">\u25B6</button></div>`;
   h+=`<div class="avb-r"><span>Kepala</span><div class="avb-gr">${kb(0,"Rambut")}${kb(1,g?"Topi":"Kerudung")}</div></div>`;
   h+=st(2,k?(g?"Model topi":"Model kerudung"):"Model rambut",AVB_TOP[g][k][v[2]][1]);
   h+=k?sw(4,AVB_TC,g?"Warna topi":"Warna kerudung"):sw(3,AVB_HC,AVB_NM[3]);
@@ -1532,7 +1531,7 @@ function avbH(){const v=avbParse(S.av),L=isLk()?"disabled ":"";
   if(g)h+=st(10,"Jenggot/kumis",AVB_FN[v[10]]);
   h+=st(11,"Baju",AVB_CN[v[11]])+(v[11]===3?st(14,"Gambar baju",AVB_GN[v[14]]):"")+sw(12,AVB_CC,AVB_NM[12])+sw(13,AVB_BG,AVB_NM[13]);
   return h+`<button type="button" ${L}class="avb-b" onclick="avbR()">\u{1F3B2} Acak</button></div>`}
-function avbSet(v){if(isLk())return;S.av="dy:"+v.join(".");sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.remove("on"));const c=$("avc");if(c)c.innerHTML=avH(S.av);const b=$("avb");if(b){const p=$("avp"),x=p?p.scrollLeft:0;b.outerHTML=avbH();const q=$("avp");if(q)q.scrollLeft=x}if(S.jnOk===1)joinRoom(1)}
+function avbSet(v){if(isLk())return;S.av="dy:"+v.join(".");sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.remove("on"));const c=$("avc");if(c)c.innerHTML=avH(S.av);const b=$("avb");if(b){const p=$("avpl"),x=p?p.scrollLeft:0;b.outerHTML=avbH();const q=$("avpl");if(q)q.scrollLeft=x}if(S.jnOk===1)joinRoom(1)}
 function avbCur(){return avbParse(S.av)||avbDef(0)}
 function avbG(g){const o=avbParse(S.av);if(o&&o[0]===g)return;const v=o?o.slice():avbDef(g);v[0]=g;v[1]=0;v[2]=0;v[10]=0;avbSet(v)}
 function avbK(k){const v=avbCur();if(v[1]===k)return;v[1]=k;v[2]=0;avbSet(v)}
