@@ -1537,12 +1537,12 @@ AVB_CL=["blazerAndShirt","blazerAndSweater","collarAndSweater","graphicShirt","h
 AVB_CN=["Blazer + kemeja","Blazer + sweater","Kerah + sweater","Kaos bergambar","Hoodie","Overall","Kaos bulat","Kaos leher lebar","Kaos V"],
 AVB_GR=["bear","bat","cumbia","deer","diamond","hola","pizza","resist","skull","skullOutline"],AVB_GN=["Beruang","Kelelawar","Cumbia","Rusa","Berlian","Hola","Pizza","Perlawanan","Tengkorak","Tengkorak garis"],
 AVB_PN=["25557c","262e33","3c4f5c","5b4636","929598","e6e6e6","6b3f2a","2f6b4f"],AVB_SH=["ffffff","262e33","e8e1e1","ff5c5c","5199e4","6b3f2a"],
-AVB_MV=["Lompat girang","Putar 360°","Joget","Salto","Hore! Tangan naik","Tanpa gerakan","Tidur pulas","Ole Romeny (tangan di dagu)","Slide tekuk lutut","Pahlawan bertopeng"],
+AVB_MV=["Lompat girang","Putar 360°","Joget","Salto","Hore! Tangan naik","Tanpa gerakan","Tidur pulas","Ole Romeny (tangan di dagu)","Slide tekuk lutut","Pahlawan bertopeng","Siu ala CR7"],
 AVB_NM={3:"Warna rambut",5:"Kulit",12:"Warna baju",13:"Latar",15:"Warna celana",16:"Warna alas kaki"},
 AVB_CE=["Celana panjang","Celana pendek","Celana 3/4","Rok pendek","Rok panjang"],
 AVB_SN=["Sepatu","Sneaker tinggi","Sandal jepit","Sandal tali","Tanpa alas kaki","Sepatu bot"];
 /* urutan kode (14 = gambar baju): 0 gender, 1 jenis kepala (0 rambut / 1 kerudung-topi), 2 model, 3 warna rambut, 4 warna kerudung/topi, 5 kulit, 6 mata, 7 alis, 8 mulut, 9 kacamata, 10 jenggot/kumis, 11 baju, 12 warna baju, 13 latar */
-function avbMax(g,k){return[2,2,AVB_TOP[g][k].length,10,15,7,12,13,12,8,g?6:1,9,14,6,10,8,6,10,g?3:5,6]}
+function avbMax(g,k){return[2,2,AVB_TOP[g][k].length,10,15,7,12,13,12,8,g?6:1,9,14,6,10,8,6,11,g?3:5,6]}
 function avbDef(g){return[g,0,0,2,8,2,2,2,8,0,0,6,4,0,0,0,0,0,0,0]}
 function avbParse(a){const m=/^dy:(\d{1,2}(?:\.\d{1,2}){13,19})$/.exec(String(a||""));if(!m)return null;const v=m[1].split(".").map(Number);while(v.length<20)v.push(0);if(v[0]>1||v[1]>1)return null;const M=avbMax(v[0],v[1]);return v.every((n,i)=>n<M[i])?v:null}
 function avbUrl(a){a=String(a||"");const x=avxUrl(a);if(x)return x;const v=avbParse(a);if(!v)return"";
@@ -1612,6 +1612,7 @@ function fbH(a){a=a||S.av;const v=avbParse(a),u=v?avbUrl(a).replace(/&background
   fx=`<g class="fb-fx fb-ro"><path d="M216 304 L170 214" stroke="${am}" stroke-width="30" stroke-linecap="round" fill="none"/><rect x="92" y="198" width="100" height="24" rx="12" fill="${sk}"/><rect x="96" y="214" width="92" height="6" rx="3" fill="#000" opacity=".12"/></g>`
   +`<g class="fb-fx fb-mk"><path d="M70 112 Q140 92 210 112 L218 128 Q214 146 196 144 Q168 138 140 142 Q112 138 84 144 Q66 146 62 128 Z" fill="#D7263D" stroke="#7a0f1d" stroke-width="3"/><ellipse cx="108" cy="124" rx="22" ry="12" fill="#fff" transform="rotate(10 108 124)"/><ellipse cx="172" cy="124" rx="22" ry="12" fill="#fff" transform="rotate(-10 172 124)"/><circle cx="110" cy="125" r="6" fill="#1F1F2E"/><circle cx="170" cy="125" r="6" fill="#1F1F2E"/></g>`
   +`<g class="fb-fx fb-bk"><circle cx="140" cy="372" r="13" fill="#FFD23F" stroke="#B58900" stroke-width="3"/><text x="140" y="378" text-anchor="middle" font-size="18" font-weight="800" fill="#7a0f1d" font-family="Arial,sans-serif">A</text></g>`
+  +`<g class="fb-fx fb-siu"><text x="140" y="30" text-anchor="middle">SIUUU!</text></g>`
   +`<g class="fb-fx fb-z"><text class="z1" x="196" y="64">Z</text><text class="z2" x="224" y="38">Z</text><text class="z3" x="250" y="14">Z</text></g>`;
   const arm=(x,c)=>`<g class="fb-a ${c}"><rect x="${x}" y="236" width="32" height="${ay-236}" rx="16" fill="${sh}"/>`+(lg?"":`<rect x="${x+2}" y="${ay-14}" width="28" height="${372-ay+26}" rx="14" fill="${sk}"/>`)+`<circle cx="${x+16}" cy="388" r="16" fill="${sk}"/>`+(lg?`<rect x="${x}" y="350" width="32" height="12" rx="6" fill="#000" opacity=".12"/>`:"")+`</g>`;
   const ce=v[18],sn=v[19],mir=s=>`<g transform="translate(280 0) scale(-1 1)">${s}</g>`,
@@ -1630,14 +1631,16 @@ function fbH(a){a=a||S.av;const v=avbParse(a),u=v?avbUrl(a).replace(/&background
    foot+sole+`<path d="M68 563H134M70 573H132" stroke="${so}" stroke-width="7" stroke-linecap="round"/><rect x="78" y="546" width="56" height="7" rx="3.5" fill="${so}"/>`,
    foot+`<g fill="${sk}" stroke="#000" stroke-opacity=".14" stroke-width="1.5"><circle cx="78" cy="580" r="5"/><circle cx="89" cy="583" r="5"/><circle cx="101" cy="584" r="5"/><circle cx="113" cy="583" r="5"/><circle cx="124" cy="580" r="5"/></g><rect x="62" y="588" width="78" height="4" rx="2" fill="#000" opacity=".12"/>`,
    `<rect x="76" y="496" width="60" height="68" rx="10" fill="${so}"/>`+shoe+`<rect x="76" y="496" width="60" height="9" rx="4" fill="#fff" opacity=".28"/><path d="M84 522h44" stroke="#000" stroke-opacity=".2" stroke-width="3" stroke-linecap="round"/>`][sn]||shoe;
-  return `<svg class="fb" viewBox="0 0 280 610" aria-hidden="true">`
+  const fid=(window._fbn=(window._fbn||0)+1),cU="fbu"+fid,cLw="fbl"+fid,kc=(ce===0||ce===2)?pn:sk,
+  leg=(c,pc,cx)=>`<g class="fb-th ${c}"><circle cx="${cx}" cy="482" r="30" fill="${kc}"/><g clip-path="url(#${cU})">${pc}</g><g class="fb-sh ${c}"><g clip-path="url(#${cLw})">${pc}</g></g></g>`;
+  return `<svg class="fb" viewBox="0 0 280 610" aria-hidden="true"><defs><clipPath id="${cU}"><rect x="-80" y="0" width="440" height="482"/></clipPath><clipPath id="${cLw}"><rect x="-80" y="482" width="440" height="200"/></clipPath></defs>`
    +cape+arm(38,"l")+arm(210,"r")
    +(ce<3?skirt:"")
-   +`<g class="fb-lg l">${ce?bare:""}${pL}${seam}</g><g class="fb-lg r">${ce?mir(bare):""}${mir(pL)}</g>`
+   +leg("l",(ce?bare:"")+pL+seam,106)+leg("r",(ce?mir(bare):"")+mir(pL),174)
    +(ce<3?"":skirt)
    +`<rect x="72" y="238" width="136" height="136" rx="14" fill="${sh}"/>`
    +`<rect x="72" y="366" width="136" height="9" rx="4" fill="#000" opacity=".12"/>`
-   +`<g class="fb-lg l">${fw}</g><g class="fb-lg r">${mir(fw)}</g>`
+   +`<g class="fb-th l"><g class="fb-sh l">${fw}</g></g><g class="fb-th r"><g class="fb-sh r">${mir(fw)}</g></g>`
    +`<image href="${u.replace(/&/g,"&amp;")}" x="0" y="0" width="280" height="280"/>`+fx+`</svg>`}
 function av3H(){const N=10,c=S.av?(fbH()||avH(S.av).replace(/&backgroundColor=[0-9a-fA-F]+(&backgroundType=solid)?/,"")):"\u{1F642}";let l="";
   for(let i=0;i<N;i++){const z=((i-(N-1)/2)*1.6).toFixed(2);l+=`<div class="a3-l${i===0?" bk":i===N-1?" fr":" ed"}" style="transform:translateZ(${z}px)">${c}</div>`}
@@ -3311,33 +3314,62 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 @keyframes cbWL{0%,100%{transform:rotate(135deg)}50%{transform:rotate(172deg)}}
 @keyframes cbWR{0%,100%{transform:rotate(-172deg)}50%{transform:rotate(-135deg)}}
 .cb.pdm{left:auto;right:auto;width:150px;justify-content:center;z-index:9999}
-/* Kaki ikut bergerak: berayun dari pinggul, sinkron dengan gerakan badan */
-.fb .fb-lg.l{transform-origin:106px 394px}.fb .fb-lg.r{transform-origin:174px 394px}
-@keyframes lgJl{0%,100%{transform:rotate(0)}15%,85%{transform:rotate(5deg)}50%{transform:rotate(19deg)}}
-@keyframes lgJr{0%,100%{transform:rotate(0)}15%,85%{transform:rotate(-5deg)}50%{transform:rotate(-19deg)}}
-@keyframes lgSl{0%,100%{transform:rotate(0)}50%{transform:rotate(15deg)}}
-@keyframes lgSr{0%,100%{transform:rotate(0)}50%{transform:rotate(-15deg)}}
-@keyframes lgDl{0%,100%{transform:rotate(0)}50%{transform:rotate(22deg)}}
-@keyframes lgDr{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(0)}}
-@keyframes lgFl{0%,100%{transform:rotate(0)}40%{transform:rotate(34deg)}80%{transform:rotate(0)}}
-@keyframes lgFr{0%,100%{transform:rotate(0)}40%{transform:rotate(-34deg)}80%{transform:rotate(0)}}
-@keyframes lgHl{0%,100%{transform:rotate(0)}50%{transform:rotate(11deg)}}
-@keyframes lgHr{0%,100%{transform:rotate(-11deg)}50%{transform:rotate(0)}}
-.cb.m0 .fb-lg.l{animation:lgJl .6s ease-in-out infinite}.cb.m0 .fb-lg.r{animation:lgJr .6s ease-in-out infinite}
-.cb.m1 .fb-lg.l{animation:lgSl .9s ease-in-out infinite}.cb.m1 .fb-lg.r{animation:lgSr .9s ease-in-out infinite}
-.cb.m2 .fb-lg.l{animation:lgDl .52s ease-in-out infinite}.cb.m2 .fb-lg.r{animation:lgDr .52s ease-in-out infinite}
-.cb.m3 .fb-lg.l{animation:lgFl 1.15s ease-in-out infinite}.cb.m3 .fb-lg.r{animation:lgFr 1.15s ease-in-out infinite}
-.cb.m4 .fb-lg.l{animation:lgHl .5s ease-in-out infinite}.cb.m4 .fb-lg.r{animation:lgHr .5s ease-in-out infinite}
-.cb.m9 .fb-lg.l{transform:rotate(11deg)}.cb.m9 .fb-lg.r{transform:rotate(-11deg)}
-.cb.m8 .fb-lg.l{transform:rotate(7deg)}.cb.m8 .fb-lg.r{transform:rotate(-7deg)}
-.avpp.pv-m0 .fb-lg.l{animation:lgJl .6s ease-in-out infinite}.avpp.pv-m0 .fb-lg.r{animation:lgJr .6s ease-in-out infinite}
-.avpp.pv-m1 .fb-lg.l{animation:lgSl .9s ease-in-out infinite}.avpp.pv-m1 .fb-lg.r{animation:lgSr .9s ease-in-out infinite}
-.avpp.pv-m2 .fb-lg.l{animation:lgDl .52s ease-in-out infinite}.avpp.pv-m2 .fb-lg.r{animation:lgDr .52s ease-in-out infinite}
-.avpp.pv-m3 .fb-lg.l{animation:lgFl 1.15s ease-in-out infinite}.avpp.pv-m3 .fb-lg.r{animation:lgFr 1.15s ease-in-out infinite}
-.avpp.pv-m4 .fb-lg.l{animation:lgHl .5s ease-in-out infinite}.avpp.pv-m4 .fb-lg.r{animation:lgHr .5s ease-in-out infinite}
-.avpp.pv-m9 .fb-lg.l{transform:rotate(11deg)}.avpp.pv-m9 .fb-lg.r{transform:rotate(-11deg)}
-.avpp.pv-m8 .fb-lg.l{transform:rotate(7deg)}.avpp.pv-m8 .fb-lg.r{transform:rotate(-7deg)}
-@media (prefers-reduced-motion:reduce){.cb:not(.pv) .fb-lg{animation:none!important;transform:none!important}}
+/* Kaki: paha berayun dari pinggul (.fb-th), betis menekuk dari lutut (.fb-sh), sinkron dengan gerakan badan */
+.fb .fb-th.l{transform-origin:106px 394px}.fb .fb-th.r{transform-origin:174px 394px}
+.fb .fb-sh.l{transform-origin:106px 482px}.fb .fb-sh.r{transform-origin:174px 482px}
+@keyframes lgJtl{0%,100%{transform:rotate(0deg)}15%,85%{transform:rotate(16deg)}50%{transform:rotate(30deg)}}
+@keyframes lgJsl{0%,100%{transform:rotate(0deg)}15%,85%{transform:rotate(-29deg)}50%{transform:rotate(-60deg)}}
+@keyframes lgJtr{0%,100%{transform:rotate(0deg)}15%,85%{transform:rotate(-16deg)}50%{transform:rotate(-30deg)}}
+@keyframes lgJsr{0%,100%{transform:rotate(0deg)}15%,85%{transform:rotate(29deg)}50%{transform:rotate(60deg)}}
+@keyframes lgStl{0%,100%{transform:rotate(0deg)}50%{transform:rotate(24deg)}}
+@keyframes lgSsl{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-48deg)}}
+@keyframes lgStr{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-24deg)}}
+@keyframes lgSsr{0%,100%{transform:rotate(0deg)}50%{transform:rotate(48deg)}}
+@keyframes lgDtl{0%,100%{transform:rotate(6deg)}50%{transform:rotate(24deg)}}
+@keyframes lgDsl{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(-50deg)}}
+@keyframes lgDtr{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(-24deg)}}
+@keyframes lgDsr{0%,100%{transform:rotate(10deg)}50%{transform:rotate(50deg)}}
+@keyframes lgDRtl{0%,100%{transform:rotate(24deg)}50%{transform:rotate(6deg)}}
+@keyframes lgDRsl{0%,100%{transform:rotate(-50deg)}50%{transform:rotate(-10deg)}}
+@keyframes lgDRtr{0%,100%{transform:rotate(-24deg)}50%{transform:rotate(-6deg)}}
+@keyframes lgDRsr{0%,100%{transform:rotate(50deg)}50%{transform:rotate(10deg)}}
+@keyframes lgFtl{0%,100%{transform:rotate(0deg)}25%{transform:rotate(20deg)}42%{transform:rotate(38deg)}80%{transform:rotate(14deg)}}
+@keyframes lgFsl{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-35deg)}42%{transform:rotate(-76deg)}80%{transform:rotate(-25deg)}}
+@keyframes lgFtr{0%,100%{transform:rotate(0deg)}25%{transform:rotate(-20deg)}42%{transform:rotate(-38deg)}80%{transform:rotate(-14deg)}}
+@keyframes lgFsr{0%,100%{transform:rotate(0deg)}25%{transform:rotate(35deg)}42%{transform:rotate(76deg)}80%{transform:rotate(25deg)}}
+@keyframes lgHtl{0%,100%{transform:rotate(0deg)}50%{transform:rotate(14deg)}}
+@keyframes lgHsl{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-28deg)}}
+@keyframes lgHtr{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-14deg)}}
+@keyframes lgHsr{0%,100%{transform:rotate(0deg)}50%{transform:rotate(28deg)}}
+@keyframes lgHRtl{0%,100%{transform:rotate(14deg)}50%{transform:rotate(0deg)}}
+@keyframes lgHRsl{0%,100%{transform:rotate(-28deg)}50%{transform:rotate(0deg)}}
+@keyframes lgHRtr{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(0deg)}}
+@keyframes lgHRsr{0%,100%{transform:rotate(28deg)}50%{transform:rotate(0deg)}}
+.cb.m0 .fb-th.l{animation:lgJtl .6s ease-in-out infinite}.cb.m0 .fb-sh.l{animation:lgJsl .6s ease-in-out infinite}
+.cb.m0 .fb-th.r{animation:lgJtr .6s ease-in-out infinite}.cb.m0 .fb-sh.r{animation:lgJsr .6s ease-in-out infinite}
+.cb.m1 .fb-th.l{animation:lgStl .9s ease-in-out infinite}.cb.m1 .fb-sh.l{animation:lgSsl .9s ease-in-out infinite}
+.cb.m1 .fb-th.r{animation:lgStr .9s ease-in-out infinite}.cb.m1 .fb-sh.r{animation:lgSsr .9s ease-in-out infinite}
+.cb.m2 .fb-th.l{animation:lgDtl .52s ease-in-out infinite}.cb.m2 .fb-sh.l{animation:lgDsl .52s ease-in-out infinite}
+.cb.m2 .fb-th.r{animation:lgDRtr .52s ease-in-out infinite}.cb.m2 .fb-sh.r{animation:lgDRsr .52s ease-in-out infinite}
+.cb.m3 .fb-th.l{animation:lgFtl 1.15s ease-in-out infinite}.cb.m3 .fb-sh.l{animation:lgFsl 1.15s ease-in-out infinite}
+.cb.m3 .fb-th.r{animation:lgFtr 1.15s ease-in-out infinite}.cb.m3 .fb-sh.r{animation:lgFsr 1.15s ease-in-out infinite}
+.cb.m4 .fb-th.l{animation:lgHtl .5s ease-in-out infinite}.cb.m4 .fb-sh.l{animation:lgHsl .5s ease-in-out infinite}
+.cb.m4 .fb-th.r{animation:lgHRtr .5s ease-in-out infinite}.cb.m4 .fb-sh.r{animation:lgHRsr .5s ease-in-out infinite}
+.cb.m9 .fb-th.l{transform:rotate(14deg)}.cb.m9 .fb-sh.l{transform:rotate(-14deg)}.cb.m9 .fb-th.r{transform:rotate(-14deg)}.cb.m9 .fb-sh.r{transform:rotate(14deg)}
+.cb.m8 .fb-th.l{transform:rotate(20deg)}.cb.m8 .fb-sh.l{transform:rotate(-38deg)}.cb.m8 .fb-th.r{transform:rotate(-20deg)}.cb.m8 .fb-sh.r{transform:rotate(38deg)}
+.avpp.pv-m0 .fb-th.l{animation:lgJtl .6s ease-in-out infinite}.avpp.pv-m0 .fb-sh.l{animation:lgJsl .6s ease-in-out infinite}
+.avpp.pv-m0 .fb-th.r{animation:lgJtr .6s ease-in-out infinite}.avpp.pv-m0 .fb-sh.r{animation:lgJsr .6s ease-in-out infinite}
+.avpp.pv-m1 .fb-th.l{animation:lgStl .9s ease-in-out infinite}.avpp.pv-m1 .fb-sh.l{animation:lgSsl .9s ease-in-out infinite}
+.avpp.pv-m1 .fb-th.r{animation:lgStr .9s ease-in-out infinite}.avpp.pv-m1 .fb-sh.r{animation:lgSsr .9s ease-in-out infinite}
+.avpp.pv-m2 .fb-th.l{animation:lgDtl .52s ease-in-out infinite}.avpp.pv-m2 .fb-sh.l{animation:lgDsl .52s ease-in-out infinite}
+.avpp.pv-m2 .fb-th.r{animation:lgDRtr .52s ease-in-out infinite}.avpp.pv-m2 .fb-sh.r{animation:lgDRsr .52s ease-in-out infinite}
+.avpp.pv-m3 .fb-th.l{animation:lgFtl 1.15s ease-in-out infinite}.avpp.pv-m3 .fb-sh.l{animation:lgFsl 1.15s ease-in-out infinite}
+.avpp.pv-m3 .fb-th.r{animation:lgFtr 1.15s ease-in-out infinite}.avpp.pv-m3 .fb-sh.r{animation:lgFsr 1.15s ease-in-out infinite}
+.avpp.pv-m4 .fb-th.l{animation:lgHtl .5s ease-in-out infinite}.avpp.pv-m4 .fb-sh.l{animation:lgHsl .5s ease-in-out infinite}
+.avpp.pv-m4 .fb-th.r{animation:lgHRtr .5s ease-in-out infinite}.avpp.pv-m4 .fb-sh.r{animation:lgHRsr .5s ease-in-out infinite}
+.avpp.pv-m9 .fb-th.l{transform:rotate(14deg)}.avpp.pv-m9 .fb-sh.l{transform:rotate(-14deg)}.avpp.pv-m9 .fb-th.r{transform:rotate(-14deg)}.avpp.pv-m9 .fb-sh.r{transform:rotate(14deg)}
+.avpp.pv-m8 .fb-th.l{transform:rotate(20deg)}.avpp.pv-m8 .fb-sh.l{transform:rotate(-38deg)}.avpp.pv-m8 .fb-th.r{transform:rotate(-20deg)}.avpp.pv-m8 .fb-sh.r{transform:rotate(38deg)}
+@media (prefers-reduced-motion:reduce){.cb:not(.pv) .fb-th,.cb:not(.pv) .fb-sh{animation:none!important;transform:none!important}}
 .cb-cf{position:fixed;inset:0;z-index:9998;pointer-events:none;overflow:hidden}
 @media (prefers-reduced-motion:reduce){.cb:not(.pv) .cb-in,.cb:not(.pv) .fb-a{animation:none!important}.cb:not(.pv) .fb-a.l{transform:rotate(150deg)}.cb:not(.pv) .fb-a.r{transform:rotate(-150deg)}}
 
@@ -3376,6 +3408,26 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 .avpp.pv-m9 .fb-cape,.avpp.pv-m9 .fb-mk,.avpp.pv-m9 .fb-bk{opacity:1}
 .avpp.pv-m9 .fb-cape{animation:cbCape .5s ease-in-out infinite alternate}
 .avpp.pv-m9 .fb-a.r{animation:cbPump .45s ease-in-out infinite alternate}.avpp.pv-m9 .fb-a.l{transform:rotate(24deg)}
+/* Selebrasi Siu ala CR7: jongkok, lompat berputar, mendarat kaki lebar, tangan terbuka, teriak SIUUU */
+@keyframes cbSiu{0%{transform:perspective(600px) translateY(0) scale(1,1) rotateY(0)}12%{transform:perspective(600px) translateY(0) scale(1.06,.88) rotateY(0)}46%{transform:perspective(600px) translateY(-48%) scale(.97,1.04) rotateY(360deg)}56%{transform:perspective(600px) translateY(0) scale(1.07,.9) rotateY(360deg)}66%{transform:perspective(600px) translateY(0) scale(1.03,.99) rotateY(360deg)}88%{transform:perspective(600px) translateY(0) scale(1.03,.99) rotateY(360deg)}100%{transform:perspective(600px) translateY(0) scale(1,1) rotateY(360deg)}}
+@keyframes cbSiuT{0%,55%{opacity:0;transform:scale(.5)}62%{opacity:1;transform:scale(1.25)}70%,90%{opacity:1;transform:scale(1)}98%,100%{opacity:0;transform:scale(1)}}
+@keyframes lgSiutl{0%{transform:rotate(0deg)}12%{transform:rotate(24deg)}30%{transform:rotate(32deg)}46%{transform:rotate(26deg)}56%{transform:rotate(28deg)}66%{transform:rotate(17deg)}88%{transform:rotate(17deg)}100%{transform:rotate(0deg)}}
+@keyframes lgSiusl{0%{transform:rotate(0deg)}12%{transform:rotate(-44deg)}30%{transform:rotate(-64deg)}46%{transform:rotate(-52deg)}56%{transform:rotate(-48deg)}66%{transform:rotate(-5deg)}88%{transform:rotate(-5deg)}100%{transform:rotate(0deg)}}
+@keyframes cbSiuAL{0%{transform:rotate(0deg)}12%{transform:rotate(-20deg)}30%{transform:rotate(70deg)}46%{transform:rotate(80deg)}56%{transform:rotate(55deg)}66%{transform:rotate(42deg)}88%{transform:rotate(42deg)}100%{transform:rotate(0deg)}}
+@keyframes lgSiutr{0%{transform:rotate(0deg)}12%{transform:rotate(-24deg)}30%{transform:rotate(-32deg)}46%{transform:rotate(-26deg)}56%{transform:rotate(-28deg)}66%{transform:rotate(-17deg)}88%{transform:rotate(-17deg)}100%{transform:rotate(0deg)}}
+@keyframes lgSiusr{0%{transform:rotate(0deg)}12%{transform:rotate(44deg)}30%{transform:rotate(64deg)}46%{transform:rotate(52deg)}56%{transform:rotate(48deg)}66%{transform:rotate(5deg)}88%{transform:rotate(5deg)}100%{transform:rotate(0deg)}}
+@keyframes cbSiuAR{0%{transform:rotate(0deg)}12%{transform:rotate(20deg)}30%{transform:rotate(-70deg)}46%{transform:rotate(-80deg)}56%{transform:rotate(-55deg)}66%{transform:rotate(-42deg)}88%{transform:rotate(-42deg)}100%{transform:rotate(0deg)}}
+.fb-siu text{font-size:50px;font-weight:900;fill:#FFD23F;stroke:#1F1F2E;stroke-width:4;paint-order:stroke;font-family:Arial,Impact,sans-serif;transform-box:fill-box;transform-origin:50% 50%}
+.cb.m10 .cb-in{animation:cbSiu 2.6s ease-in-out infinite}
+.cb.m10 .fb-a.l{animation:cbSiuAL 2.6s ease-in-out infinite}.cb.m10 .fb-a.r{animation:cbSiuAR 2.6s ease-in-out infinite}
+.cb.m10 .fb-th.l{animation:lgSiutl 2.6s ease-in-out infinite}.cb.m10 .fb-sh.l{animation:lgSiusl 2.6s ease-in-out infinite}
+.cb.m10 .fb-th.r{animation:lgSiutr 2.6s ease-in-out infinite}.cb.m10 .fb-sh.r{animation:lgSiusr 2.6s ease-in-out infinite}
+.cb.m10 .fb-siu{opacity:1}.cb.m10 .fb-siu text{animation:cbSiuT 2.6s ease-in-out infinite}
+.avpp.pv-m10 .avpp-in{animation:cbSiu 2.6s ease-in-out infinite}
+.avpp.pv-m10 .fb-a.l{animation:cbSiuAL 2.6s ease-in-out infinite}.avpp.pv-m10 .fb-a.r{animation:cbSiuAR 2.6s ease-in-out infinite}
+.avpp.pv-m10 .fb-th.l{animation:lgSiutl 2.6s ease-in-out infinite}.avpp.pv-m10 .fb-sh.l{animation:lgSiusl 2.6s ease-in-out infinite}
+.avpp.pv-m10 .fb-th.r{animation:lgSiutr 2.6s ease-in-out infinite}.avpp.pv-m10 .fb-sh.r{animation:lgSiusr 2.6s ease-in-out infinite}
+.avpp.pv-m10 .fb-siu{opacity:1}.avpp.pv-m10 .fb-siu text{animation:cbSiuT 2.6s ease-in-out infinite}
 /* Pratinjau gerakan langsung di kartu avatar (tetap jalan walau "kurangi animasi" aktif, karena diminta pemain) */
 .avpp{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);z-index:10000;pointer-events:none;padding:14px 22px 10px;border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.9);animation:avppIn .25s cubic-bezier(.3,1.5,.5,1) both}
 .avpp.out{animation:avppOut .22s ease forwards}
