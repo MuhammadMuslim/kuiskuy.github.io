@@ -1023,6 +1023,31 @@ html[data-tema="badai"]{--gl:rgba(10,14,34,.55);--gls:rgba(8,12,30,.76);--glr:rg
 .mt ol{padding-left:22px;margin:8px 0}
 </style>
 <script>if(location.hash==="#dosen")document.documentElement.classList.add("dsn");try{var _t=localStorage.getItem("tema_cache");if(_t==="siang"||_t==="malam"||_t==="badai")document.documentElement.setAttribute("data-tema",_t)}catch(e){}</script>
+<style>
+.avb{margin:4px 0 12px;padding:10px 12px;border-radius:14px;background:var(--soft);text-align:left}
+.avb-pv{display:flex;justify-content:center;margin:6px 0}.avb-pv .avi{width:84px;height:84px}
+.avb-r{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:.88rem;flex-wrap:wrap}
+.avb-r>span{width:104px;flex:none;color:var(--mut)}
+.avb-s{display:flex;flex-wrap:wrap;gap:6px}
+.avb-sw{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);cursor:pointer;padding:0}
+.avb-sw.on{outline:3px solid var(--pri);outline-offset:1px}
+.avb-t{display:flex;align-items:center;gap:8px}
+.avb-t button,.avb-b{font:inherit;border:0;border-radius:10px;background:var(--card);color:var(--ink);padding:6px 12px;cursor:pointer;box-shadow:inset 0 0 0 2px var(--line)}
+.avb-t b{min-width:84px;text-align:center;font-weight:700}
+.avb-b{margin-top:6px}
+.avb-gr{display:flex;gap:8px;flex-wrap:wrap}
+.avb-g{font:inherit;font-weight:700;border:0;border-radius:10px;background:var(--card);color:var(--ink);padding:8px 14px;cursor:pointer;box-shadow:inset 0 0 0 2px var(--line)}
+.avb-g.on{background:var(--pri);color:var(--priT);box-shadow:none}
+.avb-ps{display:flex;align-items:center;gap:6px;margin:4px 0 8px}
+.avb-pl{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;flex:1;min-width:0;padding:4px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.avb-pl::-webkit-scrollbar{display:none}
+.avb-p{flex:none;width:68px;height:68px;border:0;padding:0;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);cursor:pointer;scroll-snap-align:start;overflow:hidden}
+.avb-p.on{box-shadow:inset 0 0 0 4px var(--pri)}
+.avb-p img{width:100%;height:100%;display:block;pointer-events:none}
+.avb-ar{flex:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;font:inherit;font-weight:700;border:0;border-radius:10px;background:var(--card);color:var(--ink);padding:10px 9px;cursor:pointer;box-shadow:inset 0 0 0 2px var(--line)}
+.avb button:disabled{opacity:.5;cursor:default}
+.avb button:focus-visible{outline:3px solid #FFD23F;outline-offset:2px}
+</style>
 </head>
 <body>
 <main>
@@ -1452,9 +1477,71 @@ function joinRoom(q,lk){clearTimeout(jnT);if(S.locked||S.playing||S.done.some(Bo
   Promise.resolve(sync("Bergabung, belum mulai")).then(ok=>{if(S.jnK!==k)return;S.jnOk=ok?1:2;jnUi(jnTxt());if(ok&&lk)jnLockSet();if(ok)snOk();else snErr("Gagal bergabung. Periksa koneksi.");if(!q){S.i1=1;introNext()}})}
 const AVS=[["🦸 Pahlawan",["🦸‍♂️","🦸‍♀️","🦹","🥷","🧙‍♂️","🧚","🤺","🧛"]],["🐾 Hewan",["🐱","🐶","🦊","🐼","🦁","🐯","🐵","🐸","🐧","🦄","🐲","🐘","🐨","🐙"]],["🇮🇩 Nusantara",["🇮🇩","🦅","🦎","🦧","🐅","🦜","🎭","🥁","🌋","🎖️"]],["🎭 Karakter seru",["🤖","👽","👻","🎃","🦖","🧸","🤡","😎","🤠","🥳"]]];
 const DBS=[["pixel-art","Pixel"],["thumbs","Jempol"],["bottts","Robot"],["adventurer","Petualang"],["fun-emoji","Emoji seru"]],DBN=["Koko","Mika","Ravi","Sari","Bima","Nala"];
-function avH(a){a=String(a||"");const m=/^db:([a-z-]+):([A-Za-z]{1,20})$/.exec(a);return m?`<img class="avi" alt="" loading="lazy" src="https://api.dicebear.com/9.x/${m[1]}/svg?seed=${m[2]}">`:esc(a)}
-function avPick(b,a){if(isLk())return;S.av=a;sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);if(S.jnOk===1)joinRoom(1)}
-function avCard(){return DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${isLk()?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${isLk()?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
+/* ===== Pembuat karakter (DiceBear Avataaars): pilih gender dulu, lalu rambut/kerudung/topi dst. Kode "dy:14 angka" (<=60 karakter, sesuai aturan Firestore). Kode lama "dx:" tetap tampil ===== */
+const avp2=n=>String(n).padStart(2,"0");
+const AVX_SK=["9e5622","763900","ecad80","f2d3b1"],AVX_HC=["0e0e0e","3eac2c","6a4e35","85c2c6","796a45","562306","592454","ab2a18","ac6511","afafaf","b9a05f","cb6820","dba3be","e5d7a3"],AVX_BG=["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","d9f2c9"],AVX_MAX=[4,45,14,26,30,6,6];
+function avxUrl(a){const m=/^dx:(\d{1,2}(?:\.\d{1,2}){6})$/.exec(a);if(!m)return"";const v=m[1].split(".").map(Number);if(!v.every((n,i)=>n<AVX_MAX[i]))return"";const h=v[1]<19?"short"+avp2(v[1]+1):"long"+avp2(v[1]-18);
+  return"https://api.dicebear.com/9.x/adventurer/svg?seed=k"+v.join("")+"&skinColor="+AVX_SK[v[0]]+"&hair="+h+"&hairProbability=100&hairColor="+AVX_HC[v[2]]+"&eyes=variant"+avp2(v[3]+1)+"&mouth=variant"+avp2(v[4]+1)+"&glasses=variant"+avp2(Math.max(v[5],1))+"&glassesProbability="+(v[5]?100:0)+"&backgroundColor="+AVX_BG[v[6]]+"&earringsProbability=0&featuresProbability=0"}
+const AVB_SK=["ffdbb4","f8d25c","edb98a","fd9841","d08b5b","ae5d29","614335"],
+AVB_HC=["2c1b18","4a312c","724133","a55728","b58143","c93305","d6b370","e8e1e1","ecdcbf","f59797"],
+AVB_TC=["3c4f5c","65c9ff","262e33","5199e4","25557c","929598","a7ffc4","b1e2ff","e6e6e6","ff5c5c","ff488e","ffafb9","ffdeb5","ffffb1","ffffff"],
+AVB_CC=["3c4f5c","65c9ff","262e33","5199e4","25557c","929598","a7ffc4","b1e2ff","e6e6e6","ff5c5c","ff488e","ffafb9","ffffb1","ffffff"],
+AVB_BG=["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","d9f2c9"],
+AVB_TOP=[[[["bigHair","Rambut besar"],["bob","Bob"],["bun","Cepol"],["curly","Keriting"],["curvy","Bergelombang"],["frida","Poni"],["longButNotTooLong","Sebahu"],["miaWallace","Lurus poni"],["straight01","Lurus 1"],["straight02","Lurus 2"],["straightAndStrand","Lurus + helai"],["dreads01","Gimbal"],["dreads","Gimbal panjang"],["dreads02","Gimbal 2"],["fro","Afro"],["froBand","Afro + bandana"],["shortCurly","Pendek keriting"],["shortFlat","Pendek rata"],["shortRound","Pendek bulat"],["shortWaved","Pendek bergelombang"]],[["hijab","Hijab"],["turban","Turban"],["hat","Topi"],["winterHat1","Kupluk 1"],["winterHat02","Kupluk 2"],["winterHat03","Kupluk 3"],["winterHat04","Kupluk 4"]]],
+ [[["shortCurly","Pendek keriting"],["shortFlat","Pendek rata"],["shortRound","Pendek bulat"],["shortWaved","Pendek bergelombang"],["sides","Samping"],["theCaesar","Caesar"],["theCaesarAndSidePart","Caesar belah"],["shavedSides","Cukur samping"],["shaggy","Acak-acakan"],["shaggyMullet","Mullet"],["frizzle","Kribo tipis"],["fro","Afro"],["dreads","Gimbal panjang"],["dreads01","Gimbal 1"],["dreads02","Gimbal 2"],["froBand","Afro + bandana"],["bun","Cepol"],["longButNotTooLong","Sebahu"],["curly","Keriting"],["straight01","Lurus"]],[["hat","Topi"],["winterHat1","Kupluk 1"],["winterHat02","Kupluk 2"],["winterHat03","Kupluk 3"],["winterHat04","Kupluk 4"],["turban","Turban"]]]],
+AVB_EY=["closed","cry","default","eyeRoll","happy","hearts","side","squint","surprised","wink","winkWacky","xDizzy"],
+AVB_EB=["angry","angryNatural","default","defaultNatural","flatNatural","frownNatural","raisedExcited","raisedExcitedNatural","sadConcerned","sadConcernedNatural","unibrowNatural","upDown","upDownNatural"],
+AVB_MO=["concerned","default","disbelief","eating","grimace","sad","screamOpen","serious","smile","tongue","twinkle","vomit"],
+AVB_AC=["","kurt","prescription01","prescription02","round","sunglasses","wayfarers","eyepatch"],AVB_AN=["Tidak ada","Kacamata Kurt","Kacamata 1","Kacamata 2","Kacamata bulat","Kacamata hitam","Wayfarer","Penutup mata"],
+AVB_FH=["","beardLight","beardMedium","beardMajestic","moustacheFancy","moustacheMagnum"],AVB_FN=["Tidak ada","Jenggot tipis","Jenggot sedang","Jenggot lebat","Kumis lengkung","Kumis tebal"],
+AVB_CL=["blazerAndShirt","blazerAndSweater","collarAndSweater","graphicShirt","hoodie","overall","shirtCrewNeck","shirtScoopNeck","shirtVNeck"],
+AVB_CN=["Blazer + kemeja","Blazer + sweater","Kerah + sweater","Kaos bergambar","Hoodie","Overall","Kaos bulat","Kaos leher lebar","Kaos V"],
+AVB_GR=["bear","bat","cumbia","deer","diamond","hola","pizza","resist","skull","skullOutline"],AVB_GN=["Beruang","Kelelawar","Cumbia","Rusa","Berlian","Hola","Pizza","Perlawanan","Tengkorak","Tengkorak garis"],
+AVB_NM={3:"Warna rambut",5:"Kulit",12:"Warna baju",13:"Latar"};
+/* urutan kode (14 = gambar baju): 0 gender, 1 jenis kepala (0 rambut / 1 kerudung-topi), 2 model, 3 warna rambut, 4 warna kerudung/topi, 5 kulit, 6 mata, 7 alis, 8 mulut, 9 kacamata, 10 jenggot/kumis, 11 baju, 12 warna baju, 13 latar */
+function avbMax(g,k){return[2,2,AVB_TOP[g][k].length,10,15,7,12,13,12,8,g?6:1,9,14,6,10]}
+function avbDef(g){return[g,0,0,2,8,2,2,2,8,0,0,6,4,0,0]}
+function avbParse(a){const m=/^dy:(\d{1,2}(?:\.\d{1,2}){13,14})$/.exec(String(a||""));if(!m)return null;const v=m[1].split(".").map(Number);if(v.length===14)v.push(0);if(v[0]>1||v[1]>1)return null;const M=avbMax(v[0],v[1]);return v.every((n,i)=>n<M[i])?v:null}
+function avbUrl(a){a=String(a||"");const x=avxUrl(a);if(x)return x;const v=avbParse(a);if(!v)return"";
+  return"https://api.dicebear.com/9.x/avataaars/svg?seed=k"+v.join("")+"&style=default&top="+AVB_TOP[v[0]][v[1]][v[2]][0]+"&topProbability=100&hairColor="+AVB_HC[v[3]]+"&hatColor="+AVB_TC[v[4]]+"&skinColor="+AVB_SK[v[5]]+"&eyes="+AVB_EY[v[6]]+"&eyebrows="+AVB_EB[v[7]]+"&mouth="+AVB_MO[v[8]]+"&accessories="+AVB_AC[Math.max(v[9],1)]+"&accessoriesProbability="+(v[9]?100:0)+"&accessoriesColor=262e33&facialHair="+AVB_FH[Math.max(v[10],1)]+"&facialHairProbability="+(v[10]?100:0)+"&facialHairColor="+AVB_HC[v[3]]+"&clothing="+AVB_CL[v[11]]+"&clothingGraphic="+AVB_GR[v[14]]+"&clothesColor="+AVB_CC[v[12]]+"&backgroundColor="+AVB_BG[v[13]]+"&backgroundType=solid"}
+/* karakter dasar: 16 karakter jadi per gender (acak tetap/deterministik), bisa digeser lalu diedit */
+const AVB_PC={};
+function avbPre(g){if(AVB_PC[g])return AVB_PC[g];let t=g*7919+13;const r=()=>{t=(t+0x6D2B79F5)|0;let x=Math.imul(t^t>>>15,1|t);x=x+Math.imul(x^x>>>7,61|x)^x;return((x^x>>>14)>>>0)/4294967296},pk=(a)=>a[Math.floor(r()*a.length)],o=[];
+  for(let i=0;i<16;i++){const k=i%4===3?1:0,M=avbMax(g,k),q=(i+1)/4-1;
+    const v=[g,k,k?(g===0&&q!==3?(q===1?1:0):q%M[2]):Math.floor(r()*M[2]),Math.floor(r()*M[3]),Math.floor(r()*M[4]),Math.floor(r()*M[5]),pk([2,4,2,9,7]),pk([2,3,4,6,7,12]),pk([8,1,10,8]),i%5===2?1+Math.floor(r()*(M[9]-1)):0,g&&i%3===0?1+Math.floor(r()*(M[10]-1)):0,Math.floor(r()*M[11]),Math.floor(r()*M[12]),Math.floor(r()*M[13]),Math.floor(r()*M[14])];
+    o.push(v)}
+  return AVB_PC[g]=o}
+function avbP(i){const v=avbCur(),p=avbPre(v[0])[i];if(p)avbSet(p.slice())}
+function avbSc(d){const e=$("avp");if(!e)return;const c=e.firstElementChild,st=(c?c.offsetWidth+8:76)*3,x0=e.scrollLeft,x1=Math.max(0,Math.min(e.scrollWidth-e.clientWidth,x0+d*st));if(e._an)cancelAnimationFrame(e._an);
+  const fin=()=>{e.style.scrollSnapType="";e._an=0};if(x1===x0||!window.requestAnimationFrame){e.scrollLeft=x1;return fin()}
+  e.style.scrollSnapType="none";const t0=performance.now(),D=260,f=t=>{const p=Math.min(1,(t-t0)/D),q=1-Math.pow(1-p,3);e.scrollLeft=x0+(x1-x0)*q;if(p<1)e._an=requestAnimationFrame(f);else fin()};e._an=requestAnimationFrame(f)}
+function avbH(){const v=avbParse(S.av),L=isLk()?"disabled ":"";
+  const gb=g=>`<button type="button" ${L}class="avb-g${v&&v[0]===g?" on":""}" onclick="avbG(${g})">${g?"\u{1F468} Laki-laki":"\u{1F469} Perempuan"}</button>`;
+  let h=`<div class="avb" id="avb"><div class="avt">\u{1F6E0}\uFE0F Buat karakter sendiri</div><div class="avb-gr">${gb(0)}${gb(1)}</div>`;
+  if(!v)return h+`<p class="mut" style="font-size:.8rem;margin:6px 0 0">Pilih dulu, lalu atur penampilanmu.</p></div>`;
+  const g=v[0],k=v[1];
+  const sw=(i,arr,lb)=>`<div class="avb-r"><span>${lb}</span><div class="avb-s">${arr.map((c,j)=>`<button type="button" ${L}class="avb-sw${v[i]===j?" on":""}" style="background:#${c}" onclick="avbS(${i},${j})" aria-label="${lb} ${j+1}"></button>`).join("")}</div></div>`;
+  const st=(i,lb,tx)=>`<div class="avb-r"><span>${lb}</span><div class="avb-t"><button type="button" ${L}onclick="avbN(${i},-1)" aria-label="${lb} sebelumnya">\u25C0</button><b>${tx}</b><button type="button" ${L}onclick="avbN(${i},1)" aria-label="${lb} berikutnya">\u25B6</button></div></div>`;
+  const kb=(j,t)=>`<button type="button" ${L}class="avb-g${k===j?" on":""}" onclick="avbK(${j})">${t}</button>`;
+  const P=avbPre(g);
+  h+=`<div class="avb-pv">${avH(S.av)}</div><div class="avt" style="margin-top:10px">\u{1F465} Pilih karakter dasar (geser), lalu edit di bawah</div><div class="avb-ps"><button type="button" ${L}class="avb-ar" onclick="avbSc(-1)" aria-label="Geser ke kiri">\u25C0</button><div class="avb-pl" id="avp">${P.map((p,i)=>{const c="dy:"+p.join(".");return `<button type="button" ${L}class="avb-p${S.av===c?" on":""}" onclick="avbP(${i})" aria-label="Karakter ${i+1}"><img alt="" loading="lazy" src="${avbUrl(c)}"></button>`}).join("")}</div><button type="button" ${L}class="avb-ar" onclick="avbSc(1)" aria-label="Geser ke kanan">\u25B6</button></div>`;
+  h+=`<div class="avb-r"><span>Kepala</span><div class="avb-gr">${kb(0,"Rambut")}${kb(1,g?"Topi":"Kerudung")}</div></div>`;
+  h+=st(2,k?(g?"Model topi":"Model kerudung"):"Model rambut",AVB_TOP[g][k][v[2]][1]);
+  h+=k?sw(4,AVB_TC,g?"Warna topi":"Warna kerudung"):sw(3,AVB_HC,AVB_NM[3]);
+  h+=sw(5,AVB_SK,AVB_NM[5])+st(6,"Mata",(v[6]+1)+"/12")+st(7,"Alis",(v[7]+1)+"/13")+st(8,"Mulut",(v[8]+1)+"/12")+st(9,"Kacamata",AVB_AN[v[9]]);
+  if(g)h+=st(10,"Jenggot/kumis",AVB_FN[v[10]]);
+  h+=st(11,"Baju",AVB_CN[v[11]])+(v[11]===3?st(14,"Gambar baju",AVB_GN[v[14]]):"")+sw(12,AVB_CC,AVB_NM[12])+sw(13,AVB_BG,AVB_NM[13]);
+  return h+`<button type="button" ${L}class="avb-b" onclick="avbR()">\u{1F3B2} Acak</button></div>`}
+function avbSet(v){if(isLk())return;S.av="dy:"+v.join(".");sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.remove("on"));const c=$("avc");if(c)c.innerHTML=avH(S.av);const b=$("avb");if(b){const p=$("avp"),x=p?p.scrollLeft:0;b.outerHTML=avbH();const q=$("avp");if(q)q.scrollLeft=x}if(S.jnOk===1)joinRoom(1)}
+function avbCur(){return avbParse(S.av)||avbDef(0)}
+function avbG(g){const o=avbParse(S.av);if(o&&o[0]===g)return;const v=o?o.slice():avbDef(g);v[0]=g;v[1]=0;v[2]=0;v[10]=0;avbSet(v)}
+function avbK(k){const v=avbCur();if(v[1]===k)return;v[1]=k;v[2]=0;avbSet(v)}
+function avbS(i,j){const v=avbCur();v[i]=j;avbSet(v)}
+function avbN(i,d){const v=avbCur(),M=avbMax(v[0],v[1]);v[i]=(v[i]+d+M[i])%M[i];avbSet(v)}
+function avbR(){const v=avbCur(),g=v[0],k=Math.floor(Math.random()*2),M=avbMax(g,k);avbSet(M.map((n,i)=>i===0?g:i===1?k:Math.floor(Math.random()*n)))}
+function avH(a){a=String(a||"");const x=avbUrl(a);if(x)return`<img class="avi" alt="" loading="lazy" src="${x}">`;const m=/^db:([a-z-]+):([A-Za-z]{1,20})$/.exec(a);return m?`<img class="avi" alt="" loading="lazy" src="https://api.dicebear.com/9.x/${m[1]}/svg?seed=${m[2]}">`:esc(a)}
+function avPick(b,a){if(isLk())return;S.av=a;sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.toggle("on",x===b));const c=$("avc");if(c)c.innerHTML=avH(a);const bb=$("avb");if(bb)bb.outerHTML=avbH();if(S.jnOk===1)joinRoom(1)}
+function avCard(){return avbH()+DBS.map(g=>`<div class="avt">🎨 ${g[1]}</div><div class="avg">${DBN.map(n=>{const a="db:"+g[0]+":"+n;return `<button type="button" ${isLk()?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${g[1]} ${n}">${avH(a)}</button>`}).join("")}</div>`).join("")+`<p class="mut" style="font-size:.75rem;margin:4px 0">Ilustrasi oleh DiceBear (dicebear.com), lisensi terbuka.</p>`+AVS.map(g=>`<div class="avt">${g[0]}</div><div class="avg">${g[1].map(a=>`<button type="button" ${isLk()?"disabled ":""}class="${S.av===a?"on":""}" onclick="avPick(this,'${a}')" aria-label="Avatar ${a}">${a}</button>`).join("")}</div>`).join("")}
 function JL(){try{return localStorage.getItem("jn_"+ROOM.id)==="1"}catch(e){return false}}
 function nameCard(L){if(L===undefined)L=isLk();if(!L)return nmPh();return `<div class="ncw">${snHdH("idle","",1)}<div class="card nc">${snW("idle")}<h3><span id="avc">${S.av?avH(S.av):"🙂"}</span> ${L?"Kamu sudah bergabung":"Siapa namamu?"}</h3><input ${L?"readonly ":""}id="nmi" placeholder="Nama lengkap" value="${esc(S.nm||"")}" oninput="S.nm=this.value.trim();sv();jnSch()"><input ${L?"readonly ":""}id="nimi" placeholder="NIM" inputmode="numeric" value="${esc(S.nim||"")}" oninput="S.nim=this.value.trim();sv();jnSch()">${L?"":`<div class="avt">Pilih avatarmu</div>${avCard()}`}<div id="msg" style="color:var(--bad);margin-top:8px"></div>${L?`${DB?`<p class="mut">Akunmu tersimpan di cloud. Masuk dengan NIM dan kata sandi di perangkat lain untuk melanjutkan.</p>${avWarn()}<div style="margin-top:8px"><button class="btn ghost" onclick="acctKeluar()">Keluar akun</button></div>`:`<p class="mut">Nama, NIM, dan avatar sudah terkunci di perangkat ini.</p>${avWarn()}`}`:`<div style="margin-top:8px"><button class="btn" onclick="jnConfirm()">Gabung ▶</button></div><div id="jn" style="margin-top:8px;font-weight:700">${jnTxt()}</div>`}</div></div>`}
 function avWarn(){return AVOFF&&S.av?'<div style="color:var(--bad);font-size:.85rem;margin-top:6px">\u26a0 Avatar belum terkirim ke dosen (aturan Firestore menolak field av). Beri tahu dosen.</div>':""}
