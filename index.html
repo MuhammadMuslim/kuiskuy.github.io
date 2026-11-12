@@ -1538,6 +1538,7 @@ AVB_CN=["Blazer + kemeja","Blazer + sweater","Kerah + sweater","Kaos bergambar",
 AVB_GR=["bear","bat","cumbia","deer","diamond","hola","pizza","resist","skull","skullOutline"],AVB_GN=["Beruang","Kelelawar","Cumbia","Rusa","Berlian","Hola","Pizza","Perlawanan","Tengkorak","Tengkorak garis"],
 AVB_PN=["25557c","262e33","3c4f5c","5b4636","929598","e6e6e6","6b3f2a","2f6b4f"],AVB_SH=["ffffff","262e33","e8e1e1","ff5c5c","5199e4","6b3f2a"],
 AVB_MV=["Lompat girang","Putar 360°","Joget","Salto","Hore! Tangan naik","Tanpa gerakan","Tidur pulas","Ole Romeny (tangan di dagu)","Slide tekuk lutut","Pahlawan bertopeng","Siu ala CR7"],
+AVB_TX=["YEAY!","WUUUSH!","GOYANG!","HAP!","HOREEE!","","","OLE OLE!","GOOOL!","SUPER!","SIUUU!"],
 AVB_NM={3:"Warna rambut",5:"Kulit",12:"Warna baju",13:"Latar",15:"Warna celana",16:"Warna alas kaki"},
 AVB_CE=["Celana panjang","Celana pendek","Celana 3/4","Rok pendek","Rok panjang"],
 AVB_SN=["Sepatu","Sneaker tinggi","Sandal jepit","Sandal tali","Tanpa alas kaki","Sepatu bot"];
@@ -1592,7 +1593,7 @@ let _pvT=0,_pvO=0;
 function avbPlay(){const old=document.getElementById("avpop");if(old)old.remove();clearTimeout(_pvT);clearTimeout(_pvO);
   const v=avbParse(S.av);if(!v)return;const mv=v[17];
   const el=document.createElement("div");el.id="avpop";el.className="avpp pv-m"+mv;el.setAttribute("aria-hidden","true");el.style.background="#"+AVB_BG[v[13]];
-  el.innerHTML='<div class="avpp-in">'+(fbH(S.av)||avH(S.av))+'</div><div class="avpp-t">'+AVB_MV[mv]+'</div>';
+  el.innerHTML=(AVB_TX[mv]?'<div class="avpp-x">'+AVB_TX[mv]+'</div>':"")+'<div class="avpp-in">'+(fbH(S.av)||avH(S.av))+'</div><div class="avpp-t">'+AVB_MV[mv]+'</div>';
   document.body.appendChild(el);
   _pvT=setTimeout(()=>{el.classList.add("out");_pvO=setTimeout(()=>el.remove(),260)},mv===5?1200:2800)}
 function avbSet(v){if(isLk())return;S.av="dy:"+v.join(".");sv();hud();document.querySelectorAll(".avg button").forEach(x=>x.classList.remove("on"));const c=$("avc");if(c)c.innerHTML=avH(S.av);av3Up();const b=$("avb");if(b){const p=$("avpl"),x=p?p.scrollLeft:0;b.outerHTML=avbH();const q=$("avpl");if(q)q.scrollLeft=x}if(S.jnOk===1)joinRoom(1)}
@@ -1612,7 +1613,7 @@ function fbH(a){a=a||S.av;const v=avbParse(a),u=v?avbUrl(a).replace(/&background
   fx=`<g class="fb-fx fb-ro"><path d="M216 304 L170 214" stroke="${am}" stroke-width="30" stroke-linecap="round" fill="none"/><rect x="92" y="198" width="100" height="24" rx="12" fill="${sk}"/><rect x="96" y="214" width="92" height="6" rx="3" fill="#000" opacity=".12"/></g>`
   +`<g class="fb-fx fb-mk"><path d="M70 112 Q140 92 210 112 L218 128 Q214 146 196 144 Q168 138 140 142 Q112 138 84 144 Q66 146 62 128 Z" fill="#D7263D" stroke="#7a0f1d" stroke-width="3"/><ellipse cx="108" cy="124" rx="22" ry="12" fill="#fff" transform="rotate(10 108 124)"/><ellipse cx="172" cy="124" rx="22" ry="12" fill="#fff" transform="rotate(-10 172 124)"/><circle cx="110" cy="125" r="6" fill="#1F1F2E"/><circle cx="170" cy="125" r="6" fill="#1F1F2E"/></g>`
   +`<g class="fb-fx fb-bk"><circle cx="140" cy="372" r="13" fill="#FFD23F" stroke="#B58900" stroke-width="3"/><text x="140" y="378" text-anchor="middle" font-size="18" font-weight="800" fill="#7a0f1d" font-family="Arial,sans-serif">A</text></g>`
-  +`<g class="fb-fx fb-siu"><text x="140" y="30" text-anchor="middle">SIUUU!</text></g>`
+  +`<g class="fb-fx fb-ear"><path d="M226 256L258 194" stroke="${sh}" stroke-width="32" stroke-linecap="round" fill="none"/><path d="M258 194L206 126" stroke="${am}" stroke-width="28" stroke-linecap="round" fill="none"/><circle cx="202" cy="118" r="18" fill="${sk}"/><path d="M194 112q8-6 16 0" stroke="#000" stroke-opacity=".15" stroke-width="3" fill="none" stroke-linecap="round"/></g>`
   +`<g class="fb-fx fb-z"><text class="z1" x="196" y="64">Z</text><text class="z2" x="224" y="38">Z</text><text class="z3" x="250" y="14">Z</text></g>`;
   const arm=(x,c)=>`<g class="fb-a ${c}"><rect x="${x}" y="236" width="32" height="${ay-236}" rx="16" fill="${sh}"/>`+(lg?"":`<rect x="${x+2}" y="${ay-14}" width="28" height="${372-ay+26}" rx="14" fill="${sk}"/>`)+`<circle cx="${x+16}" cy="388" r="16" fill="${sk}"/>`+(lg?`<rect x="${x}" y="350" width="32" height="12" rx="6" fill="#000" opacity=".12"/>`:"")+`</g>`;
   const ce=v[18],sn=v[19],mir=s=>`<g transform="translate(280 0) scale(-1 1)">${s}</g>`,
@@ -3356,7 +3357,6 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 .cb.m4 .fb-th.l{animation:lgHtl .5s ease-in-out infinite}.cb.m4 .fb-sh.l{animation:lgHsl .5s ease-in-out infinite}
 .cb.m4 .fb-th.r{animation:lgHRtr .5s ease-in-out infinite}.cb.m4 .fb-sh.r{animation:lgHRsr .5s ease-in-out infinite}
 .cb.m9 .fb-th.l{transform:rotate(14deg)}.cb.m9 .fb-sh.l{transform:rotate(-14deg)}.cb.m9 .fb-th.r{transform:rotate(-14deg)}.cb.m9 .fb-sh.r{transform:rotate(14deg)}
-.cb.m8 .fb-th.l{transform:rotate(20deg)}.cb.m8 .fb-sh.l{transform:rotate(-38deg)}.cb.m8 .fb-th.r{transform:rotate(-20deg)}.cb.m8 .fb-sh.r{transform:rotate(38deg)}
 .avpp.pv-m0 .fb-th.l{animation:lgJtl .6s ease-in-out infinite}.avpp.pv-m0 .fb-sh.l{animation:lgJsl .6s ease-in-out infinite}
 .avpp.pv-m0 .fb-th.r{animation:lgJtr .6s ease-in-out infinite}.avpp.pv-m0 .fb-sh.r{animation:lgJsr .6s ease-in-out infinite}
 .avpp.pv-m1 .fb-th.l{animation:lgStl .9s ease-in-out infinite}.avpp.pv-m1 .fb-sh.l{animation:lgSsl .9s ease-in-out infinite}
@@ -3368,7 +3368,6 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 .avpp.pv-m4 .fb-th.l{animation:lgHtl .5s ease-in-out infinite}.avpp.pv-m4 .fb-sh.l{animation:lgHsl .5s ease-in-out infinite}
 .avpp.pv-m4 .fb-th.r{animation:lgHRtr .5s ease-in-out infinite}.avpp.pv-m4 .fb-sh.r{animation:lgHRsr .5s ease-in-out infinite}
 .avpp.pv-m9 .fb-th.l{transform:rotate(14deg)}.avpp.pv-m9 .fb-sh.l{transform:rotate(-14deg)}.avpp.pv-m9 .fb-th.r{transform:rotate(-14deg)}.avpp.pv-m9 .fb-sh.r{transform:rotate(14deg)}
-.avpp.pv-m8 .fb-th.l{transform:rotate(20deg)}.avpp.pv-m8 .fb-sh.l{transform:rotate(-38deg)}.avpp.pv-m8 .fb-th.r{transform:rotate(-20deg)}.avpp.pv-m8 .fb-sh.r{transform:rotate(38deg)}
 @media (prefers-reduced-motion:reduce){.cb:not(.pv) .fb-th,.cb:not(.pv) .fb-sh{animation:none!important;transform:none!important}}
 .cb-cf{position:fixed;inset:0;z-index:9998;pointer-events:none;overflow:hidden}
 @media (prefers-reduced-motion:reduce){.cb:not(.pv) .cb-in,.cb:not(.pv) .fb-a{animation:none!important}.cb:not(.pv) .fb-a.l{transform:rotate(150deg)}.cb:not(.pv) .fb-a.r{transform:rotate(-150deg)}}
@@ -3382,7 +3381,8 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 @keyframes cbZz{0%{opacity:0;translate:0 10px}30%{opacity:1}100%{opacity:0;translate:10px -26px}}
 @keyframes cbR{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6%) rotate(-3deg)}}
 @keyframes cbRh{0%,100%{translate:0 0}50%{translate:0 -8px}}
-@keyframes cbSl{0%{transform:translateX(-110%) rotate(0) scaleY(1)}22%{transform:translateX(-80%) rotate(-24deg) scaleY(.82)}78%{transform:translateX(60%) rotate(-24deg) scaleY(.82)}100%{transform:translateX(90%) rotate(-6deg) scaleY(.92)}}
+@keyframes cbSl{0%{transform:translateX(-125%) translateY(0) rotate(0)}18%{transform:translateX(-95%) translateY(18%) rotate(-10deg)}82%{transform:translateX(45%) translateY(18%) rotate(-12deg)}100%{transform:translateX(70%) translateY(18%) rotate(-6deg)}}
+@keyframes cbSlX{0%{transform:translateX(-125%)}18%{transform:translateX(-95%)}82%{transform:translateX(45%)}100%{transform:translateX(70%)}}
 @keyframes cbAk{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12%) scale(1.04)}}
 @keyframes cbCape{0%{transform:skewX(-5deg) scaleY(1)}100%{transform:skewX(6deg) scaleY(1.04)}}
 @keyframes cbPump{0%{transform:rotate(-150deg)}100%{transform:rotate(-176deg)}}
@@ -3392,7 +3392,8 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 .cb.m7 .fb-ro{opacity:1;animation:cbRh .9s ease-in-out infinite}
 .cb.m7 .fb-a.r{transform:rotate(32deg)}.cb.m7 .fb-a.l{transform:rotate(-4deg)}
 .cb.m8 .cb-in{animation:cbSl 1.5s ease-in-out infinite}
-.cb.m8 .fb-a.l{transform:rotate(105deg)}.cb.m8 .fb-a.r{transform:rotate(-105deg)}
+.cb.m8 .fb-a.l{transform:rotate(34deg)}.cb.m8 .fb-a.r{opacity:0}.cb.m8 .fb-ear{opacity:1}
+.cb.m8 .fb-th.l{transform:rotate(9deg)}.cb.m8 .fb-th.r{transform:rotate(-9deg)}.cb.m8 .fb-sh.l{transform:rotate(14deg) scaleY(.26)}.cb.m8 .fb-sh.r{transform:rotate(-14deg) scaleY(.26)}
 .cb.m9 .cb-in{animation:cbAk .8s ease-in-out infinite}
 .cb.m9 .fb-cape,.cb.m9 .fb-mk,.cb.m9 .fb-bk{opacity:1}
 .cb.m9 .fb-cape{animation:cbCape .5s ease-in-out infinite alternate}
@@ -3403,7 +3404,8 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 .avpp.pv-m7 .fb-ro{opacity:1;animation:cbRh .9s ease-in-out infinite}
 .avpp.pv-m7 .fb-a.r{transform:rotate(32deg)}.avpp.pv-m7 .fb-a.l{transform:rotate(-4deg)}
 .avpp.pv-m8 .avpp-in{animation:cbSl 1.5s ease-in-out infinite}
-.avpp.pv-m8 .fb-a.l{transform:rotate(105deg)}.avpp.pv-m8 .fb-a.r{transform:rotate(-105deg)}
+.avpp.pv-m8 .fb-a.l{transform:rotate(34deg)}.avpp.pv-m8 .fb-a.r{opacity:0}.avpp.pv-m8 .fb-ear{opacity:1}
+.avpp.pv-m8 .fb-th.l{transform:rotate(9deg)}.avpp.pv-m8 .fb-th.r{transform:rotate(-9deg)}.avpp.pv-m8 .fb-sh.l{transform:rotate(14deg) scaleY(.26)}.avpp.pv-m8 .fb-sh.r{transform:rotate(-14deg) scaleY(.26)}
 .avpp.pv-m9 .avpp-in{animation:cbAk .8s ease-in-out infinite}
 .avpp.pv-m9 .fb-cape,.avpp.pv-m9 .fb-mk,.avpp.pv-m9 .fb-bk{opacity:1}
 .avpp.pv-m9 .fb-cape{animation:cbCape .5s ease-in-out infinite alternate}
@@ -3417,17 +3419,25 @@ cloudInit();(function(){let c="default";try{c=localStorage.getItem("tema_cache")
 @keyframes lgSiutr{0%{transform:rotate(0deg)}12%{transform:rotate(-24deg)}30%{transform:rotate(-32deg)}46%{transform:rotate(-26deg)}56%{transform:rotate(-28deg)}66%{transform:rotate(-17deg)}88%{transform:rotate(-17deg)}100%{transform:rotate(0deg)}}
 @keyframes lgSiusr{0%{transform:rotate(0deg)}12%{transform:rotate(44deg)}30%{transform:rotate(64deg)}46%{transform:rotate(52deg)}56%{transform:rotate(48deg)}66%{transform:rotate(5deg)}88%{transform:rotate(5deg)}100%{transform:rotate(0deg)}}
 @keyframes cbSiuAR{0%{transform:rotate(0deg)}12%{transform:rotate(20deg)}30%{transform:rotate(-70deg)}46%{transform:rotate(-80deg)}56%{transform:rotate(-55deg)}66%{transform:rotate(-42deg)}88%{transform:rotate(-42deg)}100%{transform:rotate(0deg)}}
-.fb-siu text{font-size:50px;font-weight:900;fill:#FFD23F;stroke:#1F1F2E;stroke-width:4;paint-order:stroke;font-family:Arial,Impact,sans-serif;transform-box:fill-box;transform-origin:50% 50%}
 .cb.m10 .cb-in{animation:cbSiu 2.6s ease-in-out infinite}
 .cb.m10 .fb-a.l{animation:cbSiuAL 2.6s ease-in-out infinite}.cb.m10 .fb-a.r{animation:cbSiuAR 2.6s ease-in-out infinite}
 .cb.m10 .fb-th.l{animation:lgSiutl 2.6s ease-in-out infinite}.cb.m10 .fb-sh.l{animation:lgSiusl 2.6s ease-in-out infinite}
 .cb.m10 .fb-th.r{animation:lgSiutr 2.6s ease-in-out infinite}.cb.m10 .fb-sh.r{animation:lgSiusr 2.6s ease-in-out infinite}
-.cb.m10 .fb-siu{opacity:1}.cb.m10 .fb-siu text{animation:cbSiuT 2.6s ease-in-out infinite}
 .avpp.pv-m10 .avpp-in{animation:cbSiu 2.6s ease-in-out infinite}
 .avpp.pv-m10 .fb-a.l{animation:cbSiuAL 2.6s ease-in-out infinite}.avpp.pv-m10 .fb-a.r{animation:cbSiuAR 2.6s ease-in-out infinite}
 .avpp.pv-m10 .fb-th.l{animation:lgSiutl 2.6s ease-in-out infinite}.avpp.pv-m10 .fb-sh.l{animation:lgSiusl 2.6s ease-in-out infinite}
 .avpp.pv-m10 .fb-th.r{animation:lgSiutr 2.6s ease-in-out infinite}.avpp.pv-m10 .fb-sh.r{animation:lgSiusr 2.6s ease-in-out infinite}
-.avpp.pv-m10 .fb-siu{opacity:1}.avpp.pv-m10 .fb-siu text{animation:cbSiuT 2.6s ease-in-out infinite}
+/* Teks di atas avatar untuk tiap selebrasi */
+.cb{--w:78px}.cb.med{--w:104px}.cb.big{--w:136px}
+.cb.m0{--k:1}.cb.m1{--k:.65}.cb.m2{--k:.28}.cb.m3{--k:1.15}.cb.m4{--k:.3}.cb.m7{--k:.2}.cb.m9{--k:.35}.cb.m10{--k:1.15}
+.cb-tx,.avpp-x{font:900 28px/1 Arial,Impact,sans-serif;color:#FFD23F;-webkit-text-stroke:6px #1F1F2E;paint-order:stroke fill;text-shadow:0 3px 0 rgba(0,0,0,.25);white-space:nowrap;text-align:center;animation:cbTxIn .45s cubic-bezier(.3,1.6,.5,1) both,cbTxBob .8s ease-in-out .45s infinite alternate}
+.cb-tx{position:absolute;left:50%;width:var(--w);margin-left:calc(var(--w)/-2);bottom:calc(var(--w)*(2.18 + var(--k,0)) + 10px);font-size:calc(var(--w)*.34);z-index:2}
+.avpp-x{position:relative;z-index:2;font-size:24px;margin:0 0 8px}
+@keyframes cbTxIn{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
+@keyframes cbTxBob{from{translate:0 0}to{translate:0 -6px}}
+.cb.m8 .cb-tx{animation:cbSlX 1.5s ease-in-out infinite;bottom:calc(var(--w)*2.18*.82 + 10px)}
+.cb.m10 .cb-tx,.avpp.pv-m10 .avpp-x{animation:cbSiuT 2.6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.cb:not(.pv) .cb-tx{animation:none!important}}
 /* Pratinjau gerakan langsung di kartu avatar (tetap jalan walau "kurangi animasi" aktif, karena diminta pemain) */
 .avpp{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 64px);transform:translateX(-50%);z-index:10000;pointer-events:none;padding:14px 22px 10px;border-radius:22px;box-shadow:0 10px 30px rgba(0,0,0,.45),0 0 0 3px rgba(255,255,255,.9);animation:avppIn .25s cubic-bezier(.3,1.5,.5,1) both}
 .avpp.out{animation:avppOut .22s ease forwards}
@@ -3594,7 +3604,7 @@ function celeb(kind,av,pod){const o=document.getElementById("cb"),oc=document.ge
   const a=av||S.av;if(!a||(DOSEN&&!pod))return;const v=avbParse(a),mv=v?v[17]:0;if(mv===5)return;
   const rm=!!(window.matchMedia&&matchMedia("(prefers-reduced-motion:reduce)").matches),big=kind==="big",med=kind==="med",dur=pod?6:big?3.4:med?2.3:1.8;
   const el=document.createElement("div");el.id="cb";el.className="cb "+(big?"big":med?"med":"q")+" m"+mv+(pod?" pdm":"");el.setAttribute("aria-hidden","true");el.style.setProperty("--dur",dur+"s");
-  el.innerHTML='<div class="cb-in">'+(fbH(a)||avH(a))+'</div>';document.body.appendChild(el);
+  el.innerHTML=(AVB_TX[mv]?'<div class="cb-tx">'+AVB_TX[mv]+'</div>':"")+'<div class="cb-in">'+(fbH(a)||avH(a))+'</div>';document.body.appendChild(el);
   if(pod){const b=document.querySelector('#pod .pdc.r1 .pdb');if(b){const r=b.getBoundingClientRect();el.style.left=(r.left+r.width/2-75)+'px';el.style.bottom=Math.max(6,innerHeight-r.bottom+4)+'px'}}
   let c=null;
   if((big||med)&&!rm&&!pod){const cc=["#E21B3C","#1368CE","#FFD23F","#26890C","#fff"],n=big?64:26;c=document.createElement("div");c.id="cbc";c.className="cb-cf";c.setAttribute("aria-hidden","true");
