@@ -1545,7 +1545,7 @@ AVB_NM={3:"Warna rambut",5:"Kulit",12:"Warna baju",13:"Latar",15:"Warna celana",
 AVB_CE=["Celana panjang","Celana pendek","Celana 3/4","Rok pendek","Rok panjang"],
 AVB_SN=["Sepatu","Sneaker tinggi","Sandal jepit","Sandal tali","Tanpa alas kaki","Sepatu bot"];
 /* urutan kode (14 = gambar baju): 0 gender, 1 jenis kepala (0 rambut / 1 kerudung-topi), 2 model, 3 warna rambut, 4 warna kerudung/topi, 5 kulit, 6 mata, 7 alis, 8 mulut, 9 kacamata, 10 jenggot/kumis, 11 baju, 12 warna baju, 13 latar */
-function avbMax(g,k){return[2,2,AVB_TOP[g][k].length,10,15,7,12,13,12,8,g?6:1,9,14,6,10,8,6,11,g?3:5,6,18]}
+function avbMax(g,k){return[2,2,AVB_TOP[g][k].length,10,15,7,12,13,12,8,g?6:1,9,14,6,10,8,6,11,g?3:5,6,19]}
 function avbDef(g){return[g,0,0,2,8,2,2,2,8,0,0,6,4,0,0,0,0,0,0,0]}
 function avbParse(a){const m=/^dy:(\d{1,2}(?:\.\d{1,2}){13,20})$/.exec(String(a||""));if(!m)return null;const v=m[1].split(".").map(Number);while(v.length<21)v.push(0);if(v[0]>1||v[1]>1)return null;const M=avbMax(v[0],v[1]);return v.every((n,i)=>n<M[i])?v:null}
 function avbUrl(a){a=String(a||"");const x=avxUrl(a);if(x)return x;const v=avbParse(a);if(!v)return"";
@@ -3687,7 +3687,7 @@ const avCh=()=>isLk()&&!!S.avEd&&S.avCh===1;
 
 <script>
 /* ===== Peliharaan: disimpan sebagai angka ke-21 di kode avatar "dy:" (0 = tanpa peliharaan) ===== */
-const PETS=[null,["\u{1F431}","Kucing"],["\u{1F436}","Anjing"],["\u{1F430}","Kelinci"],["\u{1F98A}","Rubah"],["\u{1F43C}","Panda"],["\u{1F425}","Anak ayam"],["\u{1F422}","Kura-kura"],["\u{1F439}","Hamster"],["\u{1F427}","Penguin"],["\u{1F99C}","Beo"],["\u{1F409}","Naga mini"],["\u{1F984}","Unicorn"],["\u{1F996}","Dinosaurus"],["\u{1F411}","Domba"],["\u{1F404}","Sapi"],["\u{1F40A}","Buaya"],["\u{1F98B}","Kupu-kupu"]];
+const PETS=[null,["\u{1F431}","Kucing"],["\u{1F436}","Anjing"],["\u{1F430}","Kelinci"],["\u{1F98A}","Rubah"],["\u{1F43C}","Panda"],["\u{1F425}","Anak ayam"],["\u{1F422}","Kura-kura"],["\u{1F439}","Hamster"],["\u{1F427}","Penguin"],["\u{1F99C}","Beo"],["\u{1F409}","Naga mini"],["\u{1F984}","Unicorn"],["\u{1F996}","Dinosaurus"],["\u{1F411}","Domba"],["\u{1F404}","Sapi"],["\u{1F40A}","Buaya"],["\u{1F98B}","Kupu-kupu"],["\u{1F40C}","Siput"]];
 function avBase(a){const v=avbParse(a);return v?"dy:"+v.slice(0,20).join("."):""}
 function petPanel(v,L){return `<div class="avb-r w2"><span>Teman setiamu</span><div class="pet-g">${PETS.map((p,j)=>`<button type="button" ${L}class="${v[20]===j?"on":""}" onclick="avbS(20,${j})" aria-label="${p?p[1]:"Tanpa peliharaan"}"><i>${p?p[0]:"\u2716\uFE0F"}</i>${p?p[1]:"Tidak ada"}</button>`).join("")}</div></div><p class="mut" style="font-size:.78rem;margin:6px 0 0">Ketuk avatar atau peliharaanmu di pratinjau, lalu lihat mereka beraksi.</p>`}
 (function(){
@@ -3710,6 +3710,9 @@ function petPanel(v,L){return `<div class="avb-r w2"><span>Teman setiamu</span><
 .pet .ps{width:100%;height:100%;display:block;overflow:visible}
 .pet .ps *{transform-box:view-box}
 .pet-pv{position:absolute;left:calc(50% - 150px);bottom:58px;width:86px;height:86px;z-index:4}
+.pet-s{position:absolute;left:50%;bottom:100%;margin-bottom:5px;transform:translateX(-50%);white-space:nowrap;font:700 13px/1.2 system-ui,sans-serif;color:#2b2230;background:#fff;border:2px solid #2b2230;border-radius:12px;padding:3px 9px;pointer-events:none;z-index:30;animation:petSay 1.5s ease-out forwards}
+.pet-s::after{content:"";position:absolute;left:50%;top:100%;margin-left:-5px;border:5px solid transparent;border-top-color:#2b2230}
+@keyframes petSay{0%{opacity:0;transform:translateX(-50%) translateY(6px) scale(.7)}12%{opacity:1;transform:translateX(-50%) scale(1.08)}20%{transform:translateX(-50%) scale(1)}80%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-6px)}}
 .pet-hud{width:1.8em;height:1.8em;vertical-align:middle;margin-left:2px;pointer-events:none}
 .cb-in .pet{position:absolute;left:-60%;bottom:0;width:66%;height:auto;aspect-ratio:1;pointer-events:none}
 .mvt{display:block;margin:6px auto 0;font:inherit;font-size:.74rem;font-weight:700;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer}
@@ -3767,7 +3770,7 @@ html:not(.mv-off) .a3.act .a3-l .fb image{animation:fbHa 1.1s ease-in-out}
 
 <script>
 /* ===== Peliharaan chibi (SVG tampak depan, berkontur) ===== */
-const PD={1:{k:"f",c:"#F5A85C",b:"#FFE6C7",d:"#F28B9C",o:"#9A5A22",s:"#D9822B",e:"cat",t:"long",n:"#F28B9C"},2:{k:"f",c:"#D9A066",b:"#FBE6CC",d:"#8A5A2B",o:"#6B4220",e:"dog",t:"dog",n:"#3B2A22"},3:{k:"f",c:"#FFFFFF",b:"#FFF2F4",d:"#F7B9C6",o:"#B39AA3",e:"rab",t:"puff",n:"#F28B9C"},4:{k:"f",c:"#EE7B30",b:"#FFFFFF",d:"#4A2E22",o:"#8A3F10",e:"cat",t:"bush",x:"fox",n:"#3B2A22"},5:{k:"f",c:"#FFFFFF",b:"#FFFFFF",d:"#2B2B33",o:"#2B2B33",e:"round",t:"stub",x:"panda",n:"#2B2B33",lg:1},6:{k:"b",c:"#FFD93D",d:"#F29F1D",o:"#C98A00",x:"chick"},7:{k:"t"},8:{k:"f",c:"#F0CB94",b:"#FFF3DF",d:"#C98F50",o:"#8A5E2B",e:"hamr",t:"stub",x:"ham",n:"#F28B9C"},9:{k:"b",c:"#34425F",d:"#F29F1D",o:"#1B2438",x:"peng"},10:{k:"b",c:"#2FB36B",d:"#F29F1D",o:"#176B40",x:"parrot"},11:{k:"f",c:"#63C46F",b:"#F6E7A8",d:"#3E9E54",o:"#26683A",e:"drag",t:"drag",x:"drag",n:"#26683A"},12:{k:"f",c:"#FFFFFF",b:"#F8F0FF",d:"#F58BC4",o:"#A98BC4",e:"uni",t:"mane",x:"uni",n:"#F28B9C"},13:{k:"n",x:"dino",o:"#2F6B2A"},14:{k:"n",x:"sheep",o:"#8A6A52"},15:{k:"n",x:"cow",o:"#4A4A52"},16:{k:"n",x:"croc",o:"#25601F"},17:{k:"n",x:"bfly",o:"#8A4B00"}};
+const PD={1:{k:"f",c:"#F5A85C",b:"#FFE6C7",d:"#F28B9C",o:"#9A5A22",s:"#D9822B",e:"cat",t:"long",n:"#F28B9C"},2:{k:"f",c:"#D9A066",b:"#FBE6CC",d:"#8A5A2B",o:"#6B4220",e:"dog",t:"dog",n:"#3B2A22"},3:{k:"f",c:"#FFFFFF",b:"#FFF2F4",d:"#F7B9C6",o:"#B39AA3",e:"rab",t:"puff",n:"#F28B9C"},4:{k:"f",c:"#EE7B30",b:"#FFFFFF",d:"#4A2E22",o:"#8A3F10",e:"cat",t:"bush",x:"fox",n:"#3B2A22"},5:{k:"f",c:"#FFFFFF",b:"#FFFFFF",d:"#2B2B33",o:"#2B2B33",e:"round",t:"stub",x:"panda",n:"#2B2B33",lg:1},6:{k:"b",c:"#FFD93D",d:"#F29F1D",o:"#C98A00",x:"chick"},7:{k:"t"},8:{k:"f",c:"#F0CB94",b:"#FFF3DF",d:"#C98F50",o:"#8A5E2B",e:"hamr",t:"stub",x:"ham",n:"#F28B9C"},9:{k:"b",c:"#34425F",d:"#F29F1D",o:"#1B2438",x:"peng"},10:{k:"b",c:"#2FB36B",d:"#F29F1D",o:"#176B40",x:"parrot"},11:{k:"f",c:"#63C46F",b:"#F6E7A8",d:"#3E9E54",o:"#26683A",e:"drag",t:"drag",x:"drag",n:"#26683A"},12:{k:"f",c:"#FFFFFF",b:"#F8F0FF",d:"#F58BC4",o:"#A98BC4",e:"uni",t:"mane",x:"uni",n:"#F28B9C"},13:{k:"n",x:"dino",o:"#2F6B2A"},14:{k:"n",x:"sheep",o:"#8A6A52"},15:{k:"n",x:"cow",o:"#4A4A52"},16:{k:"n",x:"croc",o:"#25601F"},17:{k:"n",x:"bfly",o:"#8A4B00"},18:{k:"n",x:"snail",o:"#8A4B1E"}};
 function petNew(x,L,S,K,eye,blush,mouth,line2){
  let g="";
  if(x==="dino"){
@@ -3812,6 +3815,13 @@ function petNew(x,L,S,K,eye,blush,mouth,line2){
    +`<path d="M25 52 Q25 40 50 40 Q75 40 75 52 Q78 70 50 72 Q22 70 25 52Z" fill="${Sn}" ${S}/><circle cx="42" cy="46" r="3.6" fill="${C}" ${S}/><circle cx="58" cy="46" r="3.6" fill="${C}" ${S}/><circle cx="42" cy="46" r="1.2" fill="${Sp}"/><circle cx="58" cy="46" r="1.2" fill="${Sp}"/>`
    +eye(36,27)+eye(64,27)+`<ellipse cx="29" cy="56" rx="4" ry="2.8" fill="#FF8FA3" opacity=".55"/><ellipse cx="71" cy="56" rx="4" ry="2.8" fill="#FF8FA3" opacity=".55"/>`
    +`<path d="M31 60 Q50 70 69 60" fill="none" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/><path d="M35 62 L37 66 L39.5 64Z M42 64.5 L44 68.5 L46.5 66Z M53.5 66 L56 68.5 L58 64.5Z M60.5 64 L63 66 L65 62Z" fill="#fff" stroke="${K}" stroke-width=".8" stroke-linejoin="round"/></g>`;
+ }else if(x==="snail"){
+  const B="#F5D6A8",Sh="#F29F5C",Sd="#C96A2B";
+  const stalk=(bx,ex)=>`<g class="p-ear">${line2(`M${bx} 40 Q${(bx+ex)/2+(ex>bx?2:-2)} 28 ${ex} 19`,B,5)}<circle cx="${ex}" cy="14" r="7.5" fill="#fff" ${S}/><g class="p-eye"><circle cx="${ex+.8}" cy="14.5" r="3.6" fill="${K}"/><circle cx="${ex+1.9}" cy="13" r="1.2" fill="#fff"/></g></g>`;
+  g=`<ellipse cx="52" cy="89" rx="40" ry="8" fill="${B}" ${S}/>`
+   +`<g class="p-arm"><circle cx="66" cy="62" r="28" fill="${Sh}" ${S}/><ellipse cx="56" cy="46" rx="9" ry="4.5" fill="#fff" opacity=".3" transform="rotate(-30 56 46)"/><path d="M66 62 C70 58 74 62 71 66 C67 72 58 67 60 58 C63 48 76 50 78 60 C80 72 70 80 60 76 C50 72 50 56 58 48" fill="none" stroke="${Sd}" stroke-width="2.6" stroke-linecap="round"/></g>`
+   +`<g class="p-body"><ellipse cx="32" cy="76" rx="20" ry="17" fill="${B}" ${S}/></g>`
+   +`<g class="p-head">${stalk(23,18)}${stalk(37,42)}<ellipse cx="30" cy="54" rx="20" ry="17" fill="${B}" ${S}/><ellipse cx="22" cy="44" rx="7" ry="3.5" fill="#fff" opacity=".35" transform="rotate(-20 22 44)"/><ellipse cx="19" cy="58" rx="4" ry="2.8" fill="#FF8FA3" opacity=".55"/><ellipse cx="41" cy="58" rx="4" ry="2.8" fill="#FF8FA3" opacity=".55"/><path d="M24 54 Q30 61 36 54" fill="none" stroke="${K}" stroke-width="1.7" stroke-linecap="round"/></g>`;
  }else{
   const WU="#FF9F43",WL="#FFC46B",WO="#8A4B00",SW=`stroke="${WO}" stroke-width="2.2" stroke-linejoin="round"`,B="#B9835A",BK="#5B3A29";
   const side=(m)=>{const X=v=>m?100-v:v;return `<path d="M${X(44)} 40 C${X(30)} 6 ${X(6)} 12 ${X(8)} 34 C${X(9)} 48 ${X(28)} 54 ${X(44)} 50Z" fill="${WU}" ${SW}/><path d="M${X(44)} 52 C${X(28)} 52 ${X(14)} 62 ${X(20)} 76 C${X(26)} 88 ${X(42)} 78 ${X(46)} 62Z" fill="${WL}" ${SW}/><circle cx="${X(22)}" cy="26" r="5" fill="#fff" opacity=".9"/><circle cx="${X(15)}" cy="38" r="3" fill="#fff" opacity=".9"/><circle cx="${X(30)}" cy="69" r="4" fill="#fff" opacity=".9"/>`};
@@ -3863,10 +3873,44 @@ function petSvg(i){const o=PD[i];if(!o)return"";const K="#2b2230",L=o.o||"#444",
   g=`<path class="p-tail" d="M86 86 L97 91 L86 94Z" fill="${G}" ${T}/><ellipse cx="30" cy="92" rx="10" ry="5.5" fill="${G}" ${T}/><ellipse cx="70" cy="92" rx="10" ry="5.5" fill="${G}" ${T}/><g class="p-body"><ellipse cx="50" cy="70" rx="38" ry="28" fill="#4F9D3A" ${T}/><path d="M32 66 L44 58 L56 66 L50 80 L36 80Z M56 66 L68 58 L80 66 L70 80 L58 80Z M20 76 L32 66 M80 66 L90 76" fill="none" stroke="#3A7A2B" stroke-width="2" stroke-linejoin="round"/></g><ellipse class="p-arm" cx="19" cy="78" rx="6" ry="9" transform="rotate(25 19 78)" fill="${G}" ${T}/><ellipse class="p-arm" cx="81" cy="78" rx="6" ry="9" transform="rotate(-25 81 78)" fill="${G}" ${T}/><g class="p-head"><ellipse cx="50" cy="46" rx="25" ry="23" fill="${G}" ${T}/><ellipse cx="40" cy="31" rx="8" ry="4" fill="#fff" opacity=".3" transform="rotate(-20 40 31)"/>${eye(40,45)}${eye(60,45)}<ellipse cx="29" cy="55" rx="4.5" ry="3" fill="#FF8FA3" opacity=".55"/><ellipse cx="71" cy="55" rx="4.5" ry="3" fill="#FF8FA3" opacity=".55"/>${mouth(57)}</g>`}
  g=g.replace(/<(ellipse|path|circle) class="(p-[a-z]+)"([^>]*?) transform="([^"]+)"([^>]*?)\/>/g,'<g transform="$4"><$1 class="$2"$3$5/></g>');
  return `<svg class="ps" viewBox="0 0 100 100" aria-hidden="true"><ellipse cx="50" cy="96" rx="30" ry="3.8" fill="#000" opacity=".2"/><g class="p-all">${g}</g></svg>`}
+/* ===== Suara hewan: klik peliharaan -> balon teks + suara (WebAudio, ikut tombol 🔊) ===== */
+const PTXT={1:"Meong~",2:"Guk guk!",3:"Cit cit~",4:"Yip yip!",5:"Ngiik ngiik~",6:"Ciap ciap!",7:"Hsss~",8:"Cuit cuit!",9:"Ook ook!",10:"Halo! Kwek!",11:"Rawr!",12:"Hiiihihihi!",13:"Groaaar!",14:"Mbeeek~",15:"Mooo~",16:"Grrrr!",17:"Frrr~",18:"Slurp~"};
+function petVoice(i){const c=MU.ctx;if(!c||!MU.mg)return;const T=c.currentTime+.02;
+ const S=(o,d,a,b,ty,v,fc,ft,vh,vd)=>{const s=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain(),t=T+o;s.type=ty;s.frequency.setValueAtTime(a,t);s.frequency.exponentialRampToValueAtTime(Math.max(b,20),t+d);
+  f.type=ft||"bandpass";f.frequency.value=fc||1500;f.Q.value=f.type==="lowpass"?.7:.9;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+Math.min(.03,d/3));g.gain.setValueAtTime(v*.85,t+d*.65);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  if(vh){const l=c.createOscillator(),lg=c.createGain();l.frequency.value=vh;lg.gain.value=vd||20;l.connect(lg);lg.connect(s.frequency);l.start(t);l.stop(t+d+.05)}
+  s.connect(f);f.connect(g);g.connect(MU.mg);s.start(t);s.stop(t+d+.05)};
+ const N=(o,d,fc,v,q)=>{if(!MU.nb)return;const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain(),t=T+o;s.buffer=MU.nb;f.type="bandpass";f.frequency.value=fc;f.Q.value=q||1;
+  g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);s.connect(f);f.connect(g);g.connect(MU.mg);s.start(t,Math.random()*.4,d+.05)};
+ switch(i){
+  case 1:S(0,.16,420,760,"sawtooth",.2,1500);S(.16,.42,760,480,"sawtooth",.2,1200);break;
+  case 2:[0,.22].forEach(o=>{S(o,.14,320,170,"sawtooth",.3,900,"lowpass");N(o,.08,1200,.12)});break;
+  case 3:[0,.12].forEach(o=>S(o,.07,1900,2500,"sine",.18,2200));break;
+  case 4:[0,.17].forEach(o=>S(o,.13,900,1400,"square",.1,1600));break;
+  case 5:S(0,.6,330,300,"sawtooth",.2,900,"bandpass",32,35);break;
+  case 6:[0,.1,.2].forEach((o,k)=>S(o,.07,2600+k*150,3400+k*150,"sine",.14,3000));break;
+  case 7:N(0,.5,4500,.18,.8);N(0,.5,6000,.1,.8);break;
+  case 8:[0,.09,.18,.27].forEach(o=>S(o,.05,3000,3900,"sine",.12,3400));break;
+  case 9:[0,.26].forEach(o=>S(o,.2,360,260,"sawtooth",.25,1000,"lowpass",18,15));break;
+  case 10:S(0,.18,1100,1700,"sine",.16,1500);S(.2,.28,1700,1200,"sine",.16,1500);S(.55,.2,1300,1900,"sine",.16,1600);break;
+  case 11:S(0,.7,150,60,"sawtooth",.28,700,"lowpass",45,15);N(0,.7,500,.12,.7);break;
+  case 12:S(0,.25,500,950,"sawtooth",.2,1400,"bandpass",18,25);S(.25,.55,950,420,"sawtooth",.2,1200,"bandpass",22,30);break;
+  case 13:S(0,.8,110,45,"sawtooth",.32,500,"lowpass",40,10);N(0,.8,350,.2,.6);break;
+  case 14:S(0,.6,380,340,"sawtooth",.2,1000,"bandpass",30,40);break;
+  case 15:S(0,.3,140,165,"sawtooth",.32,650,"lowpass");S(.3,.65,165,120,"sawtooth",.32,650,"lowpass",5,4);break;
+  case 16:S(0,.6,75,60,"sawtooth",.3,400,"lowpass",50,8);N(0,.6,300,.16,.8);break;
+  case 17:[0,.07,.14,.21,.28].forEach(o=>N(o,.05,2800,.07,1.5));break;
+  case 18:S(0,.18,180,520,"sine",.2,600);S(.2,.06,700,300,"sine",.15,600);N(.02,.18,1800,.05,2);break}}
+function petSay(el){const i=+el.dataset.pi;if(!i||!PTXT[i])return;
+ el.querySelectorAll(".pet-s").forEach(x=>x.remove());
+ const b=document.createElement("i");b.className="pet-s";b.textContent=PTXT[i];el.appendChild(b);clearTimeout(el._ts);el._ts=setTimeout(()=>b.remove(),1500);
+ const n=performance.now();if(el._sn&&n-el._sn<350)return;el._sn=n;
+ try{if(!MU.on)return;const c=muCtx();if(!c)return;const go=()=>{try{petVoice(i)}catch(e){}};if(c.state==="running")go();else{const p=c.resume();if(p&&p.then)p.then(go,()=>{})}}catch(e){}}
 function petIdx(a){const v=avbParse(a);return v&&v[20]&&PD[v[20]]?v[20]:0}
-function petS(a,cls){const i=petIdx(a);return i?`<span class="pet ${cls||""}" role="img" aria-label="Peliharaan: ${PETS[i][1]}" onclick="petTap(this)">${petSvg(i)}</span>`:""}
+function petS(a,cls){const i=petIdx(a);return i?`<span class="pet ${cls||""}" role="img" aria-label="Peliharaan: ${PETS[i][1]}" data-pi="${i}" onclick="petTap(this)">${petSvg(i)}</span>`:""}
 function petRe(el){el.classList.remove("act");void el.offsetWidth;el.classList.add("act");clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove("act"),950)}
-function petTap(el){petRe(el);const h=document.createElement("i");h.className="pet-h";h.textContent="\u2764\uFE0F";el.appendChild(h);setTimeout(()=>h.remove(),950);try{if(navigator.vibrate)navigator.vibrate(15)}catch(e){}}
+function petTap(el){petSay(el);petRe(el);const h=document.createElement("i");h.className="pet-h";h.textContent="\u2764\uFE0F";el.appendChild(h);setTimeout(()=>h.remove(),950);try{if(navigator.vibrate)navigator.vibrate(15)}catch(e){}}
 /* tombol Animasi: default nyala (mengabaikan "kurangi animasi" milik sistem); disimpan di perangkat */
 const mvOff=()=>document.documentElement.classList.contains("mv-off");
 function mvSet(off){document.documentElement.classList.toggle("mv-off",off);A3.rm=off;try{localStorage.setItem("mv",off?"0":"1")}catch(e){}}
